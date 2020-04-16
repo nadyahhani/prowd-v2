@@ -95,14 +95,13 @@ const renderGroup = (params) => [
   params.children,
 ];
 
-export default function Virtualize(props) {
+export default function VirtualAutocomp(props) {
   const classes = useStyles();
 
   return (
     <React.Fragment>
       <InputLabel shrink="true">{props.label}</InputLabel>
       <Autocomplete
-        id="virtualize-demo"
         size="small"
         disableListWrap
         classes={classes}
@@ -116,6 +115,10 @@ export default function Virtualize(props) {
             {...params}
             variant="outlined"
             placeholder={props.placeholder}
+            inputProps={{
+              ...params.inputProps,
+              autoComplete: "new-password",
+            }}
           />
         )}
         renderOption={props.renderOption}

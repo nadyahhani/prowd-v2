@@ -1,10 +1,10 @@
 import React from "react";
 import { Typography } from "@material-ui/core";
 
-export default function ProfilePage(props) {
+export default function BrowsePage(props) {
   return (
     <Typography>
-      this is the profile page of dashboard id: {props.match.params.id}
+      this is the browse page
     </Typography>
   );
 }

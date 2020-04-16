@@ -8,8 +8,13 @@ import {
   Button,
   Modal,
   makeStyles,
+  Checkbox,
+  InputLabel,
+  Box,
 } from "@material-ui/core";
+import VirtualAutocomp from "../../components/Inputs/VirtualAutocomp";
 import FilterBox from "./FilterBox";
+import Autocomplete from "@material-ui/lab/Autocomplete";
 
 const useStyles = makeStyles((theme) => ({
   modalPaper: {
@@ -25,6 +30,18 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+const temp = [
+  { code: "AD", label: "Andorra", phone: "376" },
+  { code: "AE", label: "United Arab Emirates", phone: "971" },
+  { code: "AF", label: "Afghanistan", phone: "93" },
+  { code: "AG", label: "Antigua and Barbuda", phone: "1-268" },
+  { code: "AI", label: "Anguilla", phone: "1-264" },
+  { code: "AL", label: "Albania", phone: "355" },
+  { code: "AM", label: "Armenia", phone: "374" },
+  { code: "AO", label: "Angola", phone: "244" },
+  { code: "AQ", label: "Antarctica", phone: "672" },
+];
+
 export default function FilterModal(props) {
   const classes = useStyles();
   return (
@@ -32,35 +49,75 @@ export default function FilterModal(props) {
       <Paper className={classes.modalPaper}>
         <Grid container direction="column" spacing={2}>
           <Grid item>
-            <Typography>Add Filter</Typography>
+            <Typography>
+              <Box fontWeight="bold">Add Filters</Box>
+            </Typography>
           </Grid>
           <Grid item>
-            <TextField />
-          </Grid>
-          <Grid item>
-            <TextField />
-          </Grid>
-          <Grid item>
-            <Button color="primary">Add Filter</Button>
-          </Grid>
-          <Grid item>
-            <Typography>Edit Filters</Typography>
-          </Grid>
-          <Grid item>
-            <FilterBox
-              disableModal
-              options={[
-                { code: "AD", label: "Andorra", phone: "376" },
-                { code: "AE", label: "United Arab Emirates", phone: "971" },
-                { code: "AF", label: "Afghanistan", phone: "93" },
-                { code: "AG", label: "Antigua and Barbuda", phone: "1-268" },
-                { code: "AI", label: "Anguilla", phone: "1-264" },
-                { code: "AL", label: "Albania", phone: "355" },
-                { code: "AM", label: "Armenia", phone: "374" },
-                { code: "AO", label: "Angola", phone: "244" },
-                { code: "AQ", label: "Antarctica", phone: "672" },
-              ]}
+            <VirtualAutocomp
+              label="Property"
+              placeholder="e.g. Sex or Gender, Date of Birth, Country"
+              options={temp}
+              getOptionLabel={(option) => option.label}
+              renderOption={(option) => (
+                <Typography noWrap>{option.label}</Typography>
+              )}
             />
+          </Grid>
+          <Grid item>
+            <InputLabel shrink="true">Value</InputLabel>
+            <Autocomplete
+              multiple
+              size="small"
+              id="tags-filled"
+              options={temp.map((option) => option.label)}
+              disableCloseOnSelect
+              renderOption={(option, { selected }) => (
+                <React.Fragment>
+                  <Checkbox checked={selected} style={{ fontSize: "2.5vh" }} />
+                  {option}
+                </React.Fragment>
+              )}
+              renderTags={(value, getTagProps) =>
+                value.map((option, index) => (
+                  <Typography
+                    {...getTagProps({ index })}
+                  >{`${option}, `}</Typography>
+                ))
+              }
+              renderInput={(params) => (
+                <TextField {...params} variant="outlined" />
+              )}
+            />
+          </Grid>
+          <Grid item>
+            <Button color="primary" variant="contained">
+              Add Filter
+            </Button>
+          </Grid>
+          <Grid item>
+            <Typography>
+              <Box fontWeight="bold">Applied Filters</Box>
+            </Typography>
+          </Grid>
+          <Grid item>
+            <FilterBox disableModal cols={4} options={temp} />
+          </Grid>
+          <Grid item>
+            <Grid container direction="row" spacing={2}>
+              <Grid item>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  onClick={props.onClose}
+                >
+                  Apply
+                </Button>
+                <Button color="primary" onClick={props.onClose}>
+                  Cancel
+                </Button>
+              </Grid>
+            </Grid>
           </Grid>
         </Grid>
       </Paper>

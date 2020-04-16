@@ -1,5 +1,6 @@
 import React from "react";
 import theme from "../../theme";
+import { useHistory } from "react-router-dom";
 import {
   Box,
   Typography,
@@ -87,14 +88,11 @@ const tempData = {
 
 function Landing(props) {
   const classes = useStyles();
+  const history = useHistory();
 
   return (
     <ThemeProvider theme={theme}>
       <Navbar />
-      {/* <FilterModal
-        open={state.filterOptOpen}
-        onClose={() => setState((s) => ({ ...s, filterOptOpen: false }))}
-      /> */}
       <div className={classes.mainLanding}>
         <div className={`${classes.mainDiv} ${classes.centerContent}`}>
           <Typography variant="h2" className={classes.infoText}>
@@ -135,6 +133,7 @@ function Landing(props) {
                   color="primary"
                   disableElevation
                   fullWidth
+                  onClick={() => history.push("/dashboards/123/profile")}
                 >
                   Check
                 </Button>
