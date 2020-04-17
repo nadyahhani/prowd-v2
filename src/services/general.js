@@ -3,7 +3,7 @@ import { url } from "../global";
 
 export function getClasses(afterFunc) {
   axios
-    .get(`${url}/api/entities`)
+    .get(`${url}/api/entities/sample`)
     .then(
       (response) => {
         afterFunc({ success: true, ...response.data });
