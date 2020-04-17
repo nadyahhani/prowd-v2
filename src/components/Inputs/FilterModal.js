@@ -18,7 +18,7 @@ import Autocomplete from "@material-ui/lab/Autocomplete";
 
 const useStyles = makeStyles((theme) => ({
   modalPaper: {
-    height: "60vh",
+    height: "fit-content",
     width: "65vw",
     position: "absolute",
     padding: theme.spacing(2),

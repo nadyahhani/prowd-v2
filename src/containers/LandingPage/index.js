@@ -12,9 +12,11 @@ import {
   Card,
   ButtonBase,
 } from "@material-ui/core";
+import tempData from "./tempData";
 import Navbar from "../../components/Navigation/Navbar";
 import VirtualAutocomp from "../../components/Inputs/VirtualAutocomp";
 import FilterBox from "../../components/Inputs/FilterBox";
+import { getClasses } from "../../services/general";
 
 const useStyles = makeStyles(() => ({
   centerContent: {
@@ -66,29 +68,24 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-const tempData = {
-  examples: [
-    "Actor and Actresses",
-    "American Politicians",
-    "Countries of the World",
-    "Diseases",
-  ],
-  countries: [
-    { code: "AD", label: "Andorra", phone: "376" },
-    { code: "AE", label: "United Arab Emirates", phone: "971" },
-    { code: "AF", label: "Afghanistan", phone: "93" },
-    { code: "AG", label: "Antigua and Barbuda", phone: "1-268" },
-    { code: "AI", label: "Anguilla", phone: "1-264" },
-    { code: "AL", label: "Albania", phone: "355" },
-    { code: "AM", label: "Armenia", phone: "374" },
-    { code: "AO", label: "Angola", phone: "244" },
-    { code: "AQ", label: "Antarctica", phone: "672" },
-  ],
+const cut = (sentence, length) => {
+  return `${sentence.slice(0, length)}${sentence.length > length ? "..." : ""}`;
 };
 
 function Landing(props) {
   const classes = useStyles();
   const history = useHistory();
+  const [state, setState] = React.useState({ classes: [] });
+
+  React.useEffect(() => {
+    console.log("jalan");
+
+    getClasses((response) => {
+      console.log(response);
+
+      setState((s) => ({ ...s, classes: response.entities }));
+    });
+  }, []);
 
   return (
     <ThemeProvider theme={theme}>
@@ -116,11 +113,18 @@ function Landing(props) {
                 <VirtualAutocomp
                   label="Class"
                   placeholder="e.g. Human, Disease, Country"
-                  options={tempData.countries}
-                  // groupBy={(option) => option.code.toUpperCase()}
-                  getOptionLabel={(option) => option.label}
+                  options={state.classes}
+                  loading={state.classes.length === 0}
+                  // groupBy={(option) => option.label[0].toUpperCase()}
+                  getOptionLabel={(option) =>
+                    `${option.entityLabel} (${option.entityID})`
+                  }
                   renderOption={(option) => (
-                    <Typography noWrap>{option.label}</Typography>
+                    <div>
+                      <Typography
+                        noWrap
+                      >{`${option.entityLabel} (${option.entityID})`}</Typography>
+                    </div>
                   )}
                 />
               </Grid>

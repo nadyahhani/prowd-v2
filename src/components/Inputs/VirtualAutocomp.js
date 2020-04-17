@@ -79,14 +79,17 @@ ListboxComponent.propTypes = {
   children: PropTypes.node,
 };
 
-const useStyles = makeStyles({
+const useStyles = makeStyles((theme) => ({
   listbox: {
     "& ul": {
-      padding: 0,
-      margin: 0,
+      padding: 5,
+      margin: 5,
     },
   },
-});
+  option: {
+    borderBottom: `1px solid ${theme.palette.disabled.main}`,
+  },
+}));
 
 const renderGroup = (params) => [
   <ListSubheader key={params.key} component="div">
@@ -103,8 +106,9 @@ export default function VirtualAutocomp(props) {
       <InputLabel shrink="true">{props.label}</InputLabel>
       <Autocomplete
         size="small"
+        loading={props.loading}
         disableListWrap
-        classes={classes}
+        classes={{ listbox: classes.listbox, option: classes.option }}
         ListboxComponent={ListboxComponent}
         renderGroup={renderGroup}
         options={props.options}

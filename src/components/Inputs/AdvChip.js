@@ -92,6 +92,7 @@ export default function AdvChip(props) {
     <React.Fragment>
       <Chip
         size="small"
+        color="primary"
         label={<Typography>{props.label}</Typography>}
         onClick={(e) => {
           setState((s) => ({

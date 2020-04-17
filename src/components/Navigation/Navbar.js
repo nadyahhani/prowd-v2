@@ -4,11 +4,13 @@ import Toolbar from "@material-ui/core/Toolbar";
 import Typography from "@material-ui/core/Typography";
 import { fade, makeStyles } from "@material-ui/core/styles";
 import SearchIcon from "@material-ui/icons/Search";
-import { TextField, InputAdornment, Box, Button } from "@material-ui/core";
+import { TextField, InputAdornment, Button, Grid } from "@material-ui/core";
+import theme from "../../theme";
 
 const useStyles = makeStyles((theme) => ({
   root: {
     flexGrow: 1,
+    position: "relative",
   },
   menuButton: {
     marginRight: theme.spacing(2),
@@ -52,10 +54,14 @@ const useStyles = makeStyles((theme) => ({
     fontSize: theme.typography.fontSize,
   },
   buttons: {
-    float: "none",
-    "& > *": {
-      //   padding: theme.spacing(2),
-    },
+    // float: "none",
+    // position: "absolute",
+    // width: "100%",
+    // flexDirection: "row",
+    // justifyContent: "center",
+    // "& > *": {
+    //   padding: theme.spacing(2),
+    // },
   },
 }));
 
@@ -64,36 +70,60 @@ export default function Navbar() {
 
   return (
     <div className={classes.root}>
-      <AppBar position="fixed">
-        <Toolbar className={classes.toolbar} variant="dense">
-          <Box>
-            <Typography className={classes.title} variant="h2" noWrap>
-              ProWD
-            </Typography>
-          </Box>
-          <Box className={classes.buttons}>
-            <Button>Home</Button>
-            <Button>Browse</Button>
-            <Button>About</Button>
-          </Box>
-          <Box>
-            <TextField
-              size="small"
-              variant="outlined"
-              placeholder="Search for dashboards..."
-              fullWidth
-              InputProps={{
-                classes: {
-                  input: classes.placeholder,
-                },
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <SearchIcon className={classes.searchIcon} />
-                  </InputAdornment>
-                ),
-              }}
-            />
-          </Box>
+      <AppBar
+        position="fixed"
+        elevation={0}
+        color="disabled"
+        variant="outlined"
+      >
+        <Toolbar
+          classes={{ root: classes.toolbar, gutters: classes.gutters }}
+          variant="dense"
+          disableGutters
+        >
+          <Grid
+            container
+            justify="space-between"
+            alignItems="center"
+            style={{ padding: `0 ${theme.spacing(2)}px` }}
+          >
+            <Grid item xs={3}>
+              <Typography className={classes.title} variant="h2" noWrap>
+                ProWD
+              </Typography>
+            </Grid>
+            <Grid item xs={3}>
+              <Grid container justify="center" spacing={2}>
+                <Grid item>
+                  <Button>Home</Button>
+                </Grid>
+                <Grid item>
+                  <Button>Browse</Button>
+                </Grid>
+                <Grid item>
+                  <Button>About</Button>
+                </Grid>
+              </Grid>
+            </Grid>
+            <Grid item xs={3}>
+              <TextField
+                size="small"
+                variant="outlined"
+                placeholder="Search for dashboards..."
+                fullWidth
+                InputProps={{
+                  classes: {
+                    input: classes.placeholder,
+                  },
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <SearchIcon className={classes.searchIcon} />
+                    </InputAdornment>
+                  ),
+                }}
+              />
+            </Grid>
+          </Grid>
         </Toolbar>
       </AppBar>
     </div>
