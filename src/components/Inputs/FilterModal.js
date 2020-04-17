@@ -57,7 +57,7 @@ export default function FilterModal(props) {
             <VirtualAutocomp
               label="Property"
               placeholder="e.g. Sex or Gender, Date of Birth, Country"
-              options={temp}
+              options={props.propertiesOptions ? props.propertiesOptions : []}
               getOptionLabel={(option) => option.label}
               renderOption={(option) => (
                 <Typography noWrap>{option.label}</Typography>
@@ -128,4 +128,5 @@ export default function FilterModal(props) {
 FilterModal.propTypes = {
   onClose: PropTypes.func,
   open: PropTypes.bool,
+  propertiesOptions: PropTypes.arrayOf(PropTypes.object),
 };

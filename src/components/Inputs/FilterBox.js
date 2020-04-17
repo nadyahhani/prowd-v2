@@ -34,13 +34,14 @@ export default function FilterBox(props) {
         <FilterModal
           open={state.modalOpen}
           onClose={() => setState((s) => ({ ...s, modalOpen: false }))}
+          propertiesOptions={props.propertiesOptions}
         />
       )}
-      <InputLabel shrink="true">Filters</InputLabel>
+      <InputLabel shrink={true}>Filters</InputLabel>
       <Paper
         className={classes.filters}
         variant="outlined"
-        disableElevation
+        elevation={0}
         style={props.cols ? { height: `${props.cols * 4}vh` } : {}}
       >
         <Grid container spacing={1}>
@@ -60,8 +61,8 @@ export default function FilterBox(props) {
             </Grid>
           )}
           {props.options.map((x) => (
-            <Grid item>
-              <AdvChip label={<Typography>{x.label}</Typography>} />
+            <Grid item key={x.label}>
+              <AdvChip label={x.label} />
             </Grid>
           ))}
         </Grid>
@@ -74,4 +75,5 @@ FilterBox.propTypes = {
   options: PropTypes.arrayOf(PropTypes.object),
   disableModal: PropTypes.bool,
   cols: PropTypes.number,
+  propertiesOptions: PropTypes.arrayOf(PropTypes.object),
 };

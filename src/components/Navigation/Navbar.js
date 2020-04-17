@@ -73,7 +73,7 @@ export default function Navbar() {
       <AppBar
         position="fixed"
         elevation={0}
-        color="disabled"
+        color="default"
         variant="outlined"
       >
         <Toolbar

@@ -103,7 +103,7 @@ export default function VirtualAutocomp(props) {
 
   return (
     <React.Fragment>
-      <InputLabel shrink="true">{props.label}</InputLabel>
+      <InputLabel shrink={true}>{props.label}</InputLabel>
       <Autocomplete
         size="small"
         loading={props.loading}
@@ -111,6 +111,8 @@ export default function VirtualAutocomp(props) {
         classes={{ listbox: classes.listbox, option: classes.option }}
         ListboxComponent={ListboxComponent}
         renderGroup={renderGroup}
+        value={props.value}
+        onChange={props.onChange}
         options={props.options}
         groupBy={props.groupBy}
         getOptionLabel={props.getOptionLabel}

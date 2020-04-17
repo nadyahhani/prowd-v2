@@ -16,7 +16,7 @@ import tempData from "./tempData";
 import Navbar from "../../components/Navigation/Navbar";
 import VirtualAutocomp from "../../components/Inputs/VirtualAutocomp";
 import FilterBox from "../../components/Inputs/FilterBox";
-import { getClasses } from "../../services/general";
+// import { getClasses, getAllProperties } from "../../services/general";
 
 const useStyles = makeStyles(() => ({
   centerContent: {
@@ -68,24 +68,27 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-const cut = (sentence, length) => {
-  return `${sentence.slice(0, length)}${sentence.length > length ? "..." : ""}`;
-};
+// const cut = (sentence, length) => {
+//   return `${sentence.slice(0, length)}${sentence.length > length ? "..." : ""}`;
+// };
 
 function Landing(props) {
   const classes = useStyles();
   const history = useHistory();
-  const [state, setState] = React.useState({ classes: [] });
+  const [state, setState] = React.useState({
+    classes: [],
+    selectedClass: "",
+    propertiesOptions: [],
+  });
 
   React.useEffect(() => {
     console.log("jalan");
 
-    getClasses((response) => {
-      console.log(response);
-
-      setState((s) => ({ ...s, classes: response.entities }));
-    });
-  }, []);
+    // getClasses(state.selectedClass, (response) => {
+    //   console.log(response);
+    //   setState((s) => ({ ...s, classes: response.entities }));
+    // });
+  }, [state.propertiesOptions]);
 
   return (
     <ThemeProvider theme={theme}>
@@ -115,6 +118,10 @@ function Landing(props) {
                   placeholder="e.g. Human, Disease, Country"
                   options={state.classes}
                   loading={state.classes.length === 0}
+                  value={state.selectedClass}
+                  onChange={(e) =>
+                    setState((s) => ({ ...s, selectedClass: e.target.value }))
+                  }
                   // groupBy={(option) => option.label[0].toUpperCase()}
                   getOptionLabel={(option) =>
                     `${option.entityLabel} (${option.entityID})`
@@ -129,7 +136,10 @@ function Landing(props) {
                 />
               </Grid>
               <Grid item>
-                <FilterBox options={tempData.countries} />
+                <FilterBox
+                  options={tempData.countries}
+                  propertiesOptions={state.propertiesOptions}
+                />
               </Grid>
               <Grid item xs={5}>
                 <Button
