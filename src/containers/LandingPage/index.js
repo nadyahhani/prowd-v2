@@ -16,7 +16,9 @@ import tempData from "./tempData";
 import Navbar from "../../components/Navigation/Navbar";
 import VirtualAutocomp from "../../components/Inputs/VirtualAutocomp";
 import FilterBox from "../../components/Inputs/FilterBox";
-// import { getClasses, getAllProperties } from "../../services/general";
+import { getClasses } from "../../services/general";
+import { createDashboard } from "../../services/dashboard";
+import { cut, getUnique } from "../../global";
 
 const useStyles = makeStyles(() => ({
   centerContent: {
@@ -68,27 +70,26 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-// const cut = (sentence, length) => {
-//   return `${sentence.slice(0, length)}${sentence.length > length ? "..." : ""}`;
-// };
-
 function Landing(props) {
   const classes = useStyles();
   const history = useHistory();
   const [state, setState] = React.useState({
     classes: [],
-    selectedClass: "",
+    classInput: "",
+    selectedClass: null,
     propertiesOptions: [],
+    selectedProps: "",
+    appliedFilters: [],
   });
 
   React.useEffect(() => {
     console.log("jalan");
 
-    // getClasses(state.selectedClass, (response) => {
-    //   console.log(response);
-    //   setState((s) => ({ ...s, classes: response.entities }));
-    // });
-  }, [state.propertiesOptions]);
+    getClasses("", (response) => {
+      console.log(response);
+      setState((s) => ({ ...s, classes: response.entities }));
+    });
+  }, []);
 
   return (
     <ThemeProvider theme={theme}>
@@ -118,27 +119,97 @@ function Landing(props) {
                   placeholder="e.g. Human, Disease, Country"
                   options={state.classes}
                   loading={state.classes.length === 0}
-                  value={state.selectedClass}
-                  onChange={(e) =>
-                    setState((s) => ({ ...s, selectedClass: e.target.value }))
-                  }
-                  // groupBy={(option) => option.label[0].toUpperCase()}
-                  getOptionLabel={(option) =>
-                    `${option.entityLabel} (${option.entityID})`
-                  }
+                  inputValue={state.classInput}
+                  getOptionSelected={(option) => option.id}
+                  // value={state.selectedClass}
+                  onInputChange={(e) => {
+                    // console.log(e);
+                    if (e) {
+                      const tempval = e.target.value;
+                      setState((s) => ({
+                        ...s,
+                        classInput: tempval,
+                        // classes: [],
+                      }));
+
+                      getClasses(e.target.value, (response) => {
+                        setState((s) => ({
+                          ...s,
+                          classes: getUnique(
+                            [...s.classes, ...response.entities],
+                            "id"
+                          ),
+                        }));
+                      });
+                    }
+                  }}
+                  onChange={(event, newValue, reason) => {
+                    if (newValue) {
+                      setState((s) => ({
+                        ...s,
+                        selectedClass: newValue,
+                        classInput: `${newValue.label} (${newValue.id})`,
+                      }));
+                    }
+                    if (reason === "clear") {
+                      setState((s) => ({
+                        ...s,
+                        selectedClass: null,
+                        classInput: "",
+                      }));
+                    }
+                  }}
+                  onClose={(event, reason) => {
+                    console.log(reason, state.selectedClass);
+
+                    if (reason !== "select-option" && !state.selectedClass) {
+                      setState((s) => ({
+                        ...s,
+                        classInput: "",
+                        selectedClass: null,
+                      }));
+                    }
+                  }}
+                  getOptionLabel={(option) => {
+                    return `${option.label} (${option.id})${
+                      option.aliases
+                        ? ` also known as ${option.aliases.join(", ")}`
+                        : ""
+                    }`;
+                  }}
                   renderOption={(option) => (
                     <div>
                       <Typography
                         noWrap
-                      >{`${option.entityLabel} (${option.entityID})`}</Typography>
+                      >{`${option.label} (${option.id})`}</Typography>
+                      <Typography
+                        variant="caption"
+                        style={{ lineHeight: "1.3vmin" }}
+                      >
+                        {cut(option.description, 80)}
+                      </Typography>
                     </div>
                   )}
                 />
               </Grid>
               <Grid item>
                 <FilterBox
-                  options={tempData.countries}
+                  class={state.selectedClass}
+                  options={state.appliedFilters}
                   propertiesOptions={state.propertiesOptions}
+                  selectedClass={state.selectedClass}
+                  disabled={!state.selectedClass}
+                  onApply={(applied) =>
+                    setState((s) => ({ ...s, appliedFilters: applied }))
+                  }
+                  renderTagText={(opt) =>
+                    cut(`${opt.property.label}: ${opt.values.label}`, 1000)
+                  }
+                  onDelete={(idx) => {
+                    const temp = [...state.appliedFilters];
+                    temp.splice(idx, 1);
+                    setState((s) => ({ ...s, appliedFilters: temp }));
+                  }}
                 />
               </Grid>
               <Grid item xs={5}>

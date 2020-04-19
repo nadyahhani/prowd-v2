@@ -101,7 +101,7 @@ export default function AdvChip(props) {
             anchorEl: e.currentTarget,
           }));
         }}
-        onDelete={() => {}}
+        onDelete={props.onDelete}
         variant="outlined"
       />
       <Popover

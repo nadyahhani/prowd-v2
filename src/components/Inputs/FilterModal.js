@@ -15,6 +15,12 @@ import {
 import VirtualAutocomp from "../../components/Inputs/VirtualAutocomp";
 import FilterBox from "./FilterBox";
 import Autocomplete from "@material-ui/lab/Autocomplete";
+import { getUnique, cut } from "../../global";
+import {
+  searchProperties,
+  getPropValues,
+  getClasses,
+} from "../../services/general";
 
 const useStyles = makeStyles((theme) => ({
   modalPaper: {
@@ -30,26 +36,40 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const temp = [
-  { code: "AD", label: "Andorra", phone: "376" },
-  { code: "AE", label: "United Arab Emirates", phone: "971" },
-  { code: "AF", label: "Afghanistan", phone: "93" },
-  { code: "AG", label: "Antigua and Barbuda", phone: "1-268" },
-  { code: "AI", label: "Anguilla", phone: "1-264" },
-  { code: "AL", label: "Albania", phone: "355" },
-  { code: "AM", label: "Armenia", phone: "374" },
-  { code: "AO", label: "Angola", phone: "244" },
-  { code: "AQ", label: "Antarctica", phone: "672" },
-];
-
 export default function FilterModal(props) {
   const classes = useStyles();
+  const [state, setState] = React.useState({
+    inputProperties: "",
+    selectedProp: null,
+    selectedValues: null,
+    propertiesOptions: [],
+    suggestedProperties: [],
+    searchresults: [],
+    propValueOptions: [],
+    appliedFilters: [],
+    inputValues: "",
+    // loading states
+    propertyLoading: false,
+    valueLoading: false,
+  });
+
+  React.useEffect(() => {
+    setState((s) => ({
+      ...s,
+      appliedFilters: props.appliedFilters,
+      propertiesOptions: [...props.propertiesOptions].map((item) => ({
+        ...item,
+        category: item.label[0].toUpperCase(),
+      })),
+    }));
+  }, [props.propertiesOptions, props.open]);
+
   return (
     <Modal open={props.open} onClose={props.onClose} className={classes.modal}>
       <Paper className={classes.modalPaper}>
         <Grid container direction="column" spacing={2}>
           <Grid item>
-            <Typography>
+            <Typography component="div">
               <Box fontWeight="bold">Add Filters</Box>
             </Typography>
           </Grid>
@@ -57,51 +77,216 @@ export default function FilterModal(props) {
             <VirtualAutocomp
               label="Property"
               placeholder="e.g. Sex or Gender, Date of Birth, Country"
-              options={props.propertiesOptions ? props.propertiesOptions : []}
-              getOptionLabel={(option) => option.label}
+              options={state.propertiesOptions}
+              // loading={state.propertiesOptions.length === 0}
               renderOption={(option) => (
-                <Typography noWrap>{option.label}</Typography>
-              )}
-            />
-          </Grid>
-          <Grid item>
-            <InputLabel shrink="true">Value</InputLabel>
-            <Autocomplete
-              multiple
-              size="small"
-              id="tags-filled"
-              options={temp.map((option) => option.label)}
-              disableCloseOnSelect
-              renderOption={(option, { selected }) => (
-                <React.Fragment>
-                  <Checkbox checked={selected} style={{ fontSize: "2.5vh" }} />
-                  {option}
-                </React.Fragment>
-              )}
-              renderTags={(value, getTagProps) =>
-                value.map((option, index) => (
+                <div>
                   <Typography
-                    {...getTagProps({ index })}
-                  >{`${option}, `}</Typography>
-                ))
-              }
-              renderInput={(params) => (
-                <TextField {...params} variant="outlined" />
+                    noWrap
+                  >{`${option.label} (${option.id})`}</Typography>
+                  <Typography variant="caption">
+                    {cut(option.description, 200)}
+                  </Typography>
+                </div>
               )}
+              inputValue={state.inputProperties}
+              getOptionSelected={(option) => option.id}
+              // groupBy={(option) => option.category}
+              loading={state.propertyLoading}
+              noOptionsText="Type something to search"
+              onInputChange={(e) => {
+                if (e) {
+                  const tempval = e.target.value;
+                  setState((s) => ({
+                    ...s,
+                    inputProperties: tempval,
+                    propertyLoading: true,
+                  }));
+                  searchProperties(tempval, (r) => {
+                    setState((s) => ({
+                      ...s,
+                      propertyLoading: false,
+                      propertiesOptions: getUnique(
+                        [
+                          ...s.propertiesOptions,
+                          ...r.properties.map((item) => ({
+                            ...item,
+                            category: item.label[0].toUpperCase(),
+                          })),
+                        ],
+                        "id"
+                      ),
+                    }));
+                  });
+                }
+                console.log(state);
+              }}
+              onChange={(event, newValue, reason) => {
+                if (newValue) {
+                  setState((s) => ({
+                    ...s,
+                    selectedProp: newValue,
+                    inputProperties: `${newValue.label} (${newValue.id})`,
+                  }));
+
+                  // getClasses("", (r) =>
+                  //   setState((s) => ({
+                  //     ...s,
+                  //     propValueOptions: r.entities,
+                  //   }))
+                  // );
+                }
+                if (reason === "clear") {
+                  setState((s) => ({
+                    ...s,
+                    selectedProp: null,
+                    inputProperties: "",
+                  }));
+                }
+              }}
+              onClose={(event, reason) => {
+                if (reason !== "select-option" && !state.selectedProp) {
+                  setState((s) => ({
+                    ...s,
+                    inputProperties: "",
+                    selectedProp: null,
+                  }));
+                }
+              }}
+              getOptionLabel={(option) => {
+                return `${option.label} (${option.id})${
+                  option.aliases
+                    ? ` also known as ${option.aliases.join(", ")}`
+                    : ""
+                }`;
+              }}
             />
           </Grid>
           <Grid item>
-            <Button color="primary" variant="contained">
+            <VirtualAutocomp
+              label="Value"
+              options={state.propValueOptions}
+              loading={state.valueLoading}
+              noOptionsText="Type something to search"
+              renderOption={(option) => (
+                <div>
+                  <Typography
+                    noWrap
+                  >{`${option.label} (${option.id})`}</Typography>
+                  <Typography variant="caption">
+                    {option.description
+                      ? cut(option.description, 200)
+                      : "No description available"}
+                  </Typography>
+                </div>
+              )}
+              inputValue={state.inputValues}
+              getOptionSelected={(option) => option.id}
+              // groupBy={(option) => option.category}
+              onInputChange={(e) => {
+                if (e) {
+                  const tempval = e.target.value;
+                  setState((s) => ({
+                    ...s,
+                    inputValues: tempval,
+                    valueLoading: true,
+                  }));
+                  getClasses(tempval, (r) => {
+                    setState((s) => ({
+                      ...s,
+                      valueLoading: false,
+                      propValueOptions: getUnique(
+                        [...s.propValueOptions, ...r.entities],
+                        "id"
+                      ),
+                    }));
+                  });
+                }
+              }}
+              onChange={(event, newValue, reason) => {
+                if (newValue) {
+                  setState((s) => ({
+                    ...s,
+                    selectedValues: newValue,
+                    inputValues: `${newValue.label}`,
+                  }));
+
+                  // getPropValues(
+                  //   props.selectedClass.id,
+                  //   newValue.entityID,
+                  //   (r) =>
+                  //     setState((s) => ({
+                  //       ...s,
+                  //       propValueOptions: r.suggestions,
+                  //     }))
+                  // );
+                }
+                if (reason === "clear") {
+                  setState((s) => ({
+                    ...s,
+                    selectedValues: null,
+                    inputValues: "",
+                  }));
+                }
+              }}
+              onClose={(event, reason) => {
+                if (reason !== "select-option" && !state.selectedValues) {
+                  setState((s) => ({
+                    ...s,
+                    inputValues: "",
+                    selectedValues: null,
+                  }));
+                }
+              }}
+              getOptionLabel={(option) => {
+                return `${option.label} (${option.id})${
+                  option.aliases
+                    ? ` also known as ${option.aliases.join(", ")}`
+                    : ""
+                }`;
+              }}
+            />
+          </Grid>
+          <Grid item>
+            <Button
+              color="primary"
+              variant="contained"
+              onClick={() =>
+                setState((s) => ({
+                  ...s,
+                  appliedFilters: [
+                    ...s.appliedFilters,
+                    { property: s.selectedProp, values: s.selectedValues },
+                  ],
+                  selectedProp: null,
+                  selectedValues: [],
+                  inputProperties: "",
+                  inputValues: "",
+                }))
+              }
+            >
               Add Filter
             </Button>
           </Grid>
           <Grid item>
-            <Typography>
+            <Typography component="div">
               <Box fontWeight="bold">Applied Filters</Box>
             </Typography>
           </Grid>
           <Grid item>
-            <FilterBox disableModal cols={4} options={temp} />
+            <FilterBox
+              disableModal
+              cols={4}
+              options={state.appliedFilters}
+              renderTagText={(opt) =>
+                cut(`${opt.property.label}: ${opt.values.label}`, 1000)
+              }
+              onDelete={(idx) => {
+                const temp = [...state.appliedFilters];
+                temp.splice(idx, 1);
+                setState((s) => ({ ...s, appliedFilters: temp }));
+              }}
+            />
           </Grid>
           <Grid item>
             <Grid container direction="row" spacing={2}>
@@ -109,7 +294,10 @@ export default function FilterModal(props) {
                 <Button
                   variant="contained"
                   color="primary"
-                  onClick={props.onClose}
+                  onClick={() => {
+                    props.onApply(state.appliedFilters);
+                    props.onClose();
+                  }}
                 >
                   Apply
                 </Button>
@@ -129,4 +317,8 @@ FilterModal.propTypes = {
   onClose: PropTypes.func,
   open: PropTypes.bool,
   propertiesOptions: PropTypes.arrayOf(PropTypes.object),
+  selectedClass: PropTypes.object,
+  onApply: PropTypes.func,
+  onDelete: PropTypes.func,
+  appliedFilters: PropTypes.arrayOf(PropTypes.object),
 };

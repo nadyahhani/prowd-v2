@@ -6,7 +6,7 @@ import useMediaQuery from "@material-ui/core/useMediaQuery";
 import ListSubheader from "@material-ui/core/ListSubheader";
 import { useTheme, makeStyles } from "@material-ui/core/styles";
 import { VariableSizeList } from "react-window";
-import { InputLabel } from "@material-ui/core";
+import { InputLabel, CircularProgress } from "@material-ui/core";
 
 const LISTBOX_PADDING = 8; // px
 
@@ -91,12 +91,14 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const renderGroup = (params) => [
-  <ListSubheader key={params.key} component="div">
-    {params.key}
-  </ListSubheader>,
-  params.children,
-];
+const renderGroup = (params) => {
+  return [
+    <ListSubheader key={params.key} component="div">
+      {params.group}
+    </ListSubheader>,
+    params.children,
+  ];
+};
 
 export default function VirtualAutocomp(props) {
   const classes = useStyles();
@@ -116,6 +118,11 @@ export default function VirtualAutocomp(props) {
         options={props.options}
         groupBy={props.groupBy}
         getOptionLabel={props.getOptionLabel}
+        getOptionSelected={props.getOptionSelected}
+        inputValue={props.inputValue}
+        onInputChange={props.onInputChange}
+        noOptionsText={props.noOptionsText}
+        onClose={props.onClose}
         renderInput={(params) => (
           <TextField
             {...params}

@@ -46,8 +46,8 @@ const useStyles = makeStyles((theme) => ({
     // borderLeft: `1px solid ${theme.palette.accent.main}`,
     borderRight: `1px solid ${theme.palette.accent.main}`,
     borderBottom: `1px solid ${theme.palette.accent.main}`,
-
     // borderRight: "0 solid #FFF",
+    minHeight: "5vh",
     backgroundColor: theme.palette.disabled.main,
   },
   selectedTab: {
@@ -66,38 +66,52 @@ const useStyles = makeStyles((theme) => ({
   },
   tabs: {
     backgroundColor: theme.palette.disabled.main,
+    minHeight: "4vh",
+    // height: "5vh",
     // borderTop: `1px solid ${theme.palette.accent.main}`,
   },
 }));
 
-export default function SimpleTabs() {
+export default function SimpleTabs(props) {
   const classes = useStyles();
   const [value, setValue] = React.useState(0);
 
-  const handleChange = (event, newValue) => {
-    setValue(newValue);
-  };
+  React.useEffect(() => {
+    switch (props.selectedTab) {
+      case "compare":
+        setValue(1);
+        return;
+      case "analysis":
+        setValue(2);
+        return;
+      default:
+        setValue(0);
+        return;
+    }
+  }, [props.selectedTab]);
 
   return (
-    <div className={classes.root}>
+    <div
+      className={`${classes.root} ${props.className ? props.className : ""}`}
+    >
       <Paper variant="outlined" elevation={0}>
         <Tabs
           value={value}
-          onChange={handleChange}
-          aria-label="simple tabs example"
+          // onChange={handleChange}
+          aria-label="Dashboard Navigation"
           classes={{ root: classes.tabs }}
           TabIndicatorProps={{ className: classes.indicator }}
         >
           <Tab
             component="a"
-            href="/dashboards/123/profile"
+            href={`/dashboards/${props.dashId}/profile`}
             classes={{ selected: classes.selectedTab, root: classes.tab }}
             label={<Typography>Profile</Typography>}
             {...a11yProps(0)}
           />
           <Tab
             component="a"
-            href="/dashboards/123/compare"
+            href={`/dashboards/${props.dashId}/compare`}
             classes={{ selected: classes.selectedTab, root: classes.tab }}
             className={classes.tab}
             label={<Typography>Compare</Typography>}
@@ -105,7 +119,7 @@ export default function SimpleTabs() {
           />
           <Tab
             component="a"
-            href="/dashboards/123/analysis"
+            href={`/dashboards/${props.dashId}/analysis`}
             classes={{ selected: classes.selectedTab, root: classes.tab }}
             className={classes.tab}
             label={<Typography>Analysis</Typography>}
@@ -115,15 +129,27 @@ export default function SimpleTabs() {
         </Tabs>
 
         <TabPanel className={classes.tabPanel} value={value} index={0}>
-          Profile
+          {props.content.profile}
         </TabPanel>
         <TabPanel value={value} index={1}>
-          Compare
+          {props.content.compare}
         </TabPanel>
         <TabPanel value={value} index={2}>
-          Analysis
+          {props.content.analysis}
         </TabPanel>
       </Paper>
     </div>
   );
 }
+
+SimpleTabs.propTypes = {
+  content: PropTypes.object,
+  dashId: PropTypes.string,
+  selectedTab: PropTypes.string,
+};
+
+SimpleTabs.defaultProps = {
+  content: { profile: "", compare: "", analysis: "" },
+  dashId: "123",
+  selectedTab: "profile",
+};

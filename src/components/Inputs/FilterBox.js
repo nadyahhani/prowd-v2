@@ -35,6 +35,10 @@ export default function FilterBox(props) {
           open={state.modalOpen}
           onClose={() => setState((s) => ({ ...s, modalOpen: false }))}
           propertiesOptions={props.propertiesOptions}
+          appliedFilters={props.options}
+          selectedClass={props.selectedClass}
+          onApply={props.onApply}
+          onDelete={props.onDelete}
         />
       )}
       <InputLabel shrink={true}>Filters</InputLabel>
@@ -51,6 +55,7 @@ export default function FilterBox(props) {
             <Grid item>
               <Chip
                 size="small"
+                disabled={props.disabled}
                 color="primary"
                 label={<Typography>Add Filter</Typography>}
                 onClick={() => {
@@ -60,9 +65,13 @@ export default function FilterBox(props) {
               />
             </Grid>
           )}
-          {props.options.map((x) => (
-            <Grid item key={x.label}>
-              <AdvChip label={x.label} />
+          {props.options.map((x, index) => (
+            <Grid item key={index}>
+              <AdvChip
+                key={index}
+                label={props.renderTagText ? props.renderTagText(x) : x.label}
+                onDelete={() => props.onDelete(index)}
+              />
             </Grid>
           ))}
         </Grid>
@@ -76,4 +85,9 @@ FilterBox.propTypes = {
   disableModal: PropTypes.bool,
   cols: PropTypes.number,
   propertiesOptions: PropTypes.arrayOf(PropTypes.object),
+  selectedClass: PropTypes.object,
+  renderTagText: PropTypes.func,
+  onApply: PropTypes.func,
+  disabled: PropTypes.bool,
+  onDelete: PropTypes.func,
 };

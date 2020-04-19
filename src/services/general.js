@@ -3,12 +3,24 @@ import { url } from "../global";
 
 export function getClasses(param = "", afterFunc) {
   axios
+    .get(`${url}/api/entities?search=${param}`)
+    .then(
+      (response) => {
+        afterFunc({ success: true, ...response.data });
+      },
+      (error) => {
+        afterFunc({ success: false, ...error });
+      }
+    )
+    .catch((err) => {
+      afterFunc({ success: false, ...err });
+    });
+}
+
+export function getPropSuggestions(entityID, filled = "", afterFunc) {
+  axios
     .get(
-      `${
-        param === ""
-          ? `${url}/api/entities`
-          : `https://www.wikidata.org/w/api.php?action=wbsearchentities&format=json&origin=*&type=item&search=${param}&language=en`
-      }`
+      `${url}/api/filter/suggestions?entity_id=${entityID}&filled_properties=${filled}`
     )
     .then(
       (response) => {
@@ -23,9 +35,29 @@ export function getClasses(param = "", afterFunc) {
     });
 }
 
-export function getAllProperties(entityID, afterFunc) {
+export function searchProperties(param = "", afterFunc) {
   axios
-    .get(`${url}/filter/suggestions?entity_id=${entityID}`)
+    .get(`${url}/api/properties?search=${param}`)
+    .then(
+      (response) => {
+        afterFunc({ success: true, ...response.data });
+      },
+      (error) => {
+        afterFunc({ success: false, ...error });
+      }
+    )
+    .catch((err) => {
+      afterFunc({ success: false, ...err });
+    });
+}
+
+export function getPropValues(entityID, propertyID, afterFunc) {
+  axios
+    .post(`${url}/api/property/value/suggestions`, {
+      entityID,
+      propertyID,
+      filters: [],
+    })
     .then(
       (response) => {
         afterFunc({ success: true, ...response.data });

@@ -2,7 +2,7 @@ import React from "react";
 import "./App.css";
 import { Switch, Route, BrowserRouter as Router } from "react-router-dom";
 import Landing from "./containers/LandingPage/index";
-import ProfilePage from "./containers/ProfilePage";
+import DashboardPage from "./containers/DashboardPage";
 import BrowsePage from "./containers/BrowsePage";
 
 function App() {
@@ -11,7 +11,7 @@ function App() {
       <Switch>
         <Route exact path="/" component={Landing} />
         <Route exact path="/dashboards" component={BrowsePage} />
-        <Route exact path="/dashboards/:id/:page" component={ProfilePage} />
+        <Route exact path="/dashboards/:id/:page" component={DashboardPage} />
       </Switch>
     </Router>
   );
