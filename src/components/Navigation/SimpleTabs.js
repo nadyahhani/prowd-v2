@@ -6,6 +6,9 @@ import Tab from "@material-ui/core/Tab";
 import Typography from "@material-ui/core/Typography";
 import Box from "@material-ui/core/Box";
 import { Paper } from "@material-ui/core";
+import Profile from "../../containers/DashboardPage/Profile";
+import Analysis from "../../containers/DashboardPage/Analysis";
+import Compare from "../../containers/DashboardPage/Compare";
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -129,13 +132,25 @@ export default function SimpleTabs(props) {
         </Tabs>
 
         <TabPanel className={classes.tabPanel} value={value} index={0}>
-          {props.content.profile}
+          <Profile
+            data={props.data}
+            hash={props.dashId}
+            updateData={props.updateData}
+          />
         </TabPanel>
         <TabPanel value={value} index={1}>
-          {props.content.compare}
+          <Compare
+            data={props.data}
+            hash={props.dashId}
+            updateData={props.updateData}
+          />
         </TabPanel>
         <TabPanel value={value} index={2}>
-          {props.content.analysis}
+          <Analysis
+            data={props.data}
+            hash={props.dashId}
+            updateData={props.updateData}
+          />
         </TabPanel>
       </Paper>
     </div>
@@ -146,10 +161,12 @@ SimpleTabs.propTypes = {
   content: PropTypes.object,
   dashId: PropTypes.string,
   selectedTab: PropTypes.string,
+  updateData: PropTypes.func,
 };
 
 SimpleTabs.defaultProps = {
   content: { profile: "", compare: "", analysis: "" },
   dashId: "123",
   selectedTab: "profile",
+  updateData: () => {},
 };

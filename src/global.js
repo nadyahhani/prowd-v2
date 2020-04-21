@@ -40,3 +40,56 @@ export const getUnique = (arr, comp) => {
 
   return unique;
 };
+
+// custom function to count properties
+export const countProperties = (entities) => {
+  const tempProps = {};
+  entities.map((item) => {
+    if (!tempProps[item.propertyCount]) {
+      tempProps[item.propertyCount] = 0;
+    }
+    tempProps[item.propertyCount] += 1;
+  });
+  let temp = [];
+  Object.keys(tempProps).map((item) => {
+    temp.push({
+      propNumber: parseInt(item),
+      entities: parseInt(tempProps[item]),
+    });
+  });
+  // temp.sort((b, a) => (a.entities > b.entities ? 1 : -1));
+  let labels = [];
+  let values = [];
+  temp.map((item) => {
+    labels.push(item.propNumber);
+    values.push(item.entities);
+  });
+  return {
+    labels: labels,
+    values: values,
+    maxLabel: Math.max.apply(Math, labels),
+    maxValue: Math.max.apply(Math, values),
+  };
+};
+
+// custom function to map properties for labels and values and sort ascending
+export const sortProperties = (props) => {
+  const tempProps = [...props];
+  tempProps.sort((b, a) =>
+    parseInt(a.entitiesCount) > parseInt(b.entitiesCount)
+      ? 1
+      : parseInt(a.entitiesCount) === parseInt(b.entitiesCount)
+      ? a.propertyLabel > b.propertyLabel
+        ? 1
+        : -1
+      : -1
+  );
+  let labels = [];
+  let values = [];
+  tempProps.map((item) => {
+    labels.push(item.propertyLabel);
+    values.push(item.entitiesCount);
+  });
+  console.log({ labels: labels, values: values });
+  return { labels: labels, values: values };
+};

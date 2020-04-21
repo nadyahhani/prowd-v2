@@ -70,3 +70,19 @@ export function getPropValues(entityID, propertyID, afterFunc) {
       afterFunc({ success: false, ...err });
     });
 }
+
+export function getDashboards(afterFunc) {
+  axios
+    .get(`${url}/api/browse`)
+    .then(
+      (response) => {
+        afterFunc({ success: true, ...response.data });
+      },
+      (error) => {
+        afterFunc({ success: false, ...error });
+      }
+    )
+    .catch((err) => {
+      afterFunc({ success: false, ...err });
+    });
+}

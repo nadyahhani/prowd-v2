@@ -1,43 +1,71 @@
 import React from "react";
 import ChartWrapper from "./ChartWrapper";
-
-const config = {
-  type: "horizontalBar",
-  options: {
-    elements: {
-      rectangle: {
-        borderWidth: 2,
-      },
-    },
-    responsive: true,
-    legend: {
-      position: "right",
-    },
-    title: {
-      display: true,
-      text: "Chart.js Horizontal Bar Chart",
-    },
-  },
-  data: {
-    labels: ["January", "February", "March", "April", "May", "June", "July"],
-    datasets: [
-      {
-        label: "Dataset 1",
-        backgroundColor: "cyan",
-        borderColor: "cyan",
-        borderWidth: 1,
-        data: [0, 1, 2, 3, 4, 5, 6, 7],
-      },
-      {
-        label: "Dataset 2",
-        backgroundColor: "cyan",
-        borderColor: "cyan",
-        data: [0, 1, 2, 3, 4, 5, 6, 7],
-      },
-    ],
-  },
-};
+import theme from "../../theme";
 
 export default function HorizontalBarChart(props) {
-  return <ChartWrapper config={config} {...props} />;
+  const config = {
+    type: "horizontalBar",
+    options: {
+      responsive: true,
+      aspectRatio: 2.2,
+      maintainAspectRatio: true,
+      legend: {
+        display: false,
+        position: "right",
+      },
+      title: {
+        display: false,
+        text: "Chart.js Horizontal Bar Chart",
+      },
+      scales: {
+        xAxes: [
+          {
+            display: true,
+            ticks: {
+              autoSkip: false,
+              beginAtZero: true,
+              min: 0,
+              max: props.max,
+            },
+            scaleLabel: {
+              display: true,
+              labelString: "Number of Entities",
+              lineHeight: 1,
+              padding: 0,
+            },
+          },
+        ],
+        yAxes: [
+          {
+            display: true,
+            ticks: {
+              autoSkip: false,
+              mirror: true,
+              z: 1,
+              padding: -10,
+              fontColor: theme.palette.common.black,
+            },
+          },
+        ],
+      },
+    },
+    data: {
+      labels: props.labels,
+      datasets: [
+        {
+          label: "# of Entities with this property",
+          // barThickness: 10,
+          backgroundColor: theme.palette.chart.main,
+          // borderColor: theme.palette.chart.main,
+          // borderWidth: 0.5,
+          data: props.values,
+        },
+      ],
+    },
+  };
+  return (
+    <div style={{ padding: theme.spacing(1) }}>
+      <ChartWrapper style={{ width: "100%" }} config={config} {...props} />
+    </div>
+  );
 }

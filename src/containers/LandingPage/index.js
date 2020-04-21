@@ -86,7 +86,6 @@ function Landing(props) {
     console.log("jalan");
 
     getClasses("", (response) => {
-      console.log(response);
       setState((s) => ({ ...s, classes: response.entities }));
     });
   }, []);
@@ -133,13 +132,14 @@ function Landing(props) {
                       }));
 
                       getClasses(e.target.value, (response) => {
-                        setState((s) => ({
-                          ...s,
-                          classes: getUnique(
-                            [...s.classes, ...response.entities],
-                            "id"
-                          ),
-                        }));
+                        response.success &&
+                          setState((s) => ({
+                            ...s,
+                            classes: getUnique(
+                              [...s.classes, ...response.entities],
+                              "id"
+                            ),
+                          }));
                       });
                     }
                   }}
@@ -218,7 +218,18 @@ function Landing(props) {
                   color="primary"
                   disableElevation
                   fullWidth
-                  onClick={() => history.push("/dashboards/123/profile")}
+                  onClick={() => {
+                    createDashboard(
+                      state.selectedClass.id,
+                      state.appliedFilters.map((x) => {
+                        let temp = {};
+                        temp[x.property.id] = x.values.id;
+                        return temp;
+                      }),
+                      (response) =>
+                        history.push(`/dashboards/${response.hashCode}/profile`)
+                    );
+                  }}
                 >
                   Check
                 </Button>

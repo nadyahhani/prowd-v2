@@ -17,7 +17,7 @@ const useStyles = makeStyles(() => ({
   filters: {
     height: "8vh",
     overflowY: "scroll",
-    padding: theme.spacing(2),
+    padding: theme.spacing(1),
   },
 }));
 
@@ -36,12 +36,13 @@ export default function FilterBox(props) {
           onClose={() => setState((s) => ({ ...s, modalOpen: false }))}
           propertiesOptions={props.propertiesOptions}
           appliedFilters={props.options}
+          renderTagText={props.renderTagText}
           selectedClass={props.selectedClass}
           onApply={props.onApply}
           onDelete={props.onDelete}
         />
       )}
-      <InputLabel shrink={true}>Filters</InputLabel>
+      {props.hideLabel ? null : <InputLabel shrink={true}>Filters</InputLabel>}
       <Paper
         className={classes.filters}
         variant="outlined"
@@ -90,4 +91,9 @@ FilterBox.propTypes = {
   onApply: PropTypes.func,
   disabled: PropTypes.bool,
   onDelete: PropTypes.func,
+  hideLabel: PropTypes.bool,
+};
+
+FilterBox.defaultProps = {
+  hideLabel: false,
 };

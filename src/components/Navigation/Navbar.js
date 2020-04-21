@@ -6,6 +6,7 @@ import { fade, makeStyles } from "@material-ui/core/styles";
 import SearchIcon from "@material-ui/icons/Search";
 import { TextField, InputAdornment, Button, Grid } from "@material-ui/core";
 import theme from "../../theme";
+import { useHistory } from "react-router-dom";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -67,15 +68,11 @@ const useStyles = makeStyles((theme) => ({
 
 export default function Navbar() {
   const classes = useStyles();
+  const history = useHistory();
 
   return (
     <div className={classes.root}>
-      <AppBar
-        position="fixed"
-        elevation={0}
-        color="default"
-        variant="outlined"
-      >
+      <AppBar position="fixed" elevation={0} color="default" variant="outlined">
         <Toolbar
           classes={{ root: classes.toolbar, gutters: classes.gutters }}
           variant="dense"
@@ -95,13 +92,15 @@ export default function Navbar() {
             <Grid item xs={3}>
               <Grid container justify="center" spacing={2}>
                 <Grid item>
-                  <Button>Home</Button>
+                  <Button onClick={() => history.push("/")}>Home</Button>
                 </Grid>
                 <Grid item>
-                  <Button>Browse</Button>
+                  <Button onClick={() => history.push("/dashboards/")}>
+                    Browse
+                  </Button>
                 </Grid>
                 <Grid item>
-                  <Button>About</Button>
+                  <Button onClick={() => history.push("/#")}>About</Button>
                 </Grid>
               </Grid>
             </Grid>

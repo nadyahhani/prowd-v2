@@ -1,10 +1,8 @@
 import React from "react";
 import ChartWrapper from "./ChartWrapper";
 import { linearLine } from "../../global";
-import { Typography } from "@material-ui/core";
-// import T3 from "./typography/T3";
-// import Status from "./dashboard/Status";
-// import Clue from "./dashboard/Clue";
+import PropTypes from "prop-types";
+import theme from "../../theme";
 
 function GiniChart(props) {
   const data = {
@@ -55,20 +53,12 @@ function GiniChart(props) {
         pointHoverBorderColor: "#51945b",
         id: "2",
       },
-      // {
-      //   data: props.data,
-      //   fill: false,
-      //   backgroundColor: "#71B37C",
-      //   borderColor: "#71B37C",
-      //   hoverBackgroundColor: "#71B37C",
-      //   hoverBorderColor: "#71B37C"
-      // }
     ],
   };
 
   const options = {
     responsive: true,
-    aspectRatio: 1,
+    aspectRatio: 1.6,
     maintainAspectRatio: true,
     legend: {
       display: false,
@@ -98,20 +88,21 @@ function GiniChart(props) {
   React.useEffect(() => {});
 
   return (
-    <div className={props.className}>
+    <div
+      className={props.className}
+      style={{
+        // paddingTop: theme.spacing(1),
+        height: "100%",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+      }}
+    >
       {props.data ? (
-        <div style={{ height: "90%" }}>
-          <div>
-            <Typography>Gini Coefficient = {props.gini}</Typography>
-            {/* <Status gini={props.gini} />
-            <Clue padded tooltip={props.insight} /> */}
-          </div>
-          <br />
-          <ChartWrapper
-            className={props.classes.ChartWrapper}
-            config={{ type: "line", data: data, options: options }}
-          />
-        </div>
+        <ChartWrapper
+          className={props.classes.ChartWrapper}
+          config={{ type: "line", data: data, options: options }}
+        />
       ) : (
         <React.Fragment />
       )}
@@ -120,3 +111,10 @@ function GiniChart(props) {
 }
 
 export default GiniChart;
+
+GiniChart.propTypes = {
+  data: PropTypes.arrayOf(PropTypes.number),
+  labels: PropTypes.arrayOf(PropTypes.string),
+  classes: PropTypes.object,
+  className: PropTypes.string,
+};

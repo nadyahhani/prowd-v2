@@ -10,6 +10,7 @@ const theme = createMuiTheme({
     disabled: { main: grey[200] },
     accent: { main: grey[400] },
     background: { main: "#E8F1F5" },
+    chart: { main: "rgba(141, 185, 207,.8)" },
   },
   //   spacing: 4,
   typography: {

@@ -4,23 +4,15 @@ import {
   Typography,
   Paper,
   Grid,
-  TextField,
   Button,
   Modal,
   makeStyles,
-  Checkbox,
-  InputLabel,
   Box,
 } from "@material-ui/core";
 import VirtualAutocomp from "../../components/Inputs/VirtualAutocomp";
 import FilterBox from "./FilterBox";
-import Autocomplete from "@material-ui/lab/Autocomplete";
 import { getUnique, cut } from "../../global";
-import {
-  searchProperties,
-  getPropValues,
-  getClasses,
-} from "../../services/general";
+import { searchProperties, getClasses } from "../../services/general";
 
 const useStyles = makeStyles((theme) => ({
   modalPaper: {
@@ -62,7 +54,7 @@ export default function FilterModal(props) {
         category: item.label[0].toUpperCase(),
       })),
     }));
-  }, [props.propertiesOptions, props.open]);
+  }, [props.propertiesOptions, props.open, props.appliedFilters]);
 
   return (
     <Modal open={props.open} onClose={props.onClose} className={classes.modal}>
@@ -278,9 +270,7 @@ export default function FilterModal(props) {
               disableModal
               cols={4}
               options={state.appliedFilters}
-              renderTagText={(opt) =>
-                cut(`${opt.property.label}: ${opt.values.label}`, 1000)
-              }
+              renderTagText={props.renderTagText}
               onDelete={(idx) => {
                 const temp = [...state.appliedFilters];
                 temp.splice(idx, 1);
@@ -321,4 +311,5 @@ FilterModal.propTypes = {
   onApply: PropTypes.func,
   onDelete: PropTypes.func,
   appliedFilters: PropTypes.arrayOf(PropTypes.object),
+  renderTagText: PropTypes.func,
 };

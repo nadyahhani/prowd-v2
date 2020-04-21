@@ -132,6 +132,17 @@ export default function VirtualAutocomp(props) {
               ...params.inputProps,
               autoComplete: "new-password",
             }}
+            InputProps={{
+              ...params.InputProps,
+              endAdornment: (
+                <React.Fragment>
+                  {props.loading ? (
+                    <CircularProgress color="primary" size={20} />
+                  ) : null}
+                  {params.InputProps.endAdornment}
+                </React.Fragment>
+              ),
+            }}
           />
         )}
         renderOption={props.renderOption}
