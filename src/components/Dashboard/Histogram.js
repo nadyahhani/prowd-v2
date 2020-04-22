@@ -11,6 +11,7 @@ function Histogram(props) {
       labels: props.labels,
       datasets: [
         {
+          barPercentage: 1.3,
           label: "# of Entities",
           data: props.values,
           backgroundColor: theme.palette.chart.main,
@@ -23,7 +24,6 @@ function Histogram(props) {
         xAxes: [
           {
             display: false,
-            barPercentage: 1.3,
             ticks: {
               // max: 10000,
               autoSkip: true,
@@ -60,10 +60,18 @@ function Histogram(props) {
     },
   };
   return (
-    <div style={{ paddingTop: theme.spacing(1) }}>
-      <ChartWrapper config={config} />
+    <div className={props.classes.root}>
+      <ChartWrapper
+        config={config}
+        className={props.classes.ChartWrapper}
+        style={{ height: "inherit", width: "inherit" }}
+      />
     </div>
   );
 }
 
 export default Histogram;
+
+Histogram.defaultProps = {
+  classes: { ChartWrapper: "", root: "" },
+};

@@ -9,6 +9,7 @@ import { Paper } from "@material-ui/core";
 import Profile from "../../containers/DashboardPage/Profile";
 import Analysis from "../../containers/DashboardPage/Analysis";
 import Compare from "../../containers/DashboardPage/Compare";
+import { useHistory } from "react-router-dom";
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -22,7 +23,7 @@ function TabPanel(props) {
       aria-labelledby={`simple-tab-${index}`}
       {...other}
     >
-      {value === index && <Box p={3}>{children}</Box>}
+      {value === index && <Box p={1}>{children}</Box>}
     </Typography>
   );
 }
@@ -77,6 +78,7 @@ const useStyles = makeStyles((theme) => ({
 
 export default function SimpleTabs(props) {
   const classes = useStyles();
+  const history = useHistory();
   const [value, setValue] = React.useState(0);
 
   React.useEffect(() => {
@@ -100,21 +102,24 @@ export default function SimpleTabs(props) {
       <Paper variant="outlined" elevation={0}>
         <Tabs
           value={value}
-          // onChange={handleChange}
           aria-label="Dashboard Navigation"
           classes={{ root: classes.tabs }}
           TabIndicatorProps={{ className: classes.indicator }}
         >
           <Tab
             component="a"
-            href={`/dashboards/${props.dashId}/profile`}
+            onClick={() => {
+              history.push(`/dashboards/${props.dashId}/profile`);
+            }}
             classes={{ selected: classes.selectedTab, root: classes.tab }}
             label={<Typography>Profile</Typography>}
             {...a11yProps(0)}
           />
           <Tab
             component="a"
-            href={`/dashboards/${props.dashId}/compare`}
+            onClick={() => {
+              history.push(`/dashboards/${props.dashId}/compare`);
+            }}
             classes={{ selected: classes.selectedTab, root: classes.tab }}
             className={classes.tab}
             label={<Typography>Compare</Typography>}
@@ -122,20 +127,24 @@ export default function SimpleTabs(props) {
           />
           <Tab
             component="a"
-            href={`/dashboards/${props.dashId}/analysis`}
+            onClick={() => {
+              history.push(`/dashboards/${props.dashId}/analysis`);
+            }}
             classes={{ selected: classes.selectedTab, root: classes.tab }}
             className={classes.tab}
             label={<Typography>Analysis</Typography>}
             {...a11yProps(2)}
           />
-          <div className={classes.fillerTab} />
+          {/* <div className={classes.fillerTab} /> */}
         </Tabs>
 
-        <TabPanel className={classes.tabPanel} value={value} index={0}>
+        <TabPanel value={value} index={0}>
           <Profile
             data={props.data}
             hash={props.dashId}
             updateData={props.updateData}
+            state={props.states.profile}
+            setState={props.setStates.profile}
           />
         </TabPanel>
         <TabPanel value={value} index={1}>
@@ -162,6 +171,8 @@ SimpleTabs.propTypes = {
   dashId: PropTypes.string,
   selectedTab: PropTypes.string,
   updateData: PropTypes.func,
+  states: PropTypes.object,
+  setStates: PropTypes.object,
 };
 
 SimpleTabs.defaultProps = {
@@ -169,4 +180,6 @@ SimpleTabs.defaultProps = {
   dashId: "123",
   selectedTab: "profile",
   updateData: () => {},
+  states: {},
+  setStates: {},
 };

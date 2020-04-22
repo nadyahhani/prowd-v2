@@ -119,8 +119,7 @@ function Landing(props) {
                   options={state.classes}
                   loading={state.classes.length === 0}
                   inputValue={state.classInput}
-                  getOptionSelected={(option) => option.id}
-                  // value={state.selectedClass}
+                  value={state.selectedClass}
                   onInputChange={(e) => {
                     // console.log(e);
                     if (e) {
@@ -237,11 +236,22 @@ function Landing(props) {
             </Grid>
           </Paper>
           <Grid container spacing={2} style={{ width: "41.67vw" }}>
-            {tempData.examples.map((x, idx) => (
+            {tempData.ex.map((x, idx) => (
               <Grid item key={idx}>
-                <ButtonBase onClick={() => {}}>
+                <ButtonBase
+                  onClick={() => {
+                    setState((s) => ({
+                      ...s,
+                      selectedClass: x.class,
+                      classInput: `${x.class.label} (${x.class.id})`,
+                      appliedFilters: x.filters,
+                    }));
+                  }}
+                >
                   <Card className={classes.exampleList}>
-                    <Typography variant="body1">{x}</Typography>
+                    <Typography variant="body1" color="primary">
+                      {x.label}
+                    </Typography>
                   </Card>
                 </ButtonBase>
               </Grid>

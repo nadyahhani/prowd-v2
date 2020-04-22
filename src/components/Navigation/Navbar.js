@@ -12,6 +12,7 @@ const useStyles = makeStyles((theme) => ({
   root: {
     flexGrow: 1,
     position: "relative",
+    height: "7vh",
   },
   menuButton: {
     marginRight: theme.spacing(2),
@@ -50,6 +51,9 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     flexDirection: "row",
     justifyContent: "space-between",
+    height: "inherit",
+    minHeight: "inherit",
+    maxHeight: "inherit",
   },
   placeholder: {
     fontSize: theme.typography.fontSize,
@@ -72,7 +76,17 @@ export default function Navbar() {
 
   return (
     <div className={classes.root}>
-      <AppBar position="fixed" elevation={0} color="default" variant="outlined">
+      <AppBar
+        position="fixed"
+        elevation={0}
+        color="default"
+        variant="outlined"
+        style={{
+          height: "inherit",
+          maxHeight: "inherit",
+          minHeight: "inherit",
+        }}
+      >
         <Toolbar
           classes={{ root: classes.toolbar, gutters: classes.gutters }}
           variant="dense"

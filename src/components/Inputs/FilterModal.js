@@ -82,7 +82,7 @@ export default function FilterModal(props) {
                 </div>
               )}
               inputValue={state.inputProperties}
-              getOptionSelected={(option) => option.id}
+              // getOptionSelected={(option) => option.id}
               // groupBy={(option) => option.category}
               loading={state.propertyLoading}
               noOptionsText="Type something to search"
@@ -173,7 +173,7 @@ export default function FilterModal(props) {
                 </div>
               )}
               inputValue={state.inputValues}
-              getOptionSelected={(option) => option.id}
+              // getOptionSelected={(option) => option.id}
               // groupBy={(option) => option.category}
               onInputChange={(e) => {
                 if (e) {
@@ -200,18 +200,8 @@ export default function FilterModal(props) {
                   setState((s) => ({
                     ...s,
                     selectedValues: newValue,
-                    inputValues: `${newValue.label}`,
+                    inputValues: `${newValue.label} (${newValue.id})`,
                   }));
-
-                  // getPropValues(
-                  //   props.selectedClass.id,
-                  //   newValue.entityID,
-                  //   (r) =>
-                  //     setState((s) => ({
-                  //       ...s,
-                  //       propValueOptions: r.suggestions,
-                  //     }))
-                  // );
                 }
                 if (reason === "clear") {
                   setState((s) => ({

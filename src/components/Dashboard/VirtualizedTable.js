@@ -3,7 +3,6 @@ import PropTypes from "prop-types";
 import clsx from "clsx";
 import { withStyles } from "@material-ui/core/styles";
 import TableCell from "@material-ui/core/TableCell";
-import Paper from "@material-ui/core/Paper";
 import { AutoSizer, Column, Table } from "react-virtualized";
 
 const styles = (theme) => ({
@@ -66,9 +65,26 @@ class MuiVirtualizedTable extends React.PureComponent {
             : "left"
         }
       >
-        {cellData}
+        {columns[columnIndex].link
+          ? (() => {
+              return (
+                <a
+                  style={{ textDecoration: "none" }}
+                  href={cellData[columns[columnIndex].linkKey]}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  {cellData[columns[columnIndex].dataKey]}
+                </a>
+              );
+            })()
+          : cellData[columns[columnIndex].dataKey]}
       </TableCell>
     );
+  };
+
+  cellDataGetter = ({ dataKey, rowData }) => {
+    return rowData;
   };
 
   headerRenderer = ({ label, columnIndex }) => {
@@ -118,6 +134,7 @@ class MuiVirtualizedTable extends React.PureComponent {
               return (
                 <Column
                   key={dataKey}
+                  cellDataGetter={this.cellDataGetter}
                   headerRenderer={(headerProps) =>
                     this.headerRenderer({
                       ...headerProps,
@@ -156,25 +173,6 @@ MuiVirtualizedTable.propTypes = {
 const VirtualizedTableMui = withStyles(styles)(MuiVirtualizedTable);
 
 // ---
-
-const sample = [
-  ["Frozen yoghurt", 159, 6.0, 24, 4.0],
-  ["Ice cream sandwich", 237, 9.0, 37, 4.3],
-  ["Eclair", 262, 16.0, 24, 6.0],
-  ["Cupcake", 305, 3.7, 67, 4.3],
-  ["Gingerbread", 356, 16.0, 49, 3.9],
-];
-
-function createData(id, dessert, calories, fat, carbs, protein) {
-  return { id, dessert, calories, fat, carbs, protein };
-}
-
-const rows = [];
-
-for (let i = 0; i < 200; i += 1) {
-  const randomSelection = sample[Math.floor(Math.random() * sample.length)];
-  rows.push(createData(i, ...randomSelection));
-}
 
 export default function ReactVirtualizedTable(props) {
   const { rows, columns } = props;

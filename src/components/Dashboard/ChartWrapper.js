@@ -22,7 +22,11 @@ export default class ChartWrapper extends Component {
   render() {
     return (
       <div className={this.props.className} style={this.props.style}>
-        <canvas id="myChart" ref={this.chartRef} />
+        <canvas
+          id="myChart"
+          ref={this.chartRef}
+          style={{ height: "100%", width: "100%" }}
+        />
       </div>
     );
   }

@@ -7,8 +7,8 @@ export default function HorizontalBarChart(props) {
     type: "horizontalBar",
     options: {
       responsive: true,
-      aspectRatio: 2.2,
-      maintainAspectRatio: true,
+      // aspectRatio: 2.6,
+      // maintainAspectRatio: true,
       legend: {
         display: false,
         position: "right",
@@ -54,18 +54,21 @@ export default function HorizontalBarChart(props) {
       datasets: [
         {
           label: "# of Entities with this property",
-          // barThickness: 10,
           backgroundColor: theme.palette.chart.main,
-          // borderColor: theme.palette.chart.main,
-          // borderWidth: 0.5,
           data: props.values,
         },
       ],
     },
   };
   return (
-    <div style={{ padding: theme.spacing(1) }}>
-      <ChartWrapper style={{ width: "100%" }} config={config} {...props} />
-    </div>
+    <ChartWrapper
+      className={props.classes.ChartWrapper}
+      config={config}
+      {...props}
+    />
   );
 }
+
+HorizontalBarChart.defaultProps = {
+  classes: { ChartWrapper: "" },
+};

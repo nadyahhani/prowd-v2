@@ -2,7 +2,6 @@ import React from "react";
 import ChartWrapper from "./ChartWrapper";
 import { linearLine } from "../../global";
 import PropTypes from "prop-types";
-import theme from "../../theme";
 
 function GiniChart(props) {
   const data = {
@@ -58,7 +57,7 @@ function GiniChart(props) {
 
   const options = {
     responsive: true,
-    aspectRatio: 1.6,
+    aspectRatio: props.ratio,
     maintainAspectRatio: true,
     legend: {
       display: false,
@@ -88,24 +87,12 @@ function GiniChart(props) {
   React.useEffect(() => {});
 
   return (
-    <div
-      className={props.className}
-      style={{
-        // paddingTop: theme.spacing(1),
-        height: "100%",
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-      }}
-    >
-      {props.data ? (
-        <ChartWrapper
-          className={props.classes.ChartWrapper}
-          config={{ type: "line", data: data, options: options }}
-        />
-      ) : (
-        <React.Fragment />
-      )}
+    <div className={props.classes.root}>
+      <ChartWrapper
+        style={{ height: "inherit", width: "inherit" }}
+        className={props.classes.ChartWrapper}
+        config={{ type: "line", data: data, options: options }}
+      />
     </div>
   );
 }
@@ -117,4 +104,10 @@ GiniChart.propTypes = {
   labels: PropTypes.arrayOf(PropTypes.string),
   classes: PropTypes.object,
   className: PropTypes.string,
+  ratio: PropTypes.number,
+};
+
+GiniChart.defaultProps = {
+  classes: { root: "", ChartWrapper: "" },
+  ratio: 1,
 };

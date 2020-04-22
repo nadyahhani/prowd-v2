@@ -44,14 +44,14 @@ export const getUnique = (arr, comp) => {
 // custom function to count properties
 export const countProperties = (entities) => {
   const tempProps = {};
-  entities.map((item) => {
+  entities.forEach((item) => {
     if (!tempProps[item.propertyCount]) {
       tempProps[item.propertyCount] = 0;
     }
     tempProps[item.propertyCount] += 1;
   });
   let temp = [];
-  Object.keys(tempProps).map((item) => {
+  Object.keys(tempProps).forEach((item) => {
     temp.push({
       propNumber: parseInt(item),
       entities: parseInt(tempProps[item]),
@@ -60,7 +60,7 @@ export const countProperties = (entities) => {
   // temp.sort((b, a) => (a.entities > b.entities ? 1 : -1));
   let labels = [];
   let values = [];
-  temp.map((item) => {
+  temp.forEach((item) => {
     labels.push(item.propNumber);
     values.push(item.entities);
   });
@@ -86,7 +86,7 @@ export const sortProperties = (props) => {
   );
   let labels = [];
   let values = [];
-  tempProps.map((item) => {
+  tempProps.forEach((item) => {
     labels.push(item.propertyLabel);
     values.push(item.entitiesCount);
   });
