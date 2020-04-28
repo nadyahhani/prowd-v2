@@ -48,6 +48,7 @@ const useStyles = makeStyles((theme) => ({
   },
   toolbar: {
     backgroundColor: theme.palette.common.white,
+    // backgroundColor: "rgba(0,0,0,0)",
     display: "flex",
     flexDirection: "row",
     justifyContent: "space-between",
@@ -79,8 +80,8 @@ export default function Navbar() {
       <AppBar
         position="fixed"
         elevation={0}
-        color="default"
-        variant="outlined"
+        // color="transparent"
+        // variant="outlined"
         style={{
           height: "inherit",
           maxHeight: "inherit",

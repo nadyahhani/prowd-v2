@@ -66,15 +66,32 @@ export default function FilterBox(props) {
               />
             </Grid>
           )}
-          {props.options.map((x, index) => (
-            <Grid item key={index}>
-              <AdvChip
-                key={index}
-                label={props.renderTagText ? props.renderTagText(x) : x.label}
-                onDelete={() => props.onDelete(index)}
-              />
+          {props.options.length > 0
+            ? props.options.map((x, index) => (
+                <Grid item key={index}>
+                  <AdvChip
+                    key={index}
+                    label={
+                      props.renderTagText ? props.renderTagText(x) : x.label
+                    }
+                    onDelete={() => props.onDelete(index)}
+                    disabled={props.disabled}
+                  />
+                </Grid>
+              ))
+            : null}
+          {props.options.length === 0 && !props.disabled ? (
+            <Grid
+              item
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              <Typography color="textSecondary">or leave empty</Typography>
             </Grid>
-          ))}
+          ) : null}
         </Grid>
       </Paper>
     </React.Fragment>

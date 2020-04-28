@@ -103,6 +103,7 @@ export default function AdvChip(props) {
         }}
         onDelete={props.onDelete}
         variant="outlined"
+        disabled={props.disabled}
       />
       <Popover
         open={state.popoverOpen}

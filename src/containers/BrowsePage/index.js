@@ -1,5 +1,5 @@
 import React from "react";
-import { Typography, CircularProgress } from "@material-ui/core";
+import { Typography, Chip, Grid, IconButton, Button } from "@material-ui/core";
 import { makeStyles, ThemeProvider } from "@material-ui/core/styles";
 import { getDashboards } from "../../services/general";
 import Table from "@material-ui/core/Table";
@@ -12,7 +12,8 @@ import Paper from "@material-ui/core/Paper";
 import theme from "../../theme";
 import Navbar from "../../components/Navigation/Navbar";
 import Loading from "../../components/Misc/Loading";
-// import { useHistory } from "react-router-dom";
+import KeyboardArrowRightIcon from "@material-ui/icons/KeyboardArrowRight";
+import { useHistory } from "react-router-dom";
 
 const useStyles = makeStyles({
   table: {
@@ -33,7 +34,7 @@ const useStyles = makeStyles({
 
 export default function BrowsePage(props) {
   const classes = useStyles();
-  // const history = useHistory();
+  const history = useHistory();
   const [state, setState] = React.useState({
     dashboards: [],
     loading: true,
@@ -53,35 +54,90 @@ export default function BrowsePage(props) {
         <Navbar />
         <div className={classes.content}>
           <TableContainer component={Paper} className={classes.table}>
-            <Table aria-label="simple table">
+            <Table aria-label="simple table" stickyHeader>
               <TableHead>
                 <TableRow>
-                  <TableCell>Entity</TableCell>
+                  <TableCell>Title</TableCell>
+                  <TableCell>Author</TableCell>
+                  <TableCell align="right">Class</TableCell>
                   <TableCell align="right">Filters</TableCell>
                   <TableCell align="right">Properties</TableCell>
+                  <TableCell align="right">Created at</TableCell>
+                  <TableCell />
                 </TableRow>
               </TableHead>
               <TableBody>
                 {!state.loading ? (
-                  state.dashboards.map((row) => (
-                    <TableRow key={row.name}>
+                  state.dashboards.map((row, index) => (
+                    <TableRow key={index}>
                       <TableCell component="th" scope="row">
-                        <Typography
-                          component="a"
-                          href={`/dashboards/${row.profileHashCode}/profile`}
-                        >
-                          {row.entityID}{" "}
-                        </Typography>
+                        {row.name === "" ? "Untitled Dashboard" : row.name}
                       </TableCell>
-                      <TableCell align="right">{row.profileFilters}</TableCell>
+                      <TableCell>
+                        {row.author === "" ? "Anonymous" : row.author}
+                      </TableCell>
                       <TableCell align="right">
-                        {row.profileProperties}
+                        {`${row.entityInfo.entityLabel} (${row.entityInfo.entityID})`}
+                      </TableCell>
+                      <TableCell align="right">
+                        <Grid container direction="column" spacing={1}>
+                          {row.filtersInfo.length > 0
+                            ? row.filtersInfo.map((item, idx) => (
+                                <Grid item>
+                                  <Chip
+                                    key={`${index}-${idx}`}
+                                    variant="outlined"
+                                    size="small"
+                                    label={`${item.filterLabel}: ${item.filterValueLabel}`}
+                                  />
+                                </Grid>
+                              ))
+                            : "-"}
+                        </Grid>
+                      </TableCell>
+                      <TableCell align="right">
+                        <Grid container direction="column" spacing={1}>
+                          {row.propertiesInfo.length > 0
+                            ? row.propertiesInfo.map((item, idx) => (
+                                <Grid item>
+                                  <Chip
+                                    key={`${index}-${idx}`}
+                                    variant="outlined"
+                                    size="small"
+                                    label={item.propertyLabel}
+                                  />
+                                </Grid>
+                              ))
+                            : "-"}
+                        </Grid>
+                      </TableCell>
+                      <TableCell align="right">
+                        {(() => {
+                          let d = new Date(0); // The 0 there is the key, which sets the date to the epoch
+                          d.setUTCSeconds(row.timestamp);
+                          return `${d.getDate()}/${d.getMonth()}/${d.getFullYear()} ${d.getHours()}:${d.getMinutes()}`;
+                        })()}
+                      </TableCell>
+                      <TableCell>
+                        <Button
+                          variant="contained"
+                          size="small"
+                          color="primary"
+                          onClick={() =>
+                            history.push(`/dashboards/${row.hashCode}/profile`)
+                          }
+                          endIcon={<KeyboardArrowRightIcon />}
+                        >
+                          Open
+                        </Button>
                       </TableCell>
                     </TableRow>
                   ))
                 ) : (
                   <TableRow key="loading">
-                    <Loading />
+                    <TableCell colSpan={7}>
+                      <Loading />
+                    </TableCell>
                   </TableRow>
                 )}
               </TableBody>

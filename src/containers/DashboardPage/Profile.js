@@ -8,8 +8,8 @@ import {
   FormControl,
   Select,
   MenuItem,
-  CircularProgress,
-  Button,
+  IconButton,
+  Tooltip,
 } from "@material-ui/core";
 import VirtualizedTable from "../../components/Dashboard/VirtualizedTable";
 import Histogram from "../../components/Dashboard/Histogram";
@@ -19,8 +19,10 @@ import FilterBox from "../../components/Inputs/FilterBox";
 import theme from "../../theme";
 import PropertiesModal from "../../components/Inputs/PropertiesModal";
 import AllPropertiesModal from "../../components/Dashboard/AllPropertiesModal";
-import { cut } from "../../global";
+import KeyboardArrowRightIcon from "@material-ui/icons/KeyboardArrowRight";
+import WarningOutlinedIcon from "@material-ui/icons/WarningOutlined";
 import Loading from "../../components/Misc/Loading";
+import { cut } from "../../global";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -54,13 +56,17 @@ const useStyles = makeStyles((theme) => ({
   histogram: {
     paddingTop: theme.spacing(1),
     width: "100%",
-    height: "96%",
+    height: "94%",
   },
   horizontalbar: { width: "100%", height: "75%" },
   card: {
-    height: theme.spacing(10),
-    width: theme.spacing(15),
-    padding: theme.spacing(1),
+    height: theme.spacing(9),
+    width: theme.spacing(13),
+    padding: theme.spacing(2),
+    display: "flex",
+    flexDirection: "column",
+    // alignItems: "center",
+    justifyContent: "center",
   },
 
   // =====
@@ -104,22 +110,27 @@ export default function Profile(props) {
 
   const propertiesChart = () => {
     if (!state.loading.properties) {
+      let tempLabels = [...state.mappedProperties.labels];
+      let tempValues = [...state.mappedProperties.values];
+      tempLabels = tempLabels.map(
+        (item, idx) => `${tempLabels[idx]}: ${tempValues[idx]}`
+      );
       if (state.propertySort === 0) {
         // Descending
         return (
           <React.Fragment>
             <HorizontalBarChart
               key={1}
-              labels={state.mappedProperties.labels.slice(0, 5)}
-              values={state.mappedProperties.values.slice(0, 5)}
-              max={Math.max.apply(Math, state.mappedProperties.values)}
+              labels={tempLabels.slice(0, 5)}
+              values={tempValues.slice(0, 5)}
+              max={Math.max.apply(Math, tempValues)}
               classes={{ ChartWrapper: classes.horizontalbar }}
             />
             <AllPropertiesModal
               data={{
-                labels: state.mappedProperties.labels,
-                values: state.mappedProperties.values,
-                max: Math.max.apply(Math, state.mappedProperties.values),
+                labels: tempLabels,
+                values: tempValues,
+                max: Math.max.apply(Math, tempValues),
               }}
             />
           </React.Fragment>
@@ -130,16 +141,16 @@ export default function Profile(props) {
           <React.Fragment>
             <HorizontalBarChart
               key={2}
-              labels={[...state.mappedProperties.labels].reverse().slice(0, 5)}
-              values={[...state.mappedProperties.values].reverse().slice(0, 5)}
-              max={Math.max.apply(Math, state.mappedProperties.values)}
+              labels={[...tempLabels].reverse().slice(0, 5)}
+              values={[...tempValues].reverse().slice(0, 5)}
+              max={Math.max.apply(Math, tempValues)}
               classes={{ ChartWrapper: classes.horizontalbar }}
             />
             <AllPropertiesModal
               data={{
-                labels: state.mappedProperties.labels,
-                values: state.mappedProperties.values,
-                max: Math.max.apply(Math, state.mappedProperties.values),
+                labels: tempLabels,
+                values: tempValues,
+                max: Math.max.apply(Math, tempValues),
               }}
             />
           </React.Fragment>
@@ -194,9 +205,12 @@ export default function Profile(props) {
                   }));
                 }}
                 renderTagText={(opt) =>
-                  `${opt.property ? opt.property.label : opt.filterLabel}: ${
-                    opt.values ? opt.values.label : opt.filterValueLabel
-                  }`
+                  cut(
+                    `${opt.property ? opt.property.label : opt.filterLabel}: ${
+                      opt.values ? opt.values.label : opt.filterValueLabel
+                    }`,
+                    43
+                  )
                 }
                 onDelete={(idx) => {
                   let temp = [...filters];
@@ -371,29 +385,67 @@ export default function Profile(props) {
               <Grid container spacing={1}>
                 <Grid item>
                   <Paper classes={{ root: classes.card }}>
-                    <Typography component="div">
-                      <Box fontWeight="bold">Number of Entities:</Box>
-                    </Typography>
-                    <Typography variant="h2" component="div">
-                      {!state.loading.gini ? (
-                        state.giniData.amount
-                      ) : (
-                        <Loading />
-                      )}
-                    </Typography>
+                    {!state.loading.gini ? (
+                      <React.Fragment>
+                        <Typography variant="h1" component="div">
+                          {state.giniData.amount
+                            ? state.giniData.amount
+                            : state.entities.length}
+                        </Typography>
+                        <Typography
+                          component="div"
+                          style={{
+                            display: "flex",
+                            flexDirection: "row",
+                            justifyContent: "space-between",
+                            alignItems: "center",
+                          }}
+                        >
+                          <Box fontWeight="bold">Entities</Box>{" "}
+                          {state.giniData.exceedLimit ? (
+                            <Tooltip
+                              title="This number is limited and is only a sample of the whole population"
+                              aria-label="warning"
+                            >
+                              <IconButton
+                                color="primary"
+                                size="small"
+                                edge="end"
+                              >
+                                <WarningOutlinedIcon
+                                  style={{ color: theme.palette.warning.main }}
+                                />
+                              </IconButton>
+                            </Tooltip>
+                          ) : null}
+                        </Typography>
+                      </React.Fragment>
+                    ) : (
+                      <Loading />
+                    )}
                   </Paper>
                 </Grid>
                 <Grid item>
                   <Paper classes={{ root: classes.card }}>
-                    <Typography component="div">
-                      <Box fontWeight="bold">Property Gap</Box>
-                    </Typography>
                     {!state.loading.gap ? (
                       <React.Fragment>
-                        <Typography variant="h2" component="div">
-                          {cut(state.gap.join(", "), 100)}
+                        <Typography variant="h1" component="div">
+                          {state.gap.length}
                         </Typography>
-                        <Button color="primary">More...</Button>
+                        <Typography
+                          component="div"
+                          style={{
+                            display: "flex",
+                            flexDirection: "row",
+                            justifyContent: "space-between",
+                            alignItems: "center",
+                          }}
+                        >
+                          <Box fontWeight="bold">Property Gap</Box>
+                          <IconButton color="primary" size="small" edge="end">
+                            <KeyboardArrowRightIcon />
+                          </IconButton>
+                        </Typography>
                       </React.Fragment>
                     ) : (
                       <Loading />

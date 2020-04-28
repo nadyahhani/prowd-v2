@@ -10,6 +10,7 @@ import Profile from "../../containers/DashboardPage/Profile";
 import Analysis from "../../containers/DashboardPage/Analysis";
 import Compare from "../../containers/DashboardPage/Compare";
 import { useHistory } from "react-router-dom";
+import theme from "../../theme";
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -44,32 +45,35 @@ function a11yProps(index) {
 const useStyles = makeStyles((theme) => ({
   root: {
     flexGrow: 1,
-    backgroundColor: theme.palette.background.paper,
+    backgroundColor: theme.palette.background.main,
   },
   tab: {
     // borderLeft: `1px solid ${theme.palette.accent.main}`,
-    borderRight: `1px solid ${theme.palette.accent.main}`,
-    borderBottom: `1px solid ${theme.palette.accent.main}`,
+    // borderRight: `1px solid ${theme.palette.accent.main}`,
+    // borderBottom: `1px solid ${theme.palette.accent.main}`,
     // borderRight: "0 solid #FFF",
     minHeight: "5vh",
-    backgroundColor: theme.palette.disabled.main,
+    backgroundColor: theme.palette.disabled.light,
   },
   selectedTab: {
     backgroundColor: theme.palette.common.white,
     borderBottom: `1px solid ${theme.palette.common.white}`,
+    fontWeight: "bold",
   },
   fillerTab: {
     width: "100%",
     borderBottom: `1px solid ${theme.palette.accent.main}`,
   },
   indicator: {
-    position: "absolute",
-    backgroundColor: theme.palette.common.white,
-    zIndex: theme.zIndex.speedDial,
+    // position: "absolute",
+    // backgroundColor: theme.palette.common.white,
+    // zIndex: theme.zIndex.speedDial,
     display: "none",
+    // width: "80%",
+    // backgroundColor: theme.palette.primary.main,
   },
   tabs: {
-    backgroundColor: theme.palette.disabled.main,
+    backgroundColor: theme.palette.disabled.light,
     minHeight: "4vh",
     // height: "5vh",
     // borderTop: `1px solid ${theme.palette.accent.main}`,
@@ -99,7 +103,7 @@ export default function SimpleTabs(props) {
     <div
       className={`${classes.root} ${props.className ? props.className : ""}`}
     >
-      <Paper variant="outlined" elevation={0}>
+      <Paper>
         <Tabs
           value={value}
           aria-label="Dashboard Navigation"
@@ -112,7 +116,11 @@ export default function SimpleTabs(props) {
               history.push(`/dashboards/${props.dashId}/profile`);
             }}
             classes={{ selected: classes.selectedTab, root: classes.tab }}
-            label={<Typography>Profile</Typography>}
+            label={
+              <Typography component="div">
+                <Box fontWeight="bold">Profile</Box>
+              </Typography>
+            }
             {...a11yProps(0)}
           />
           <Tab
@@ -122,7 +130,11 @@ export default function SimpleTabs(props) {
             }}
             classes={{ selected: classes.selectedTab, root: classes.tab }}
             className={classes.tab}
-            label={<Typography>Compare</Typography>}
+            label={
+              <Typography component="div">
+                <Box fontWeight="bold">Compare</Box>
+              </Typography>
+            }
             {...a11yProps(1)}
           />
           <Tab
@@ -132,7 +144,11 @@ export default function SimpleTabs(props) {
             }}
             classes={{ selected: classes.selectedTab, root: classes.tab }}
             className={classes.tab}
-            label={<Typography>Analysis</Typography>}
+            label={
+              <Typography component="div">
+                <Box fontWeight="bold">Analysis</Box>
+              </Typography>
+            }
             {...a11yProps(2)}
           />
           {/* <div className={classes.fillerTab} /> */}

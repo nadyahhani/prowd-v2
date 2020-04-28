@@ -92,8 +92,8 @@ function Landing(props) {
 
   return (
     <ThemeProvider theme={theme}>
-      <Navbar />
       <div className={classes.mainLanding}>
+        <Navbar />
         <div className={`${classes.mainDiv} ${classes.centerContent}`}>
           <Typography variant="h2" className={classes.infoText}>
             ProWD is a tool which visualizes imbalance in Wikidata, a knowledge

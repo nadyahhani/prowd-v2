@@ -4,12 +4,9 @@ import { green, amber, red, grey } from "@material-ui/core/colors";
 const theme = createMuiTheme({
   palette: {
     primary: { main: "#006699" },
-    green: { main: green[500] },
-    yellow: { main: amber[500] },
-    red: { main: red[700] },
-    disabled: { main: grey[200] },
+    disabled: {light: grey[100], main: grey[200] },
     accent: { main: grey[400] },
-    background: { main: "#E8F1F5" },
+    background: { light: "#ecf3f7", main: "#E8F1F5", dark: "#a2a8ab" },
     chart: { main: "rgba(141, 185, 207,.8)" },
   },
   //   spacing: 4,

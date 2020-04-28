@@ -94,25 +94,26 @@ export default function DashboardPage(props) {
             each_amount: r.each_amount,
             data: r.data,
             percentileData: r.percentileData,
-            amount: r.amount,
+            amount: r.amount ? r.amount : null,
             insight: r.insight,
+            exceedLimit: r.exceedLimit,
           },
           distribution: {
             ...distTemp,
           },
           loading: { ...s.loading, gini: false },
         }));
-      }
-    });
+        getPropertyGap(props.match.params.id, (r) => {
+          if (r.success) {
+            console.log(r);
 
-    getPropertyGap(props.match.params.id, (r) => {
-      if (r.success) {
-        console.log(r);
-
-        setProfileState((s) => ({
-          ...s,
-          gap: [...r.properties],
-        }));
+            setProfileState((s) => ({
+              ...s,
+              loading: { ...s.loading, gap: false },
+              gap: [...r.properties],
+            }));
+          }
+        });
       }
     });
   }, [props.match.params.id]);
@@ -176,7 +177,7 @@ export default function DashboardPage(props) {
               disabled={!state.update}
               style={{ marginRight: theme.spacing(1) }}
             >
-              Refresh
+              Update
             </Button>
             <IconButton size="small" edge="end">
               <SettingsIcon color="primary" />
