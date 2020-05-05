@@ -44,7 +44,9 @@ export default function FilterBox(props) {
       )}
       {props.hideLabel ? null : <InputLabel shrink={true}>Filters</InputLabel>}
       <Paper
-        className={classes.filters}
+        className={`${classes.filters}${
+          props.classes.root ? " " + props.classes.root : ""
+        }`}
         variant="outlined"
         elevation={0}
         style={props.cols ? { height: `${props.cols * 4}vh` } : {}}
@@ -109,8 +111,10 @@ FilterBox.propTypes = {
   disabled: PropTypes.bool,
   onDelete: PropTypes.func,
   hideLabel: PropTypes.bool,
+  classes: PropTypes.object,
 };
 
 FilterBox.defaultProps = {
   hideLabel: false,
+  classes: { root: "" },
 };

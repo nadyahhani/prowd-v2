@@ -49,12 +49,8 @@ export default function FilterModal(props) {
     setState((s) => ({
       ...s,
       appliedFilters: props.appliedFilters,
-      propertiesOptions: [...props.propertiesOptions].map((item) => ({
-        ...item,
-        category: item.label[0].toUpperCase(),
-      })),
     }));
-  }, [props.propertiesOptions, props.open, props.appliedFilters]);
+  }, [props.open, props.appliedFilters]);
 
   return (
     <Modal open={props.open} onClose={props.onClose} className={classes.modal}>

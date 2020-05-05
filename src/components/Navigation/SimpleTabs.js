@@ -10,7 +10,6 @@ import Profile from "../../containers/DashboardPage/Profile";
 import Analysis from "../../containers/DashboardPage/Analysis";
 import Compare from "../../containers/DashboardPage/Compare";
 import { useHistory } from "react-router-dom";
-import theme from "../../theme";
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -168,6 +167,8 @@ export default function SimpleTabs(props) {
             data={props.data}
             hash={props.dashId}
             updateData={props.updateData}
+            state={props.states.compare}
+            setState={props.setStates.compare}
           />
         </TabPanel>
         <TabPanel value={value} index={2}>

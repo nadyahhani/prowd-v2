@@ -2,6 +2,7 @@ import React from "react";
 import ChartWrapper from "./ChartWrapper";
 import { linearLine } from "../../global";
 import PropTypes from "prop-types";
+import { Typography, Box } from "@material-ui/core";
 
 function GiniChart(props) {
   const data = {
@@ -57,7 +58,7 @@ function GiniChart(props) {
 
   const options = {
     responsive: true,
-    aspectRatio: props.ratio,
+    aspectRatio: 1,
     maintainAspectRatio: true,
     legend: {
       display: false,
@@ -87,13 +88,22 @@ function GiniChart(props) {
   React.useEffect(() => {});
 
   return (
-    <div className={props.classes.root}>
-      <ChartWrapper
-        style={{ height: "inherit", width: "inherit" }}
-        className={props.classes.ChartWrapper}
-        config={{ type: "line", data: data, options: options }}
-      />
-    </div>
+    <React.Fragment>
+      <div className={props.classes.root}>
+        <Typography
+          variant="h2"
+          component="div"
+          style={{ position: "absolute", marginTop: "-2%", marginLeft: "-2%" }}
+        >
+          <Box fontWeight="bold">{props.gini}</Box>
+        </Typography>
+        <ChartWrapper
+          // style={{ height: "inherit", width: "inherit" }}
+          className={props.classes.ChartWrapper}
+          config={{ type: "line", data: data, options: options }}
+        />
+      </div>
+    </React.Fragment>
   );
 }
 
@@ -101,6 +111,7 @@ export default GiniChart;
 
 GiniChart.propTypes = {
   data: PropTypes.arrayOf(PropTypes.number),
+  gini: PropTypes.number,
   labels: PropTypes.arrayOf(PropTypes.string),
   classes: PropTypes.object,
   className: PropTypes.string,

@@ -87,9 +87,17 @@ export const sortProperties = (props) => {
   let labels = [];
   let values = [];
   tempProps.forEach((item) => {
-    labels.push(item.propertyLabel);
+    labels.push(`${item.propertyLabel} (${item.propertyID})`);
     values.push(item.entitiesCount);
   });
   console.log({ labels: labels, values: values });
   return { labels: labels, values: values };
+};
+
+// function to filter table
+export const filterEntities = (data, param) => {
+  let result = data.filter((item) =>
+    item.label.toLowerCase().includes(param.toLowerCase())
+  );
+  return result;
 };

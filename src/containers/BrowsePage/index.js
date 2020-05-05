@@ -1,5 +1,5 @@
 import React from "react";
-import { Typography, Chip, Grid, IconButton, Button } from "@material-ui/core";
+import { Chip, Grid, Button } from "@material-ui/core";
 import { makeStyles, ThemeProvider } from "@material-ui/core/styles";
 import { getDashboards } from "../../services/general";
 import Table from "@material-ui/core/Table";

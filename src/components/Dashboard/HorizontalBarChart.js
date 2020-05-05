@@ -7,8 +7,6 @@ export default function HorizontalBarChart(props) {
     type: "horizontalBar",
     options: {
       responsive: true,
-      // aspectRatio: 2.6,
-      // maintainAspectRatio: true,
       legend: {
         display: false,
         position: "right",
@@ -20,7 +18,7 @@ export default function HorizontalBarChart(props) {
       scales: {
         xAxes: [
           {
-            display: true,
+            display: !props.simple,
             ticks: {
               autoSkip: false,
               beginAtZero: true,
@@ -28,7 +26,7 @@ export default function HorizontalBarChart(props) {
               max: props.max,
             },
             scaleLabel: {
-              display: true,
+              display: !props.simple,
               labelString: "Number of Entities",
               lineHeight: 1,
               padding: 0,
@@ -49,26 +47,21 @@ export default function HorizontalBarChart(props) {
         ],
       },
     },
-    data: {
-      labels: props.labels,
-      datasets: [
-        {
-          label: "# of Entities with this property",
-          backgroundColor: theme.palette.chart.main,
-          data: props.values,
-        },
-      ],
-    },
+    data: props.data,
   };
   return (
-    <ChartWrapper
-      className={props.classes.ChartWrapper}
-      config={config}
-      {...props}
-    />
+    <div className={props.classes.root}>
+      <ChartWrapper
+        className={props.classes.ChartWrapper}
+        style={{ height: "100%", width: "100%" }}
+        config={config}
+        {...props}
+      />
+    </div>
   );
 }
 
 HorizontalBarChart.defaultProps = {
-  classes: { ChartWrapper: "" },
+  classes: { ChartWrapper: "", root: "" },
+  simple: false
 };

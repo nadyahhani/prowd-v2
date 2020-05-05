@@ -4,6 +4,11 @@ import clsx from "clsx";
 import { withStyles } from "@material-ui/core/styles";
 import TableCell from "@material-ui/core/TableCell";
 import { AutoSizer, Column, Table } from "react-virtualized";
+import { TextField, Typography } from "@material-ui/core";
+import { Check, Close, Remove } from "@material-ui/icons";
+import theme from "../../theme";
+import Autocomplete from "@material-ui/lab/Autocomplete";
+import Loading from "../Misc/Loading";
 
 const styles = (theme) => ({
   flexContainer: {
@@ -65,20 +70,33 @@ class MuiVirtualizedTable extends React.PureComponent {
             : "left"
         }
       >
-        {columns[columnIndex].link
-          ? (() => {
-              return (
-                <a
-                  style={{ textDecoration: "none" }}
-                  href={cellData[columns[columnIndex].linkKey]}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  {cellData[columns[columnIndex].dataKey]}
-                </a>
-              );
-            })()
-          : cellData[columns[columnIndex].dataKey]}
+        {(() => {
+          if (columns[columnIndex].link) {
+            return (
+              <a
+                style={{ textDecoration: "none" }}
+                href={cellData[columns[columnIndex].linkKey]}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                {cellData[columns[columnIndex].dataKey]}
+              </a>
+            );
+          } else if (columns[columnIndex].dropdown) {
+            if (this.props.loading) {
+              return <Loading secondary />;
+            }
+            if (cellData[columns[columnIndex].dataKey]) {
+              return <Check style={{ color: theme.palette.success.main }} />;
+            } else if (cellData[columns[columnIndex].dataKey] === false) {
+              return <Close style={{ color: theme.palette.error.main }} />;
+            } else {
+              return <Remove style={{ color: theme.palette.accent.main }} />;
+            }
+          } else {
+            return cellData[columns[columnIndex].dataKey];
+          }
+        })()}
       </TableCell>
     );
   };
@@ -102,7 +120,37 @@ class MuiVirtualizedTable extends React.PureComponent {
         style={{ height: headerHeight }}
         align={columns[columnIndex].numeric || false ? "right" : "left"}
       >
-        <span>{label}</span>
+        {columns[columnIndex].dropdown ? (
+          <div style={{ width: "100%" }}>
+            <Autocomplete
+              getOptionLabel={(option) => {
+                return option;
+              }}
+              renderOption={(option) => <Typography>{`${option}`}</Typography>}
+              onChange={(e, value, reason) => {
+                if (reason === "select-option") {
+                  this.props.selectProperty(value);
+                }
+              }}
+              options={this.props.options ? this.props.options : []}
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  fullWidth
+                  margin="dense"
+                  size="small"
+                  placeholder="Select Property"
+                  inputProps={{
+                    ...params.inputProps,
+                    autoComplete: "new-password",
+                  }}
+                />
+              )}
+            />
+          </div>
+        ) : (
+          <span>{label}</span>
+        )}
       </TableCell>
     );
   };
@@ -129,6 +177,12 @@ class MuiVirtualizedTable extends React.PureComponent {
             className={classes.table}
             {...tableProps}
             rowClassName={this.getRowClassName}
+            style={{
+              "& > * > * > *": {
+                paddingLeft: "1%",
+                paddingRight: "1%",
+              },
+            }}
           >
             {columns.map(({ dataKey, ...other }, index) => {
               return (
@@ -181,6 +235,7 @@ export default function ReactVirtualizedTable(props) {
       rowCount={rows.length}
       rowGetter={({ index }) => rows[index]}
       columns={columns}
+      {...props}
     />
   );
 }

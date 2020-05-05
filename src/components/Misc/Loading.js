@@ -12,7 +12,11 @@ export default function Loading(props) {
         alignItems: "center",
       }}
     >
-      <CircularProgress />
+      {props.secondary ? (
+        <CircularProgress color="secondary" size={11} />
+      ) : (
+        <CircularProgress />
+      )}
     </div>
   );
 }

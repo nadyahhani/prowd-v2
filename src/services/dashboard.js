@@ -36,9 +36,13 @@ export function getDashInfo(hash, afterFunc) {
     });
 }
 
-export function getGiniEntity(hash, afterFunc) {
+export function getGiniEntity(hash, entityCheck, afterFunc) {
   axios
-    .get(`${url}/api/entity/gini?hash_code=${hash}`)
+    .get(
+      `${url}/api/entity/gini?hash_code=${hash}${
+        entityCheck ? `&property=${entityCheck}` : ""
+      }`
+    )
     .then(
       (response) => {
         afterFunc({ success: true, ...response.data });
@@ -73,6 +77,49 @@ export function getAllProperties(hash, afterFunc) {
 export function getPropertyGap(hash, afterFunc) {
   axios
     .get(`${url}/api/properties/gap?hash_code=${hash}`)
+    .then(
+      (response) => {
+        afterFunc({ success: true, ...response.data });
+      },
+      (error) => {
+        afterFunc({ success: false, ...error });
+      }
+    )
+    .catch((err) => {
+      afterFunc({ success: false, ...err });
+    });
+}
+
+export function editGlobal(hash, classID, filters, afterFunc) {
+  axios
+    .post(`${url}/api/dashboard/edit1`, {
+      hashCode: hash,
+      entityID: classID,
+      filters: filters,
+      properties: [],
+      additionalFilters: "[]",
+    })
+    .then(
+      (response) => {
+        afterFunc({ success: true, ...response.data });
+      },
+      (error) => {
+        afterFunc({ success: false, ...error });
+      }
+    )
+    .catch((err) => {
+      afterFunc({ success: false, ...err });
+    });
+}
+
+export function editCompare(hash, classID, filters, compareFilters, afterFunc) {
+  axios
+    .post(`${url}/api/dashboard/edit2`, {
+      hashCode: hash,
+      entityID: classID,
+      filters: filters,
+      compareFilters: compareFilters,
+    })
     .then(
       (response) => {
         afterFunc({ success: true, ...response.data });

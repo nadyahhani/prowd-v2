@@ -1,13 +1,16 @@
 import { createMuiTheme } from "@material-ui/core/styles";
-import { green, amber, red, grey } from "@material-ui/core/colors";
+import { grey } from "@material-ui/core/colors";
 
 const theme = createMuiTheme({
   palette: {
     primary: { main: "#006699" },
-    disabled: {light: grey[100], main: grey[200] },
+    disabled: { light: grey[100], main: grey[200] },
     accent: { main: grey[400] },
     background: { light: "#ecf3f7", main: "#E8F1F5", dark: "#a2a8ab" },
     chart: { main: "rgba(141, 185, 207,.8)" },
+    itemB: { main: "#DB7F67" },
+    itemA: { main: "#5F9EBD" },
+    itemMerge: { main: "#AD7F89" },
   },
   //   spacing: 4,
   typography: {
@@ -23,7 +26,7 @@ const theme = createMuiTheme({
     },
     h1: {
       // fontSize: "3.889vmin",
-      fontSize: 30,
+      fontSize: 35,
     },
     h2: {
       // fontSize: "2.7vmin",

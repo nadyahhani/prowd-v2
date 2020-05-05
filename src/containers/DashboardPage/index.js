@@ -8,14 +8,22 @@ import {
   Box,
   IconButton,
   Button,
+  Grid,
+  Paper,
 } from "@material-ui/core";
 import theme from "../../theme";
 import SimpleTabs from "../../components/Navigation/SimpleTabs";
 import Navbar from "../../components/Navigation/Navbar";
-import { getDashInfo, getPropertyGap } from "../../services/dashboard";
+import {
+  getDashInfo,
+  getPropertyGap,
+  editGlobal,
+} from "../../services/dashboard";
 import { getGiniEntity, getAllProperties } from "../../services/dashboard";
-import { countProperties, sortProperties } from "../../global";
+import { countProperties, sortProperties, cut } from "../../global";
 import SettingsIcon from "@material-ui/icons/Settings";
+import Loading from "../../components/Misc/Loading";
+import FilterBox from "../../components/Inputs/FilterBox";
 
 const useStyles = makeStyles(() => ({
   content: {
@@ -36,6 +44,9 @@ const useStyles = makeStyles(() => ({
   tabs: {
     width: "100%",
   },
+  filters: {
+    // width: "100%",
+  },
 }));
 
 export default function DashboardPage(props) {
@@ -47,6 +58,27 @@ export default function DashboardPage(props) {
   });
 
   const [profileState, setProfileState] = React.useState({
+    loaded: false,
+    entities: [],
+    giniData: {},
+    distribution: {},
+    properties: [],
+    propertySort: 0,
+    gap: [],
+    tableSearch: "",
+
+    // loading states
+    loading: {
+      gini: true,
+      properties: true,
+      propertiesOptions: false,
+      gap: true,
+      checkProperty: false,
+    },
+  });
+
+  const [compareState, setCompareState] = React.useState({
+    loaded: false,
     entities: [],
     giniData: {},
     distribution: {},
@@ -63,7 +95,7 @@ export default function DashboardPage(props) {
     },
   });
 
-  React.useEffect(() => {
+  const fetchData = React.useCallback(() => {
     // Global
     getDashInfo(props.match.params.id, (r) => {
       if (r.success) {
@@ -83,12 +115,12 @@ export default function DashboardPage(props) {
         }));
       }
     });
-    getGiniEntity(props.match.params.id, (r) => {
+    getGiniEntity(props.match.params.id, null, (r) => {
       if (r.success) {
         const distTemp = countProperties(r.entities);
         setProfileState((s) => ({
           ...s,
-          entities: [...r.entities.reverse()],
+          entities: [...r.entities].reverse(),
           giniData: {
             gini: r.gini,
             each_amount: r.each_amount,
@@ -118,13 +150,17 @@ export default function DashboardPage(props) {
     });
   }, [props.match.params.id]);
 
+  React.useEffect(() => {
+    fetchData();
+  }, [fetchData]);
+
   return (
     <ThemeProvider theme={theme}>
       <Navbar />
       <div className={classes.content}>
         <div
           style={{
-            marginBottom: theme.spacing(2),
+            marginBottom: theme.spacing(1),
             display: "flex",
             flexDirection: "row",
             alignItems: "center",
@@ -176,23 +212,125 @@ export default function DashboardPage(props) {
               color="primary"
               disabled={!state.update}
               style={{ marginRight: theme.spacing(1) }}
+              onClick={() => {
+                const hash = props.match.params.id;
+                let tempFilter = [];
+                state.globalData.filters.forEach((item) => {
+                  let t = {};
+                  t[item.filterID] = item.filterValueID;
+                  tempFilter.push(t);
+                });
+                setState((s) => ({
+                  ...s,
+                  loading: {
+                    gini: true,
+                    properties: true,
+                    propertiesOptions: false,
+                    gap: true,
+                  },
+                }));
+                editGlobal(
+                  hash,
+                  state.globalData.entity.entityID,
+                  tempFilter,
+                  (r) => {
+                    if (r.success) {
+                      fetchData();
+                    }
+                  }
+                );
+              }}
             >
-              Update
+              Apply
             </Button>
             <IconButton size="small" edge="end">
               <SettingsIcon color="primary" />
             </IconButton>
           </div>
         </div>
+        <div
+          style={{
+            marginBottom: theme.spacing(3),
+            height: "10vh",
+          }}
+        >
+          {state.globalData.entity ? (
+            <Grid container spacing={1} style={{ height: "100%" }}>
+              <Grid item style={{ height: "100%" }} xs={5}>
+                <Paper style={{ height: "100%", padding: theme.spacing(1) }}>
+                  <Typography variant="h2">
+                    {`${state.globalData.entity.entityLabel} (${state.globalData.entity.entityID})`}
+                  </Typography>
+                  <Typography>
+                    {state.globalData.entity.entityDescription}
+                  </Typography>
+                </Paper>
+              </Grid>
+              <Grid item style={{ height: "100%" }} xs={7}>
+                <Paper style={{ height: "100%", padding: theme.spacing(1) }}>
+                  <Typography>Filters</Typography>
+                  <FilterBox
+                    classes={{ root: classes.filters }}
+                    options={state.globalData.filters}
+                    selectedClass={state.globalData.entity}
+                    hideLabel
+                    cols={1}
+                    onApply={(applied) => {
+                      let temp = [...applied];
+                      temp = temp.map((item) => {
+                        if (!item.property) {
+                          return item;
+                        }
+                        return {
+                          filterDescription: item.property.description,
+                          filterID: item.property.id,
+                          filterLabel: item.property.label,
+                          filterValueDescription: item.values.description,
+                          filterValueID: item.values.id,
+                          filterValueLabel: item.values.label,
+                        };
+                      });
+                      setState((s) => ({
+                        ...s,
+                        update: true,
+                        globalData: { ...s.globalData, filters: temp },
+                      }));
+                    }}
+                    renderTagText={(opt) =>
+                      cut(
+                        `${
+                          opt.property ? opt.property.label : opt.filterLabel
+                        }: ${
+                          opt.values ? opt.values.label : opt.filterValueLabel
+                        }`,
+                        43
+                      )
+                    }
+                    onDelete={(idx) => {
+                      let temp = [...state.globalData.filters];
+                      temp.splice(idx, 1);
+                      setState((s) => ({
+                        ...s,
+                        update: true,
+                        globalData: { ...s.globalData, filters: temp },
+                      }));
+                    }}
+                  />
+                </Paper>
+              </Grid>
+            </Grid>
+          ) : (
+            <Loading />
+          )}
+        </div>
         <div>
           <SimpleTabs
             className={classes.tabs}
             dashId={props.match.params.id}
             selectedTab={props.match.params.page}
-            states={{ profile: profileState }}
-            setStates={{ profile: setProfileState }}
             data={state.globalData}
-            updateData={setState}
+            states={{ profile: profileState, compare: compareState }}
+            setStates={{ profile: setProfileState, compare: setCompareState }}
           />
         </div>
       </div>

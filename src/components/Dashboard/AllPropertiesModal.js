@@ -13,6 +13,7 @@ import {
 } from "@material-ui/core";
 import HorizontalBarChart from "./HorizontalBarChart";
 import PropTypes from "prop-types";
+import theme from "../../theme";
 
 export default function AllPropertiesModal(props) {
   const useStyles = makeStyles((theme) => ({
@@ -45,6 +46,7 @@ export default function AllPropertiesModal(props) {
 
   const setModal = (bool) => {
     setState((s) => ({ ...s, modalIsOpen: bool }));
+    console.log(props.data);
   };
 
   return (
@@ -86,17 +88,33 @@ export default function AllPropertiesModal(props) {
             <Grid item className={classes.chartDiv}>
               {state.sort === 0 ? (
                 <HorizontalBarChart
-                  key={3}
-                  labels={props.data.labels}
-                  values={props.data.values}
+                  key={`${props.key}-${3}`}
+                  data={{
+                    labels: props.data.labels,
+                    datasets: [
+                      {
+                        label: "# of Entities with this property",
+                        backgroundColor: theme.palette.chart.main,
+                        data: props.data.values,
+                      },
+                    ],
+                  }}
                   max={props.data.max}
                   classes={{ ChartWrapper: classes.chart }}
                 />
               ) : (
                 <HorizontalBarChart
-                  key={4}
-                  labels={[...props.data.labels].reverse()}
-                  values={[...props.data.values].reverse()}
+                  key={`${props.key}-${4}`}
+                  data={{
+                    labels: [...props.data.labels].reverse(),
+                    datasets: [
+                      {
+                        label: "# of Entities with this property",
+                        backgroundColor: theme.palette.chart.main,
+                        data: [...props.data.values].reverse(),
+                      },
+                    ],
+                  }}
                   max={props.data.max}
                   classes={{ ChartWrapper: classes.chart }}
                 />
