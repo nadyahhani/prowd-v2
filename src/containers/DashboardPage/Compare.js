@@ -109,12 +109,6 @@ export default function Compare(props) {
   const applyFilter = (data) => {
     alert("apply");
     let temp = [];
-    let tempFilter = [];
-    props.data.filters.forEach((item) => {
-      let t = {};
-      t[item.filterID] = item.filterValueID;
-      tempFilter.push(t);
-    });
     data.forEach((item) => {
       temp.push({
         propertyID: item.property.id,
@@ -124,15 +118,10 @@ export default function Compare(props) {
         },
       });
     });
-    editCompare(
-      props.hash,
-      props.data.entity.entityID,
-      tempFilter,
-      temp,
-      (r) => {
-        console.log(r);
+    editCompare(props.hash, temp, (r) => {
+      if (r.success) {
       }
-    );
+    });
   };
 
   const propertiesChart = () => {
@@ -161,7 +150,10 @@ export default function Compare(props) {
               <Grid item style={{ height: "87%" }}>
                 <DimensionTable
                   classes={{ root: classes.dimensionTable }}
+                  // appliedDimensions={state.compareFilters}
+                  appliedDimensions={[]}
                   onApply={applyFilter}
+                  loading={state.loading.compareFilters}
                 />
               </Grid>
             </Grid>
@@ -175,7 +167,7 @@ export default function Compare(props) {
                   <Grid container spacing={1}>
                     <Grid item xs={6}>
                       <Paper classes={{ root: classes.card }}>
-                        {!state.loading.gini ? (
+                        {!state.loading.giniA && !state.loading.giniB ? (
                           <div style={{ width: "100%", height: "100%" }}>
                             <Typography
                               component="div"
@@ -192,7 +184,10 @@ export default function Compare(props) {
                               key={3}
                               simple
                               data={{
-                                labels: ["A", "B"],
+                                labels: [
+                                  `A: ${state.giniA.amount}`,
+                                  `B: ${state.giniB.amount}`,
+                                ],
                                 datasets: [
                                   {
                                     label: "# of Entities",
@@ -200,11 +195,13 @@ export default function Compare(props) {
                                       theme.palette.itemA.main,
                                       theme.palette.itemB.main,
                                     ],
-                                    data: [10, 20],
+                                    data: [
+                                      state.giniA.amount,
+                                      state.giniB.amount,
+                                    ],
                                   },
                                 ],
                               }}
-                              max={20}
                               classes={{
                                 root: classes.horizontalbar,
                                 ChartWrapper: classes.horizontalbarchart,
@@ -225,7 +222,7 @@ export default function Compare(props) {
                     </Grid>
                     <Grid item xs={6}>
                       <Paper classes={{ root: classes.card }}>
-                        {!state.loading.gini ? (
+                        {!state.loading.giniA ? (
                           <div style={{ width: "100%", height: "100%" }}>
                             <Typography
                               component="div"
@@ -307,49 +304,50 @@ export default function Compare(props) {
                     >
                       <Grid item xs={6}>
                         <Typography>A</Typography>
-                        <Paper
-                          variant="outlined"
-                          elevation={0}
-                          className={classes.giniSubPaper}
-                        >
-                          <Status>Imbalanced</Status>
-                          {!state.loading.gini ? (
+                        {!state.loading.giniA ? (
+                          <Paper
+                            variant="outlined"
+                            elevation={0}
+                            className={classes.giniSubPaper}
+                          >
+                            <Status>Imbalanced</Status>
+
                             <GiniChart
-                              data={state.giniData.data}
-                              gini={state.giniData.gini}
-                              insight={state.giniData.insight}
+                              data={state.giniA.data}
+                              gini={state.giniA.gini}
+                              insight={state.giniA.insight}
                               classes={{
                                 root: classes.giniChart,
                                 ChartWrapper: classes.giniChart,
                               }}
                             />
-                          ) : (
-                            <Loading />
-                          )}
-                        </Paper>
+                          </Paper>
+                        ) : (
+                          <Loading />
+                        )}
                       </Grid>
                       <Grid item xs={6}>
                         <Typography>A</Typography>
-                        <Paper
-                          variant="outlined"
-                          elevation={0}
-                          className={classes.giniSubPaper}
-                        >
-                          <Status>Imbalanced</Status>
-                          {!state.loading.gini ? (
+                        {!state.loading.giniB ? (
+                          <Paper
+                            variant="outlined"
+                            elevation={0}
+                            className={classes.giniSubPaper}
+                          >
+                            <Status>Imbalanced</Status>
                             <GiniChart
-                              data={state.giniData.data}
-                              gini={state.giniData.gini}
-                              insight={state.giniData.insight}
+                              data={state.giniB.data}
+                              gini={state.giniB.gini}
+                              insight={state.giniB.insight}
                               classes={{
                                 root: classes.giniChart,
                                 ChartWrapper: classes.giniChart,
                               }}
                             />
-                          ) : (
-                            <Loading />
-                          )}
-                        </Paper>
+                          </Paper>
+                        ) : (
+                          <Loading />
+                        )}
                       </Grid>
                     </Grid>
                   </Paper>

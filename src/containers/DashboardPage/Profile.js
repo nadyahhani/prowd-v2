@@ -37,6 +37,7 @@ const useStyles = makeStyles((theme) => ({
     height: "fit-content",
     // padding: theme.spacing(0),
   },
+  columnGrid : {height: "100%"},
   gridItem: {
     minWidth: "33.333333%",
     "& > *": {
@@ -45,11 +46,11 @@ const useStyles = makeStyles((theme) => ({
   },
   tablePaper: {
     overflowY: "scroll",
-    height: "65.3vh",
+    height: "65.5vh",
   },
   distPaper: { height: "32vh" },
   giniPaper: {
-    height: "46vh",
+    height: "46.2vh",
     display: "flex",
     flexDirection: "column",
     justifyContent: "space-between",
@@ -86,7 +87,7 @@ const useStyles = makeStyles((theme) => ({
   table: {
     height: "92%",
   },
-  tableToolbar: { height: "fit-content" },
+  tableToolbar: { height: "fit-content", marginTop: theme.spacing(1) },
 
   // =====
   dashboardConfig: {
@@ -235,7 +236,7 @@ export default function Profile(props) {
         direction="row"
         classes={{ root: classes.root }}
       >
-        <Grid item xs={5}>
+        <Grid item xs={5} classes={{root: classes.columnGrid}}>
           <Grid container direction="column" spacing={1}>
             <Grid item xs={12}>
               <Paper className={classes.tablePaper}>
@@ -303,7 +304,7 @@ export default function Profile(props) {
             </Grid>
           </Grid>
         </Grid>
-        <Grid item xs={3}>
+        <Grid item xs={3} classes={{root: classes.columnGrid}}>
           <Grid container spacing={1}>
             <Grid item xs={12}>
               <Grid container spacing={1}>
@@ -422,7 +423,7 @@ export default function Profile(props) {
             </Grid>
           </Grid>
         </Grid>
-        <Grid item xs={4}>
+        <Grid item xs={4} classes={{root: classes.columnGrid}}>
           <Grid container spacing={1}>
             <Grid item xs={12} classes={{ root: classes.gridItem }}>
               <Paper classes={{ root: classes.propertiesPaper }}>

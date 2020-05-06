@@ -22,7 +22,7 @@ export function createDashboard(entityID, filters, afterFunc) {
 
 export function getDashInfo(hash, afterFunc) {
   axios
-    .get(`${url}/api/entity/information?hash_code=${hash}`)
+    .get(`${url}/api/dashboard/info?hash_code=${hash}`)
     .then(
       (response) => {
         afterFunc({ success: true, ...response.data });
@@ -92,7 +92,7 @@ export function getPropertyGap(hash, afterFunc) {
 
 export function editGlobal(hash, classID, filters, afterFunc) {
   axios
-    .post(`${url}/api/dashboard/edit1`, {
+    .post(`${url}/api/dashboard/edit/global`, {
       hashCode: hash,
       entityID: classID,
       filters: filters,
@@ -112,14 +112,31 @@ export function editGlobal(hash, classID, filters, afterFunc) {
     });
 }
 
-export function editCompare(hash, classID, filters, compareFilters, afterFunc) {
+export function editCompare(hash, compareFilters, afterFunc) {
   axios
-    .post(`${url}/api/dashboard/edit2`, {
+    .post(`${url}/api/dashboard/edit/compare`, {
       hashCode: hash,
-      entityID: classID,
-      filters: filters,
       compareFilters: compareFilters,
     })
+    .then(
+      (response) => {
+        afterFunc({ success: true, ...response.data });
+      },
+      (error) => {
+        afterFunc({ success: false, ...error });
+      }
+    )
+    .catch((err) => {
+      afterFunc({ success: false, ...err });
+    });
+}
+
+export function getCompareGini(hash, item, afterFunc) {
+  axios
+    .get(
+      `${url}/api/entity/gini/compare?hash_code=${hash}&item_number=${item}
+    `
+    )
     .then(
       (response) => {
         afterFunc({ success: true, ...response.data });

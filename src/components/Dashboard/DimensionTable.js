@@ -18,6 +18,7 @@ import { getClasses, searchProperties } from "../../services/general";
 import { AddCircle, RemoveCircle } from "@material-ui/icons";
 import { getUnique } from "../../global";
 import theme from "../../theme";
+import Loading from "../Misc/Loading";
 
 const useStyles = makeStyles({
   table: {
@@ -48,6 +49,10 @@ export default function DimensionTable(props) {
     inputProperty: "",
     loading: false,
   });
+
+  React.useEffect(() => {
+    setState((s) => ({ ...s, data: props.appliedDimensions }));
+  }, [props.appliedDimensions]);
 
   const eraseInput = () => {
     setState((s) => ({
@@ -124,34 +129,42 @@ export default function DimensionTable(props) {
             </TableRow>
           </TableHead>
           <TableBody>
-            {state.data.map((row, idx) => (
-              <TableRow key={idx}>
-                <TableCell>{row.property.label}</TableCell>
-                <TableCell>{row.valueA.label}</TableCell>
-                <TableCell>{row.valueB.label}</TableCell>
-                <TableCell>
-                  <IconButton
-                    size="small"
-                    edge="end"
-                    onClick={() => {
-                      if (idx > 0) {
-                        setState((s) => ({
-                          ...s,
-                          data: [...s.data].slice(idx, 1),
-                        }));
-                      } else {
-                        setState((s) => ({
-                          ...s,
-                          data: [],
-                        }));
-                      }
-                    }}
-                  >
-                    <RemoveCircle color="primary" />
-                  </IconButton>
+            {!props.loading ? (
+              state.data.map((row, idx) => (
+                <TableRow key={idx}>
+                  <TableCell>{row.property.label}</TableCell>
+                  <TableCell>{row.valueA.label}</TableCell>
+                  <TableCell>{row.valueB.label}</TableCell>
+                  <TableCell>
+                    <IconButton
+                      size="small"
+                      edge="end"
+                      onClick={() => {
+                        if (idx > 0) {
+                          setState((s) => ({
+                            ...s,
+                            data: [...s.data].slice(idx, 1),
+                          }));
+                        } else {
+                          setState((s) => ({
+                            ...s,
+                            data: [],
+                          }));
+                        }
+                      }}
+                    >
+                      <RemoveCircle color="primary" />
+                    </IconButton>
+                  </TableCell>
+                </TableRow>
+              ))
+            ) : (
+              <TableRow>
+                <TableCell colSpan={4}>
+                  <Loading />
                 </TableCell>
               </TableRow>
-            ))}
+            )}
             <TableRow key="input">
               <TableCell
                 component="th"
@@ -330,7 +343,14 @@ export default function DimensionTable(props) {
           </Button>
         </Grid>
         <Grid item>
-          <Button color="primary">Reset</Button>
+          <Button
+            onClick={() =>
+              setState((s) => ({ ...s, data: props.appliedDimensions }))
+            }
+            color="primary"
+          >
+            Reset
+          </Button>
         </Grid>
       </Grid>
     </React.Fragment>

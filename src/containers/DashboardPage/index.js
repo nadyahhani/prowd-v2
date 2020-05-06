@@ -18,6 +18,7 @@ import {
   getDashInfo,
   getPropertyGap,
   editGlobal,
+  getCompareGini,
 } from "../../services/dashboard";
 import { getGiniEntity, getAllProperties } from "../../services/dashboard";
 import { countProperties, sortProperties, cut } from "../../global";
@@ -79,76 +80,140 @@ export default function DashboardPage(props) {
 
   const [compareState, setCompareState] = React.useState({
     loaded: false,
-    entities: [],
-    giniData: {},
-    distribution: {},
-    properties: [],
-    propertySort: 0,
-    gap: [],
+    giniA: {},
+    giniB: {},
+    compareFilters: [],
 
     // loading states
     loading: {
-      gini: true,
+      giniA: true,
+      giniB: true,
+      compareFilters: true,
       properties: true,
       propertiesOptions: false,
       gap: true,
     },
   });
 
-  const fetchData = React.useCallback(() => {
-    // Global
-    getDashInfo(props.match.params.id, (r) => {
-      if (r.success) {
-        setState((s) => ({ ...s, loading: false, globalData: { ...r } }));
-      }
-    });
-
-    // Profile
-    getAllProperties(props.match.params.id, (r) => {
-      if (r.success) {
-        const temp = sortProperties(r.properties);
-        setProfileState((s) => ({
+  const fetchData = React.useCallback(
+    (scope = "") => {
+      // Global
+      if (scope === "" || scope === "compare") {
+        setState((s) => ({ ...s, loading: true }));
+        setCompareState((s) => ({
           ...s,
-          properties: r.properties,
-          mappedProperties: temp,
-          loading: { ...s.loading, properties: false },
+          loading: { ...s.loading, compareFilters: true },
         }));
-      }
-    });
-    getGiniEntity(props.match.params.id, null, (r) => {
-      if (r.success) {
-        const distTemp = countProperties(r.entities);
-        setProfileState((s) => ({
-          ...s,
-          entities: [...r.entities].reverse(),
-          giniData: {
-            gini: r.gini,
-            each_amount: r.each_amount,
-            data: r.data,
-            percentileData: r.percentileData,
-            amount: r.amount ? r.amount : null,
-            insight: r.insight,
-            exceedLimit: r.exceedLimit,
-          },
-          distribution: {
-            ...distTemp,
-          },
-          loading: { ...s.loading, gini: false },
-        }));
-        getPropertyGap(props.match.params.id, (r) => {
+        getDashInfo(props.match.params.id, (r) => {
           if (r.success) {
-            console.log(r);
-
-            setProfileState((s) => ({
+            setState((s) => ({
               ...s,
-              loading: { ...s.loading, gap: false },
-              gap: [...r.properties],
+              loading: false,
+              globalData: {
+                entity: r.entityInfo,
+                filters: r.filtersInfo,
+                name: r.name === "" ? "Untitled Dashboard" : r.name,
+                author: r.author === "" ? "Anonymous" : r.author,
+              },
+            }));
+            setCompareState((s) => ({
+              ...s,
+              compareFilters: [...r.compareFilters],
+              loading: { ...s.loading, compareFilters: false },
             }));
           }
         });
       }
-    });
-  }, [props.match.params.id]);
+
+      // Profile
+      if (scope === "" || scope === "profile") {
+        setProfileState((s) => ({
+          ...s,
+          loading: {
+            gini: true,
+            properties: true,
+            propertiesOptions: false,
+            gap: true,
+            checkProperty: false,
+          },
+        }));
+        getAllProperties(props.match.params.id, (r) => {
+          if (r.success) {
+            const temp = sortProperties(r.properties);
+            setProfileState((s) => ({
+              ...s,
+              properties: r.properties,
+              mappedProperties: temp,
+              loading: { ...s.loading, properties: false },
+            }));
+          }
+        });
+        getGiniEntity(props.match.params.id, null, (r) => {
+          if (r.success) {
+            const distTemp = countProperties(r.entities);
+            setProfileState((s) => ({
+              ...s,
+              entities: [...r.entities].reverse(),
+              giniData: {
+                gini: r.gini,
+                each_amount: r.each_amount,
+                data: r.data,
+                percentileData: r.percentileData,
+                amount: r.amount ? r.amount : null,
+                insight: r.insight,
+                exceedLimit: r.exceedLimit,
+              },
+              distribution: {
+                ...distTemp,
+              },
+              loading: { ...s.loading, gini: false },
+            }));
+            getPropertyGap(props.match.params.id, (r) => {
+              if (r.success) {
+                console.log(r);
+
+                setProfileState((s) => ({
+                  ...s,
+                  loading: { ...s.loading, gap: false },
+                  gap: [...r.properties],
+                }));
+              }
+            });
+          }
+        });
+      }
+      // Compare
+      if (scope === "" || scope === "compare") {
+        setCompareState((s) => ({
+          ...s,
+          loading: {
+            ...s.loading,
+            giniA: true,
+            giniB: true,
+          },
+        }));
+        getCompareGini(props.match.params.id, 1, (r) => {
+          if (r.success) {
+            setCompareState((s) => ({
+              ...s,
+              giniA: { ...r },
+              loading: { ...s.loading, giniA: false },
+            }));
+          }
+        });
+        getCompareGini(props.match.params.id, 2, (r) => {
+          if (r.success) {
+            setCompareState((s) => ({
+              ...s,
+              giniB: { ...r },
+              loading: { ...s.loading, giniB: false },
+            }));
+          }
+        });
+      }
+    },
+    [props.match.params.id]
+  );
 
   React.useEffect(() => {
     fetchData();
@@ -176,11 +241,19 @@ export default function DashboardPage(props) {
               width: "fit-content",
             }}
           >
-            {state.globalData.name && state.globalData.author ? (
+            {!state.loading ? (
               <React.Fragment>
                 <Input
                   classes={{ input: `${classes.titleInput} ${classes.bold}` }}
                   value={state.globalData.name}
+                  onChange={(e) => {
+                    let val = e.target.value;
+                    setState((s) => ({
+                      ...s,
+                      globalData: { ...s.globalData, name: val },
+                      update: true,
+                    }));
+                  }}
                 />
                 <Typography
                   style={{ padding: "0 .4vw" }}
@@ -189,6 +262,14 @@ export default function DashboardPage(props) {
                 <Input
                   classes={{ input: classes.titleInput }}
                   value={state.globalData.author}
+                  onChange={(e) => {
+                    let val = e.target.value;
+                    setState((s) => ({
+                      ...s,
+                      globalData: { ...s.globalData, author: val },
+                      update: true,
+                    }));
+                  }}
                 />
               </React.Fragment>
             ) : (
