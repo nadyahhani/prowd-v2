@@ -73,25 +73,47 @@ export const countProperties = (entities) => {
 };
 
 // custom function to map properties for labels and values and sort ascending
-export const sortProperties = (props) => {
-  const tempProps = [...props];
-  tempProps.sort((b, a) =>
-    parseInt(a.entitiesCount) > parseInt(b.entitiesCount)
-      ? 1
-      : parseInt(a.entitiesCount) === parseInt(b.entitiesCount)
-      ? a.propertyLabel > b.propertyLabel
+export const sortProperties = (props, compare = false) => {
+  const tempProps = Object.values(props);
+
+  if (!compare) {
+    tempProps.sort((b, a) =>
+      parseInt(a.count) > parseInt(b.count)
         ? 1
+        : parseInt(a.count) === parseInt(b.count)
+        ? a.label > b.label
+          ? 1
+          : -1
         : -1
-      : -1
-  );
-  let labels = [];
-  let values = [];
-  tempProps.forEach((item) => {
-    labels.push(`${item.propertyLabel} (${item.propertyID})`);
-    values.push(item.entitiesCount);
-  });
-  console.log({ labels: labels, values: values });
-  return { labels: labels, values: values };
+    );
+    let labels = [];
+    let values = [];
+    tempProps.forEach((item) => {
+      labels.push(`${item.label} (${item.id})`);
+      values.push(item.count);
+    });
+    console.log({ labels: labels, values: values });
+    return { labels: labels, values: values };
+  } else {
+    tempProps.sort((b, a) =>
+      parseInt(a.count1 + a.count2) > parseInt(b.count1 + b.count2)
+        ? 1
+        : parseInt(a.count1 + a.count2) === parseInt(b.count1 + b.count2)
+        ? a.count1 > b.count1
+          ? 1
+          : -1
+        : -1
+    );
+    let labels = [];
+    let valuesA = [];
+    let valuesB = [];
+    tempProps.forEach((item) => {
+      labels.push(`${item.label} (${item.id})`);
+      valuesA.push(item.count1);
+      valuesB.push(item.count2);
+    });
+    return { labels: labels, valuesA: valuesA, valuesB: valuesB };
+  }
 };
 
 // function to filter table
@@ -100,4 +122,14 @@ export const filterEntities = (data, param) => {
     item.label.toLowerCase().includes(param.toLowerCase())
   );
   return result;
+};
+
+// function to merge json
+export const extend = (a, target, sources) => {
+  sources.forEach(function (source) {
+    for (var prop in source) {
+      target[prop] = source[prop];
+    }
+  });
+  return target;
 };

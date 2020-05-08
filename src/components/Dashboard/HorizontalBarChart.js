@@ -49,12 +49,67 @@ export default function HorizontalBarChart(props) {
     },
     data: props.data,
   };
+
+  var barOptions_stacked = {
+    tooltips: {
+      enabled: true,
+    },
+    hover: {
+      animationDuration: 0,
+    },
+    scales: {
+      xAxes: [
+        {
+          ticks: {
+            beginAtZero: true,
+            fontFamily: "'Open Sans Bold', sans-serif",
+            fontSize: 11,
+          },
+          scaleLabel: {
+            display: false,
+          },
+          gridLines: {},
+          stacked: true,
+        },
+      ],
+      yAxes: [
+        {
+          gridLines: {
+            display: false,
+            color: "#fff",
+            zeroLineColor: "#fff",
+            zeroLineWidth: 0,
+          },
+          ticks: {
+            autoSkip: false,
+            mirror: true,
+            z: 1,
+            padding: -10,
+            fontColor: theme.palette.common.black,
+          },
+          stacked: true,
+        },
+      ],
+    },
+    legend: {
+      display: false,
+    },
+    pointLabelFontFamily: "Quadon Extra Bold",
+    scaleFontFamily: "Quadon Extra Bold",
+  };
+
+  const stacked = {
+    type: "horizontalBar",
+    data: props.data,
+
+    options: barOptions_stacked,
+  };
   return (
     <div className={props.classes.root}>
       <ChartWrapper
         className={props.classes.ChartWrapper}
         style={{ height: "100%", width: "100%" }}
-        config={config}
+        config={props.stacked ? stacked : config}
         {...props}
       />
     </div>
@@ -63,5 +118,6 @@ export default function HorizontalBarChart(props) {
 
 HorizontalBarChart.defaultProps = {
   classes: { ChartWrapper: "", root: "" },
-  simple: false
+  simple: false,
+  stacked: false,
 };

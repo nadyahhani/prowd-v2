@@ -157,6 +157,7 @@ export default function SimpleTabs(props) {
           <Profile
             data={props.data}
             hash={props.dashId}
+            fetchData={props.fetchData}
             updateData={props.updateData}
             state={props.states.profile}
             setState={props.setStates.profile}
@@ -166,6 +167,7 @@ export default function SimpleTabs(props) {
           <Compare
             data={props.data}
             hash={props.dashId}
+            fetchData={props.fetchData}
             updateData={props.updateData}
             state={props.states.compare}
             setState={props.setStates.compare}

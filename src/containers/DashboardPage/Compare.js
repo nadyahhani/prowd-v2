@@ -29,6 +29,7 @@ import Status from "../../components/Misc/Status";
 import Help from "../../components/Misc/Help";
 import DimensionTable from "../../components/Dashboard/DimensionTable";
 import { editCompare } from "../../services/dashboard";
+import LineChart from "../../components/Dashboard/LineChart";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -69,10 +70,10 @@ const useStyles = makeStyles((theme) => ({
     justifyContent: "center",
     alignItems: "center",
   },
-  histogram: {
+  histogramChart: {
     paddingTop: theme.spacing(1),
     width: "100%",
-    height: "94%",
+    height: "90%",
   },
   horizontalbar: { width: "100%", height: "72%" },
   horizontalbarchart: { width: "100%", height: "100%" },
@@ -107,7 +108,6 @@ export default function Compare(props) {
   React.useEffect(() => {}, [state]);
 
   const applyFilter = (data) => {
-    alert("apply");
     let temp = [];
     data.forEach((item) => {
       temp.push({
@@ -120,12 +120,51 @@ export default function Compare(props) {
     });
     editCompare(props.hash, temp, (r) => {
       if (r.success) {
+        props.fetchData("compare");
       }
     });
   };
 
   const propertiesChart = () => {
-    return <Typography>TODO</Typography>;
+    if (!state.loading.properties) {
+      const dataStacked = {
+        labels: state.mappedProperties.labels.slice(0, 5),
+
+        datasets: [
+          {
+            data: state.mappedProperties.valuesA.slice(0, 5),
+            backgroundColor: theme.palette.itemA.main,
+          },
+          {
+            data: state.mappedProperties.valuesB.slice(0, 5),
+            backgroundColor: theme.palette.itemB.main,
+          },
+        ],
+      };
+      return (
+        <React.Fragment>
+          <HorizontalBarChart
+            key={0}
+            data={dataStacked}
+            stacked
+            classes={{
+              root: classes.horizontalbar,
+              ChartWrapper: classes.horizontalbarchart,
+            }}
+          />
+          {/* <AllPropertiesModal
+            key="modal-desc"
+            data={{
+              labels: tempLabels,
+              values: tempValues,
+              max: state.giniData.amount,
+            }}
+          /> */}
+        </React.Fragment>
+      );
+    } else {
+      return <Loading />;
+    }
   };
 
   return (
@@ -150,8 +189,7 @@ export default function Compare(props) {
               <Grid item style={{ height: "87%" }}>
                 <DimensionTable
                   classes={{ root: classes.dimensionTable }}
-                  // appliedDimensions={state.compareFilters}
-                  appliedDimensions={[]}
+                  appliedDimensions={state.compareFilters}
                   onApply={applyFilter}
                   loading={state.loading.compareFilters}
                 />
@@ -303,16 +341,24 @@ export default function Compare(props) {
                       style={{ height: "100%", width: "100%" }}
                     >
                       <Grid item xs={6}>
-                        <Typography>A</Typography>
+                        <Typography>
+                          A:{" "}
+                          {state.compareFilters.length > 0
+                            ? state.compareFilters
+                                .map((item) => `${item.valueA.label}`)
+                                .join("-")
+                            : "-"}
+                        </Typography>
                         {!state.loading.giniA ? (
                           <Paper
                             variant="outlined"
                             elevation={0}
                             className={classes.giniSubPaper}
                           >
-                            <Status>Imbalanced</Status>
+                            <Status value={state.giniA.gini}>Imbalanced</Status>
 
                             <GiniChart
+                              labels={state.giniA.percentileData}
                               data={state.giniA.data}
                               gini={state.giniA.gini}
                               insight={state.giniA.insight}
@@ -327,15 +373,23 @@ export default function Compare(props) {
                         )}
                       </Grid>
                       <Grid item xs={6}>
-                        <Typography>A</Typography>
+                        <Typography>
+                          B:{" "}
+                          {state.compareFilters.length > 0
+                            ? state.compareFilters
+                                .map((item) => `${item.valueB.label}`)
+                                .join("-")
+                            : "-"}
+                        </Typography>
                         {!state.loading.giniB ? (
                           <Paper
                             variant="outlined"
                             elevation={0}
                             className={classes.giniSubPaper}
                           >
-                            <Status>Imbalanced</Status>
+                            <Status value={state.giniB.gini}>Imbalanced</Status>
                             <GiniChart
+                              labels={state.giniB.percentileData}
                               data={state.giniB.data}
                               gini={state.giniB.gini}
                               insight={state.giniB.insight}
@@ -374,6 +428,7 @@ export default function Compare(props) {
                       >
                         <Select
                           value={state.propertySort}
+                          defaultValue={0}
                           onChange={(e, child) => {
                             setState((s) => ({
                               ...s,
@@ -428,10 +483,46 @@ export default function Compare(props) {
                     <Typography component="div">
                       <Box fontWeight="bold">Property Distribution</Box>
                     </Typography>
-                    {/* {!state.loading.gini ? (
-                ) : (
-                  <Loading />
-                )} */}
+                    {!state.loading.giniA && !state.loading.giniB ? (
+                      <LineChart
+                        data={{
+                          labels: state.giniA.percentileData,
+                          datasets: [
+                            {
+                              data: state.giniA.histogramData.map(
+                                (num) =>
+                                  (num * 100) /
+                                  Math.max.apply(
+                                    Math,
+                                    state.giniA.histogramData
+                                  )
+                              ),
+                              // label: "Africa",
+                              borderColor: theme.palette.itemA.main,
+                              backgroundColor: theme.palette.itemA.main,
+                              fill: false,
+                            },
+                            {
+                              data: state.giniB.histogramData.map(
+                                (num) =>
+                                  (num * 100) /
+                                  Math.max.apply(
+                                    Math,
+                                    state.giniB.histogramData
+                                  )
+                              ),
+                              // label: "Africa",
+                              borderColor: theme.palette.itemB.main,
+                              backgroundColor: theme.palette.itemB.main,
+                              fill: false,
+                            },
+                          ],
+                        }}
+                        classes={{ ChartWrapper: classes.histogramChart }}
+                      />
+                    ) : (
+                      <Loading />
+                    )}
                   </Paper>
                 </Grid>
               </Grid>

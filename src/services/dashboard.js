@@ -57,8 +57,6 @@ export function getGiniEntity(hash, entityCheck, afterFunc) {
 }
 
 export function getAllProperties(hash, afterFunc) {
-  console.log("getting properties");
-
   axios
     .get(`${url}/api/properties/info?hash_code=${hash}`)
     .then(
@@ -135,6 +133,25 @@ export function getCompareGini(hash, item, afterFunc) {
   axios
     .get(
       `${url}/api/entity/gini/compare?hash_code=${hash}&item_number=${item}
+    `
+    )
+    .then(
+      (response) => {
+        afterFunc({ success: true, ...response.data });
+      },
+      (error) => {
+        afterFunc({ success: false, ...error });
+      }
+    )
+    .catch((err) => {
+      afterFunc({ success: false, ...err });
+    });
+}
+
+export function getCompareProperties(hash, afterFunc) {
+  axios
+    .get(
+      `${url}/api/properties/info/compare?hash_code=${hash}
     `
     )
     .then(

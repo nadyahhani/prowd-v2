@@ -31,13 +31,14 @@ import Help from "../../components/Misc/Help";
 import LineChart from "../../components/Dashboard/LineChart";
 import { getGiniEntity } from "../../services/dashboard";
 import { filterEntities } from "../../global";
+import PercentageSwitch from "../../components/Inputs/PercentageSwitch";
 
 const useStyles = makeStyles((theme) => ({
   root: {
     height: "fit-content",
     // padding: theme.spacing(0),
   },
-  columnGrid : {height: "100%"},
+  columnGrid: { height: "100%" },
   gridItem: {
     minWidth: "33.333333%",
     "& > *": {
@@ -174,7 +175,7 @@ export default function Profile(props) {
                   },
                 ],
               }}
-              max={state.entities.length}
+              max={state.giniData.amount}
               classes={{
                 root: classes.horizontalbar,
                 ChartWrapper: classes.horizontalbarchart,
@@ -185,7 +186,7 @@ export default function Profile(props) {
               data={{
                 labels: tempLabels,
                 values: tempValues,
-                max: state.entities.length,
+                max: state.giniData.amount,
               }}
             />
           </React.Fragment>
@@ -206,7 +207,7 @@ export default function Profile(props) {
                   },
                 ],
               }}
-              max={state.entities.length}
+              max={state.giniData.amount}
               classes={{
                 root: classes.horizontalbar,
                 ChartWrapper: classes.horizontalbarchart,
@@ -217,7 +218,7 @@ export default function Profile(props) {
               data={{
                 labels: tempLabels,
                 values: tempValues,
-                max: state.entities.length,
+                max: state.giniData.amount,
               }}
             />
           </React.Fragment>
@@ -236,7 +237,7 @@ export default function Profile(props) {
         direction="row"
         classes={{ root: classes.root }}
       >
-        <Grid item xs={5} classes={{root: classes.columnGrid}}>
+        <Grid item xs={5} classes={{ root: classes.columnGrid }}>
           <Grid container direction="column" spacing={1}>
             <Grid item xs={12}>
               <Paper className={classes.tablePaper}>
@@ -304,7 +305,7 @@ export default function Profile(props) {
             </Grid>
           </Grid>
         </Grid>
-        <Grid item xs={3} classes={{root: classes.columnGrid}}>
+        <Grid item xs={3} classes={{ root: classes.columnGrid }}>
           <Grid container spacing={1}>
             <Grid item xs={12}>
               <Grid container spacing={1}>
@@ -404,10 +405,11 @@ export default function Profile(props) {
                     <Help text="//TODO" />
                   </Typography>
 
-                  <Status>Imbalanced</Status>
+                  <Status value={state.giniData.gini}>Imbalanced</Status>
                 </div>
                 {!state.loading.gini ? (
                   <GiniChart
+                    labels={state.giniData.percentileData}
                     data={state.giniData.data}
                     gini={state.giniData.gini}
                     insight={state.giniData.insight}
@@ -423,7 +425,7 @@ export default function Profile(props) {
             </Grid>
           </Grid>
         </Grid>
-        <Grid item xs={4} classes={{root: classes.columnGrid}}>
+        <Grid item xs={4} classes={{ root: classes.columnGrid }}>
           <Grid container spacing={1}>
             <Grid item xs={12} classes={{ root: classes.gridItem }}>
               <Paper classes={{ root: classes.propertiesPaper }}>
@@ -436,6 +438,7 @@ export default function Profile(props) {
                   }}
                 >
                   <Box fontWeight="bold">Property Frequency</Box>
+                  <PercentageSwitch />
                   <FormControl
                     variant="outlined"
                     size="small"

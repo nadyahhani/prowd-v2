@@ -87,11 +87,47 @@ class MuiVirtualizedTable extends React.PureComponent {
               return <Loading secondary />;
             }
             if (cellData[columns[columnIndex].dataKey]) {
-              return <Check style={{ color: theme.palette.success.main }} />;
+              return (
+                <div
+                  style={{
+                    height: "100%",
+                    width: "100%",
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                  }}
+                >
+                  <Check style={{ color: theme.palette.success.main }} />
+                </div>
+              );
             } else if (cellData[columns[columnIndex].dataKey] === false) {
-              return <Close style={{ color: theme.palette.error.main }} />;
+              return (
+                <div
+                  style={{
+                    height: "100%",
+                    width: "100%",
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                  }}
+                >
+                  <Close style={{ color: theme.palette.error.main }} />
+                </div>
+              );
             } else {
-              return <Remove style={{ color: theme.palette.accent.main }} />;
+              return (
+                <div
+                  style={{
+                    height: "100%",
+                    width: "100%",
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                  }}
+                >
+                  <Remove style={{ color: theme.palette.accent.main }} />
+                </div>
+              );
             }
           } else {
             return cellData[columns[columnIndex].dataKey];

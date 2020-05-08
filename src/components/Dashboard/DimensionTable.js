@@ -48,6 +48,7 @@ export default function DimensionTable(props) {
     selectedProperty: null,
     inputProperty: "",
     loading: false,
+    update: false,
   });
 
   React.useEffect(() => {
@@ -140,17 +141,13 @@ export default function DimensionTable(props) {
                       size="small"
                       edge="end"
                       onClick={() => {
-                        if (idx > 0) {
-                          setState((s) => ({
-                            ...s,
-                            data: [...s.data].slice(idx, 1),
-                          }));
-                        } else {
-                          setState((s) => ({
-                            ...s,
-                            data: [],
-                          }));
-                        }
+                        let temp = [...state.data];
+                        temp.splice(idx, 1);
+                        setState((s) => ({
+                          ...s,
+                          data: temp,
+                          update: true,
+                        }));
                       }}
                     >
                       <RemoveCircle color="primary" />
@@ -311,7 +308,8 @@ export default function DimensionTable(props) {
                       setState((s) => {
                         let t = [...s.data];
                         t.push(s.selectedTemp);
-                        return { ...s, data: t };
+                        console.log(t);
+                        return { ...s, data: t, update: true };
                       });
                       eraseInput();
                     }
@@ -335,8 +333,14 @@ export default function DimensionTable(props) {
             variant="contained"
             color="primary"
             disableElevation
+            disabled={!state.update}
             onClick={() => {
               props.onApply(state.data);
+              setState((s) => ({
+                ...s,
+                update: false,
+              }));
+              eraseInput();
             }}
           >
             Apply
@@ -345,7 +349,11 @@ export default function DimensionTable(props) {
         <Grid item>
           <Button
             onClick={() =>
-              setState((s) => ({ ...s, data: props.appliedDimensions }))
+              setState((s) => ({
+                ...s,
+                data: props.appliedDimensions,
+                update: false,
+              }))
             }
             color="primary"
           >

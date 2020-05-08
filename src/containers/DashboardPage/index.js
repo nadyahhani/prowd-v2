@@ -19,9 +19,10 @@ import {
   getPropertyGap,
   editGlobal,
   getCompareGini,
+  getCompareProperties,
 } from "../../services/dashboard";
 import { getGiniEntity, getAllProperties } from "../../services/dashboard";
-import { countProperties, sortProperties, cut } from "../../global";
+import { countProperties, sortProperties, cut, extend } from "../../global";
 import SettingsIcon from "@material-ui/icons/Settings";
 import Loading from "../../components/Misc/Loading";
 import FilterBox from "../../components/Inputs/FilterBox";
@@ -83,6 +84,8 @@ export default function DashboardPage(props) {
     giniA: {},
     giniB: {},
     compareFilters: [],
+    properties: {},
+    mappedProperties: {},
 
     // loading states
     loading: {
@@ -111,14 +114,22 @@ export default function DashboardPage(props) {
               loading: false,
               globalData: {
                 entity: r.entityInfo,
-                filters: r.filtersInfo,
+                filters: r.filtersInfo ? r.filtersInfo : [],
                 name: r.name === "" ? "Untitled Dashboard" : r.name,
                 author: r.author === "" ? "Anonymous" : r.author,
               },
             }));
             setCompareState((s) => ({
               ...s,
-              compareFilters: [...r.compareFilters],
+              compareFilters: r.compareInfo.map((item) => ({
+                property: {
+                  description: item.description,
+                  id: item.id,
+                  label: item.label,
+                },
+                valueA: item.value.item1,
+                valueB: item.value.item2,
+              })),
               loading: { ...s.loading, compareFilters: false },
             }));
           }
@@ -139,7 +150,8 @@ export default function DashboardPage(props) {
         }));
         getAllProperties(props.match.params.id, (r) => {
           if (r.success) {
-            const temp = sortProperties(r.properties);
+            const temp = sortProperties(r.result);
+
             setProfileState((s) => ({
               ...s,
               properties: r.properties,
@@ -168,17 +180,6 @@ export default function DashboardPage(props) {
               },
               loading: { ...s.loading, gini: false },
             }));
-            getPropertyGap(props.match.params.id, (r) => {
-              if (r.success) {
-                console.log(r);
-
-                setProfileState((s) => ({
-                  ...s,
-                  loading: { ...s.loading, gap: false },
-                  gap: [...r.properties],
-                }));
-              }
-            });
           }
         });
       }
@@ -190,6 +191,7 @@ export default function DashboardPage(props) {
             ...s.loading,
             giniA: true,
             giniB: true,
+            properties: true,
           },
         }));
         getCompareGini(props.match.params.id, 1, (r) => {
@@ -207,6 +209,18 @@ export default function DashboardPage(props) {
               ...s,
               giniB: { ...r },
               loading: { ...s.loading, giniB: false },
+            }));
+          }
+        });
+
+        getCompareProperties(props.match.params.id, (r) => {
+          if (r.success) {
+            const temp = sortProperties(r.result, true);
+            setCompareState((s) => ({
+              ...s,
+              properties: r.result,
+              mappedProperties: temp,
+              loading: { ...s.loading, properties: false },
             }));
           }
         });
@@ -410,6 +424,7 @@ export default function DashboardPage(props) {
             dashId={props.match.params.id}
             selectedTab={props.match.params.page}
             data={state.globalData}
+            fetchData={fetchData}
             states={{ profile: profileState, compare: compareState }}
             setStates={{ profile: setProfileState, compare: setCompareState }}
           />

@@ -4,14 +4,21 @@ import theme from "../../theme";
 
 export default function Status(props) {
   const getColor = () => {
-    let temp = props.children.toLowerCase();
-    switch (temp) {
-      case "balanced":
-        return theme.palette.success.main;
-      case "imbalanced":
-        return theme.palette.warning.main;
-      default:
-        return theme.palette.error.main;
+    if (props.value < 0.2) {
+      return theme.palette.success.main;
+    } else if (props.value >= 0.4) {
+      return theme.palette.error.main;
+    } else {
+      return theme.palette.warning.main;
+    }
+  };
+  const getLabel = () => {
+    if (props.value < 0.2) {
+      return "BALANCED";
+    } else if (props.value >= 0.4) {
+      return "HEAVILY IMBALANCED";
+    } else {
+      return "IMBALANCED";
     }
   };
   const useStyles = makeStyles(() => ({
@@ -29,7 +36,7 @@ export default function Status(props) {
           style={{ color: theme.palette.common.white }}
           textAlign="center"
         >
-          {props.children.toUpperCase()}
+          {`${getLabel()}`}
         </Box>
       </Typography>
     </Paper>
