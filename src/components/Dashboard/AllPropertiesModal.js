@@ -89,32 +89,68 @@ export default function AllPropertiesModal(props) {
               {state.sort === 0 ? (
                 <HorizontalBarChart
                   key={`${props.key}-${3}`}
-                  data={{
-                    labels: props.data.labels,
-                    datasets: [
-                      {
-                        label: "# of Entities with this property",
-                        backgroundColor: theme.palette.chart.main,
-                        data: props.data.values,
-                      },
-                    ],
-                  }}
+                  stacked={props.stacked}
+                  data={
+                    props.stacked
+                      ? {
+                          labels: props.data.labels,
+
+                          datasets: [
+                            {
+                              data: props.data.valuesA,
+                              backgroundColor: theme.palette.itemA.main,
+                            },
+                            {
+                              data: props.data.valuesB,
+                              backgroundColor: theme.palette.itemB.main,
+                            },
+                          ],
+                        }
+                      : {
+                          labels: props.data.labels,
+                          datasets: [
+                            {
+                              label: "# of Entities with this property",
+                              backgroundColor: theme.palette.chart.main,
+                              data: props.data.values,
+                            },
+                          ],
+                        }
+                  }
                   max={props.data.max}
                   classes={{ ChartWrapper: classes.chart }}
                 />
               ) : (
                 <HorizontalBarChart
                   key={`${props.key}-${4}`}
-                  data={{
-                    labels: [...props.data.labels].reverse(),
-                    datasets: [
-                      {
-                        label: "# of Entities with this property",
-                        backgroundColor: theme.palette.chart.main,
-                        data: [...props.data.values].reverse(),
-                      },
-                    ],
-                  }}
+                  stacked={props.stacked}
+                  data={
+                    props.stacked
+                      ? {
+                          labels: props.data.labels,
+
+                          datasets: [
+                            {
+                              data: [...props.data.valuesA].reverse(),
+                              backgroundColor: theme.palette.itemA.main,
+                            },
+                            {
+                              data: [...props.data.valuesB].reverse(),
+                              backgroundColor: theme.palette.itemB.main,
+                            },
+                          ],
+                        }
+                      : {
+                          labels: [...props.data.labels].reverse(),
+                          datasets: [
+                            {
+                              label: "# of Entities with this property",
+                              backgroundColor: theme.palette.chart.main,
+                              data: [...props.data.values].reverse(),
+                            },
+                          ],
+                        }
+                  }
                   max={props.data.max}
                   classes={{ ChartWrapper: classes.chart }}
                 />
@@ -137,4 +173,5 @@ export default function AllPropertiesModal(props) {
 
 AllPropertiesModal.propTypes = {
   data: PropTypes.object,
+  stacked: false,
 };

@@ -145,7 +145,7 @@ export default function SimpleTabs(props) {
             className={classes.tab}
             label={
               <Typography component="div">
-                <Box fontWeight="bold">Analysis</Box>
+                <Box fontWeight="bold">Discover</Box>
               </Typography>
             }
             {...a11yProps(2)}

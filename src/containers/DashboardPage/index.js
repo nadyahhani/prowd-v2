@@ -33,6 +33,8 @@ const useStyles = makeStyles(() => ({
     paddingTop: "1vh",
     width: "98vw",
     height: "91vh",
+    // maxHeight: "800px",
+    // minHeight: "722px",
     backgroundColor: theme.palette.background.main,
     overflow: "hidden",
   },
@@ -86,7 +88,7 @@ export default function DashboardPage(props) {
     compareFilters: [],
     properties: {},
     mappedProperties: {},
-
+    propertySort: 0,
     // loading states
     loading: {
       giniA: true,

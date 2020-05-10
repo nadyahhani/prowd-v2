@@ -96,10 +96,12 @@ export const sortProperties = (props, compare = false) => {
     return { labels: labels, values: values };
   } else {
     tempProps.sort((b, a) =>
-      parseInt(a.count1 + a.count2) > parseInt(b.count1 + b.count2)
+      parseInt(a.count1) + parseInt(a.count2) >
+      parseInt(b.count1) + parseInt(b.count2)
         ? 1
-        : parseInt(a.count1 + a.count2) === parseInt(b.count1 + b.count2)
-        ? a.count1 > b.count1
+        : parseInt(a.count1) + parseInt(a.count2) ===
+          parseInt(b.count1) + parseInt(b.count2)
+        ? parseInt(a.count1) > parseInt(b.count1)
           ? 1
           : -1
         : -1
@@ -107,12 +109,26 @@ export const sortProperties = (props, compare = false) => {
     let labels = [];
     let valuesA = [];
     let valuesB = [];
+    let countA = 0;
+    let countB = 0;
     tempProps.forEach((item) => {
       labels.push(`${item.label} (${item.id})`);
       valuesA.push(item.count1);
       valuesB.push(item.count2);
+      if (item.count1 > 0) {
+        countA += 1;
+      }
+      if (item.count2 > 0) {
+        countB += 1;
+      }
     });
-    return { labels: labels, valuesA: valuesA, valuesB: valuesB };
+    return {
+      labels: labels,
+      valuesA: valuesA,
+      valuesB: valuesB,
+      countA: countA,
+      countB: countB,
+    };
   }
 };
 

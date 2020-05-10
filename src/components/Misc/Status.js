@@ -14,11 +14,11 @@ export default function Status(props) {
   };
   const getLabel = () => {
     if (props.value < 0.2) {
-      return "BALANCED";
+      return "Balanced";
     } else if (props.value >= 0.4) {
-      return "HEAVILY IMBALANCED";
+      return "Heavily Imbalanced";
     } else {
-      return "IMBALANCED";
+      return "Imbalanced";
     }
   };
   const useStyles = makeStyles(() => ({

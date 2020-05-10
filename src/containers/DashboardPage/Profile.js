@@ -47,11 +47,11 @@ const useStyles = makeStyles((theme) => ({
   },
   tablePaper: {
     overflowY: "scroll",
-    height: "65.5vh",
+    height: "fit-content",
   },
   distPaper: { height: "32vh" },
   giniPaper: {
-    height: "46.2vh",
+    height: "45.85vh",
     display: "flex",
     flexDirection: "column",
     justifyContent: "space-between",
@@ -86,7 +86,7 @@ const useStyles = makeStyles((theme) => ({
     justifyContent: "flex-start",
   },
   table: {
-    height: "92%",
+    height: "59vh",
   },
   tableToolbar: { height: "fit-content", marginTop: theme.spacing(1) },
 
@@ -239,7 +239,7 @@ export default function Profile(props) {
       >
         <Grid item xs={5} classes={{ root: classes.columnGrid }}>
           <Grid container direction="column" spacing={1}>
-            <Grid item xs={12}>
+            <Grid item xs={12} style={{ marginBottom: `-8vh` }}>
               <Paper className={classes.tablePaper}>
                 {state.loading.gini || state.loading.properties ? (
                   <Loading />
