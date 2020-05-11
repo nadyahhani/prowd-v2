@@ -31,6 +31,9 @@ const useStyles = makeStyles({
   inputCell: {
     // width: ""
   },
+  popperPaper: {
+    width: "200%",
+  },
 });
 // const options = { properties: [], entities: [] };
 // const setOptions = (val) => {
@@ -202,6 +205,7 @@ export default function DimensionTable(props) {
                   onInputChange={(e, val, reason) =>
                     onInputChange(e, val, reason, "property")
                   }
+                  classes={{ paper: classes.popperPaper }}
                   options={state.properties}
                   loading={false}
                   renderInput={(params) => renderInput(params, "property")}
@@ -246,6 +250,7 @@ export default function DimensionTable(props) {
                   onInputChange={(e, val, reason) =>
                     onInputChange(e, val, reason, "valueA")
                   }
+                  classes={{ paper: classes.popperPaper }}
                   options={state.entities}
                   loading={false}
                   renderInput={(params) => renderInput(params, "Value A")}
@@ -290,6 +295,7 @@ export default function DimensionTable(props) {
                   onInputChange={(e, val, reason) =>
                     onInputChange(e, val, reason, "valueB")
                   }
+                  classes={{ paper: classes.popperPaper }}
                   options={state.entities}
                   loading={false}
                   renderInput={(params) => renderInput(params, "Value B")}

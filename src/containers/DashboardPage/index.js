@@ -16,13 +16,12 @@ import SimpleTabs from "../../components/Navigation/SimpleTabs";
 import Navbar from "../../components/Navigation/Navbar";
 import {
   getDashInfo,
-  getPropertyGap,
   editGlobal,
   getCompareGini,
   getCompareProperties,
 } from "../../services/dashboard";
 import { getGiniEntity, getAllProperties } from "../../services/dashboard";
-import { countProperties, sortProperties, cut, extend } from "../../global";
+import { countProperties, sortProperties, cut } from "../../global";
 import SettingsIcon from "@material-ui/icons/Settings";
 import Loading from "../../components/Misc/Loading";
 import FilterBox from "../../components/Inputs/FilterBox";
@@ -90,6 +89,7 @@ export default function DashboardPage(props) {
     properties: {},
     mappedProperties: {},
     propertySort: 0,
+    propertyPercent: 0,
     // loading states
     loading: {
       giniA: true,

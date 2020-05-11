@@ -27,7 +27,6 @@ import {
 import Loading from "../../components/Misc/Loading";
 import Status from "../../components/Misc/Status";
 import Help from "../../components/Misc/Help";
-import DimensionTable from "../../components/Dashboard/DimensionTable";
 import { editCompare } from "../../services/dashboard";
 import LineChart from "../../components/Dashboard/LineChart";
 import DiscoverDimension from "../../components/Dashboard/DiscoverDimension";

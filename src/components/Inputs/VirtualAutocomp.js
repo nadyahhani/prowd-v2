@@ -7,7 +7,7 @@ import ListSubheader from "@material-ui/core/ListSubheader";
 import { useTheme, makeStyles } from "@material-ui/core/styles";
 import { VariableSizeList } from "react-window";
 import { InputLabel, CircularProgress } from "@material-ui/core";
-
+import theme from "../../theme";
 const LISTBOX_PADDING = 8; // px
 
 function renderRow(props) {
@@ -79,7 +79,7 @@ ListboxComponent.propTypes = {
   children: PropTypes.node,
 };
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(() => ({
   listbox: {
     "& ul": {
       padding: 5,
@@ -87,7 +87,7 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   option: {
-    borderBottom: `1px solid ${theme.palette.disabled.main}`,
+    borderBottom: `1px solid ${theme.palette.accent.main}`,
   },
 }));
 
@@ -123,6 +123,7 @@ export default function VirtualAutocomp(props) {
         onInputChange={props.onInputChange}
         noOptionsText={props.noOptionsText}
         onClose={props.onClose}
+        ListboxProps={{ style: { width: "fit-content", overflowX: "hidden" } }}
         renderInput={(params) => (
           <TextField
             {...params}

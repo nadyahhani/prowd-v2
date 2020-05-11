@@ -125,7 +125,7 @@ class MuiVirtualizedTable extends React.PureComponent {
                     alignItems: "center",
                   }}
                 >
-                  <Remove style={{ color: theme.palette.accent.main }} />
+                  <Remove style={{ color: theme.palette.accent.dark }} />
                 </div>
               );
             }
@@ -159,6 +159,7 @@ class MuiVirtualizedTable extends React.PureComponent {
         {columns[columnIndex].dropdown ? (
           <div style={{ width: "100%" }}>
             <Autocomplete
+              disableClearable
               getOptionLabel={(option) => {
                 return option;
               }}

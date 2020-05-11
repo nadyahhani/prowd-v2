@@ -217,6 +217,7 @@ function Landing(props) {
                   color="primary"
                   disableElevation
                   fullWidth
+                  disabled={state.selectedClass === null}
                   onClick={() => {
                     createDashboard(
                       state.selectedClass.id,

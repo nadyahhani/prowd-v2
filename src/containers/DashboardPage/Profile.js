@@ -16,9 +16,7 @@ import {
 } from "@material-ui/core";
 import VirtualizedTable from "../../components/Dashboard/VirtualizedTable";
 import GiniChart from "../../components/Dashboard/GiniChart";
-import HorizontalBarChart from "../../components/Dashboard/HorizontalBarChart";
 import theme from "../../theme";
-import AllPropertiesModal from "../../components/Dashboard/AllPropertiesModal";
 import {
   WarningOutlined as WarningOutlinedIcon,
   SaveAlt as SaveAltIcon,
@@ -32,6 +30,7 @@ import LineChart from "../../components/Dashboard/LineChart";
 import { getGiniEntity } from "../../services/dashboard";
 import { filterEntities } from "../../global";
 import PercentageSwitch from "../../components/Inputs/PercentageSwitch";
+import ProfileProperties from "../../components/Dashboard/ProfileProperties";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -76,10 +75,8 @@ const useStyles = makeStyles((theme) => ({
   histogramChart: {
     paddingTop: theme.spacing(1),
     width: "100%",
-    height: "90%",
+    height: "85%",
   },
-  horizontalbar: { width: "100%", height: "72%" },
-  horizontalbarchart: { width: "100%", height: "100%" },
   card: {
     height: "12vh",
     // width: "100%",
@@ -154,83 +151,6 @@ export default function Profile(props) {
         }));
       }
     });
-  };
-
-  const propertiesChart = () => {
-    if (!state.loading.properties && !state.loading.gini) {
-      let tempLabels = [...state.mappedProperties.labels];
-      let tempValues = [...state.mappedProperties.values];
-      tempLabels = tempLabels.map(
-        (item, idx) => `${tempLabels[idx]}: ${tempValues[idx]}`
-      );
-      if (state.propertySort === 0) {
-        // Descending
-        return (
-          <React.Fragment>
-            <HorizontalBarChart
-              key={1}
-              data={{
-                labels: tempLabels.slice(0, 5),
-                datasets: [
-                  {
-                    label: "# of Entities with this property",
-                    backgroundColor: theme.palette.chart.main,
-                    data: tempValues.slice(0, 5),
-                  },
-                ],
-              }}
-              max={state.giniData.amount}
-              classes={{
-                root: classes.horizontalbar,
-                ChartWrapper: classes.horizontalbarchart,
-              }}
-            />
-            <AllPropertiesModal
-              key="modal-desc"
-              data={{
-                labels: tempLabels,
-                values: tempValues,
-                max: state.giniData.amount,
-              }}
-            />
-          </React.Fragment>
-        );
-      } else {
-        // Ascending
-        return (
-          <React.Fragment>
-            <HorizontalBarChart
-              key={2}
-              data={{
-                labels: [...tempLabels].reverse().slice(0, 5),
-                datasets: [
-                  {
-                    label: "# of Entities with this property",
-                    backgroundColor: theme.palette.chart.main,
-                    data: [...tempValues].reverse().slice(0, 5),
-                  },
-                ],
-              }}
-              max={state.giniData.amount}
-              classes={{
-                root: classes.horizontalbar,
-                ChartWrapper: classes.horizontalbarchart,
-              }}
-            />
-            <AllPropertiesModal
-              key="modal-asc"
-              data={{
-                labels: tempLabels,
-                values: tempValues,
-                max: state.giniData.amount,
-              }}
-            />
-          </React.Fragment>
-        );
-      }
-    } else {
-      return <Loading />;
-    }
   };
 
   return (
@@ -445,36 +365,68 @@ export default function Profile(props) {
                     display: "flex",
                     flexDirection: "row",
                     justifyContent: "space-between",
+                    width: "100%",
                   }}
                 >
-                  <Box fontWeight="bold">Property Frequency</Box>
-                  <PercentageSwitch />
-                  <FormControl
-                    variant="outlined"
-                    size="small"
-                    className={classes.formControl}
+                  <Box fontWeight="bold">
+                    Property Frequency <Help text="//TODO" />
+                  </Box>
+                  <Typography
+                    component="div"
+                    style={{
+                      display: "flex",
+                      flexDirection: "row",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                      width: "43%",
+                    }}
                   >
-                    <Select
-                      value={state.propertySort}
-                      onChange={(e, child) => {
-                        setState((s) => ({
-                          ...s,
-                          propertySort: child.props.value,
-                        }));
-                      }}
-                    >
-                      <MenuItem value={0}>Descending</MenuItem>
-                      <MenuItem value={1}>Ascending</MenuItem>
-                    </Select>
-                  </FormControl>
+                    <PercentageSwitch
+                      onChange={(newVal) =>
+                        setState((s) => ({ ...s, propertyPercent: newVal }))
+                      }
+                    />
+                    <Box>
+                      <FormControl
+                        variant="outlined"
+                        size="small"
+                        className={classes.formControl}
+                      >
+                        <Select
+                          value={state.propertySort}
+                          onChange={(e, child) => {
+                            setState((s) => ({
+                              ...s,
+                              propertySort: child.props.value,
+                            }));
+                          }}
+                        >
+                          <MenuItem value={0}>Descending</MenuItem>
+                          <MenuItem value={1}>Ascending</MenuItem>
+                        </Select>
+                      </FormControl>
+                    </Box>
+                  </Typography>
                 </Typography>
-                {propertiesChart()}
+                {!state.loading.properties && !state.loading.gini ? (
+                  <ProfileProperties
+                    max={state.giniData.amount}
+                    labels={state.mappedProperties.labels}
+                    values={state.mappedProperties.values}
+                    propertySort={state.propertySort}
+                    propertyPercent={state.propertyPercent}
+                  />
+                ) : (
+                  <Loading />
+                )}
               </Paper>
             </Grid>
             <Grid item xs={12} classes={{ root: classes.gridItem }}>
               <Paper classes={{ root: classes.distPaper }}>
                 <Typography component="div">
-                  <Box fontWeight="bold">Property Distribution</Box>
+                  <Box fontWeight="bold">
+                    Property Distribution <Help text="//TODO" />
+                  </Box>
                 </Typography>
                 {!state.loading.gini ? (
                   <LineChart

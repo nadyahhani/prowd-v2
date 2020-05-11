@@ -27,7 +27,9 @@ export default function HorizontalBarChart(props) {
             },
             scaleLabel: {
               display: !props.simple,
-              labelString: "Number of Entities",
+              labelString: props.percent
+                ? "Percentage of Entities"
+                : "Number of Entities",
               lineHeight: 1,
               padding: 0,
             },
@@ -66,7 +68,12 @@ export default function HorizontalBarChart(props) {
             fontSize: 11,
           },
           scaleLabel: {
-            display: false,
+            display: !props.simple,
+            labelString: props.percent
+              ? "Percentage of Entities"
+              : "Number of Entities",
+            lineHeight: 1,
+            padding: 0,
           },
           gridLines: {},
           stacked: true,
@@ -94,8 +101,6 @@ export default function HorizontalBarChart(props) {
     legend: {
       display: false,
     },
-    pointLabelFontFamily: "Quadon Extra Bold",
-    scaleFontFamily: "Quadon Extra Bold",
   };
 
   const stacked = {
@@ -120,4 +125,5 @@ HorizontalBarChart.defaultProps = {
   classes: { ChartWrapper: "", root: "" },
   simple: false,
   stacked: false,
+  percent: false,
 };

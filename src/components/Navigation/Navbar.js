@@ -8,7 +8,7 @@ import { TextField, InputAdornment, Button, Grid } from "@material-ui/core";
 import theme from "../../theme";
 import { useHistory } from "react-router-dom";
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(() => ({
   root: {
     flexGrow: 1,
     position: "relative",
@@ -41,7 +41,7 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   searchIcon: {
-    color: theme.palette.accent.main,
+    color: theme.palette.accent.dark,
   },
   inputRoot: {
     color: "inherit",

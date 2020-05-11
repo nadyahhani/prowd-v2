@@ -11,7 +11,6 @@ import {
   ThemeProvider,
   Button,
   ListItemIcon,
-  ListItem,
 } from "@material-ui/core";
 import GiniChart from "../../components/Dashboard/GiniChart";
 import HorizontalBarChart from "../../components/Dashboard/HorizontalBarChart";
@@ -31,7 +30,6 @@ import Help from "../../components/Misc/Help";
 import DimensionTable from "../../components/Dashboard/DimensionTable";
 import { editCompare } from "../../services/dashboard";
 import LineChart from "../../components/Dashboard/LineChart";
-import AllPropertiesModal from "../../components/Dashboard/AllPropertiesModal";
 import VennProperties from "../../components/Dashboard/VennProperties";
 
 const useStyles = makeStyles((theme) => ({
@@ -76,7 +74,7 @@ const useStyles = makeStyles((theme) => ({
   histogramChart: {
     paddingTop: theme.spacing(1),
     width: "100%",
-    height: "90%",
+    height: "85%",
   },
   horizontalbar: { width: "100%", height: "72%" },
   horizontalbarchart: { width: "100%", height: "100%" },
@@ -141,7 +139,11 @@ export default function Compare(props) {
               style={{ height: "100%" }}
             >
               <Grid item>
-                <Typography>DIMENSIONS</Typography>
+                <Typography>
+                  <Box fontWeight="bold">
+                    DIMENSIONS <Help text="//TODO" />
+                  </Box>
+                </Typography>
               </Grid>
               <Grid item style={{ height: "87%" }}>
                 <DimensionTable
@@ -383,7 +385,9 @@ export default function Compare(props) {
                     justifyContent: "space-between",
                   }}
                 >
-                  <Box fontWeight="bold">Property Frequency</Box>
+                  <Box fontWeight="bold">
+                    Property Frequency <Help text="//TODO" />
+                  </Box>
                   <FormControl
                     variant="outlined"
                     size="small"
@@ -435,7 +439,9 @@ export default function Compare(props) {
             <Grid item xs={12} classes={{ root: classes.gridItem }}>
               <Paper classes={{ root: classes.distPaper }}>
                 <Typography component="div">
-                  <Box fontWeight="bold">Property Distribution</Box>
+                  <Box fontWeight="bold">
+                    Property Distribution <Help text="//TODO" />
+                  </Box>
                 </Typography>
                 {!state.loading.giniA && !state.loading.giniB ? (
                   <LineChart

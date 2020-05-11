@@ -47,12 +47,8 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: theme.palette.background.main,
   },
   tab: {
-    // borderLeft: `1px solid ${theme.palette.accent.main}`,
-    // borderRight: `1px solid ${theme.palette.accent.main}`,
-    // borderBottom: `1px solid ${theme.palette.accent.main}`,
-    // borderRight: "0 solid #FFF",
     minHeight: "5vh",
-    backgroundColor: theme.palette.disabled.light,
+    backgroundColor: theme.palette.accent.light,
   },
   selectedTab: {
     backgroundColor: theme.palette.common.white,
@@ -64,18 +60,11 @@ const useStyles = makeStyles((theme) => ({
     borderBottom: `1px solid ${theme.palette.accent.main}`,
   },
   indicator: {
-    // position: "absolute",
-    // backgroundColor: theme.palette.common.white,
-    // zIndex: theme.zIndex.speedDial,
     display: "none",
-    // width: "80%",
-    // backgroundColor: theme.palette.primary.main,
   },
   tabs: {
-    backgroundColor: theme.palette.disabled.light,
+    backgroundColor: theme.palette.accent.light,
     minHeight: "4vh",
-    // height: "5vh",
-    // borderTop: `1px solid ${theme.palette.accent.main}`,
   },
 }));
 

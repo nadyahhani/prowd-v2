@@ -1,5 +1,5 @@
 import React from "react";
-import { Button, makeStyles } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core";
 import HorizontalBarChart from "./HorizontalBarChart";
 import theme from "../../theme";
 import Loading from "../Misc/Loading";
@@ -16,6 +16,8 @@ export default function VennProperties(props) {
 
   const portionProps = React.useCallback((properties, entityCount) => {
     const tempProps = Object.values(properties);
+    const tempPropsA = Object.values(properties);
+    const tempPropsB = Object.values(properties);
     tempProps.sort((b, a) =>
       parseInt(a.count1) + parseInt(a.count2) >
       parseInt(b.count1) + parseInt(b.count2)
@@ -23,6 +25,24 @@ export default function VennProperties(props) {
         : parseInt(a.count1) + parseInt(a.count2) ===
           parseInt(b.count1) + parseInt(b.count2)
         ? parseInt(a.count1) > parseInt(b.count1)
+          ? 1
+          : -1
+        : -1
+    );
+    tempPropsA.sort((b, a) =>
+      parseInt(a.count1) > parseInt(b.count1)
+        ? 1
+        : parseInt(a.count1) === parseInt(b.count1)
+        ? parseInt(a.count1) > parseInt(b.count1)
+          ? 1
+          : -1
+        : -1
+    );
+    tempPropsB.sort((b, a) =>
+      parseInt(a.count2) > parseInt(b.count2)
+        ? 1
+        : parseInt(a.count2) === parseInt(b.count2)
+        ? parseInt(a.count2) > parseInt(b.count2)
           ? 1
           : -1
         : -1
@@ -52,17 +72,17 @@ export default function VennProperties(props) {
       result.all.labels.push(`${item.label} (${item.id})`);
       result.all.valuesA.push(count1int);
       result.all.valuesB.push(count2int);
-      // All B && exclusive B
-      if (count2int > 0) {
-        result.allB.labels.push(`${item.label} (${item.id})`);
-        result.allB.valuesA.push(0);
-        result.allB.valuesB.push(count2int);
-        if (count1int === 0) {
-          result.excB.labels.push(`${item.label} (${item.id})`);
-          result.excB.valuesA.push(count1int);
-          result.excB.valuesB.push(count2int);
-        }
+
+      // intersection
+      if (count1int > 0 && count2int > 0) {
+        result.intersection.labels.push(`${item.label} (${item.id})`);
+        result.intersection.valuesA.push(count1int);
+        result.intersection.valuesB.push(count2int);
       }
+    });
+    tempPropsA.forEach((item) => {
+      const count1int = parseInt(item.count1);
+      const count2int = parseInt(item.count2);
       // All A & exclusive A
       if (count1int > 0) {
         result.allA.labels.push(`${item.label} (${item.id})`);
@@ -74,11 +94,20 @@ export default function VennProperties(props) {
           result.excA.valuesB.push(count2int);
         }
       }
-      // intersection
-      if (count1int > 0 && count2int > 0) {
-        result.intersection.labels.push(`${item.label} (${item.id})`);
-        result.intersection.valuesA.push(count1int);
-        result.intersection.valuesB.push(count2int);
+    });
+    tempPropsB.forEach((item) => {
+      const count1int = parseInt(item.count1);
+      const count2int = parseInt(item.count2);
+      // All B && exclusive B
+      if (count2int > 0) {
+        result.allB.labels.push(`${item.label} (${item.id})`);
+        result.allB.valuesA.push(0);
+        result.allB.valuesB.push(count2int);
+        if (count1int === 0) {
+          result.excB.labels.push(`${item.label} (${item.id})`);
+          result.excB.valuesA.push(count1int);
+          result.excB.valuesB.push(count2int);
+        }
       }
     });
     result.all.count = entityCount.entityA + entityCount.entityB;
@@ -92,7 +121,7 @@ export default function VennProperties(props) {
     console.log(temp);
 
     setState((s) => ({ ...s, ...temp }));
-  }, [props.properties, props.entityCount]);
+  }, [props.properties, props.entityCount, portionProps]);
 
   const getType = (selected) => {
     switch (selected) {
