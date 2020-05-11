@@ -3,8 +3,48 @@ import ChartWrapper from "./ChartWrapper";
 import { linearLine } from "../../global";
 import PropTypes from "prop-types";
 import { Typography, Box } from "@material-ui/core";
+import theme from "../../theme";
 
 function GiniChart(props) {
+  const getColor = (type = "") => {
+    if (type === "") {
+      if (props.item === "single") {
+        return theme.palette.chart.opaque;
+      } else if (props.item === "A") {
+        return theme.palette.itemA.opaque;
+      } else {
+        return theme.palette.itemB.opaque;
+      }
+    } else {
+      if (props.item === "single") {
+        return theme.palette.chart.main;
+      } else if (props.item === "A") {
+        return theme.palette.itemA.main;
+      } else {
+        return theme.palette.itemB.main;
+      }
+    }
+  };
+
+  const getGiniAreaColor = (type = "") => {
+    if (type === "") {
+      if (props.gini < 0.2) {
+        return theme.palette.success.transparent;
+      } else if (props.gini >= 0.4) {
+        return theme.palette.error.transparent;
+      } else {
+        return theme.palette.warning.transparent;
+      }
+    } else {
+      if (props.gini < 0.2) {
+        return theme.palette.success.main;
+      } else if (props.gini >= 0.4) {
+        return theme.palette.error.main;
+      } else {
+        return theme.palette.warning.main;
+      }
+    }
+  };
   const data = {
     type: "line",
     labels: props.labels
@@ -25,6 +65,18 @@ function GiniChart(props) {
     datasets: [
       {
         type: "line",
+        data: props.data,
+        fill: true,
+        borderColor: getColor(),
+        backgroundColor: getColor("transparent"),
+        pointBorderColor: getColor(),
+        pointBackgroundColor: getColor(),
+        pointHoverBackgroundColor: getColor(),
+        pointHoverBorderColor: getColor(),
+        id: "2",
+      },
+      {
+        type: "line",
         data: props.data
           ? linearLine(
               props.data[0],
@@ -33,29 +85,16 @@ function GiniChart(props) {
             )
           : null,
         fill: true,
-        borderColor: "#EC932F",
-        backgroundColor: "rgba(64, 190, 254,.2)",
-        pointBorderColor: "#EC932F",
-        pointBackgroundColor: "#EC932F",
-        pointHoverBackgroundColor: "#EC932F",
-        pointHoverBorderColor: "#EC932F",
+        borderColor: getGiniAreaColor("transparent"),
+        backgroundColor: getGiniAreaColor(),
+        pointBorderColor: getGiniAreaColor("transparent"),
+        pointBackgroundColor: getGiniAreaColor("transparent"),
+        pointHoverBackgroundColor: getGiniAreaColor("transparent"),
+        pointHoverBorderColor: getGiniAreaColor("transparent"),
         id: "1",
-      },
-      {
-        type: "line",
-        data: props.data,
-        fill: true,
-        borderColor: "#51945b",
-        backgroundColor: "rgba(202, 154, 0,.2)",
-        pointBorderColor: "#51945b",
-        pointBackgroundColor: "#51945b",
-        pointHoverBackgroundColor: "#51945b",
-        pointHoverBorderColor: "#51945b",
-        id: "2",
       },
     ],
   };
-
   const options = {
     responsive: true,
     aspectRatio: 1,
@@ -72,6 +111,9 @@ function GiniChart(props) {
       line: {
         fill: false,
       },
+      point: {
+        radius: props.simple ? 2 : 3,
+      },
     },
     scales: {
       yAxes: [
@@ -79,6 +121,14 @@ function GiniChart(props) {
           ticks: {
             min: 0,
             max: 1,
+            display: !props.simple,
+          },
+        },
+      ],
+      xAxes: [
+        {
+          ticks: {
+            display: !props.simple,
           },
         },
       ],
@@ -89,11 +139,11 @@ function GiniChart(props) {
 
   return (
     <React.Fragment>
-      <div className={props.classes.root}>
+      <div className={props.classes.root} style={{ position: "relative" }}>
         <Typography
           variant="h2"
           component="div"
-          style={{ position: "absolute", marginTop: "-2%", marginLeft: "-2%" }}
+          style={{ position: "absolute", left: "25%", top: "35%" }}
         >
           <Box fontWeight="bold">{props.gini}</Box>
         </Typography>
@@ -116,9 +166,13 @@ GiniChart.propTypes = {
   classes: PropTypes.object,
   className: PropTypes.string,
   ratio: PropTypes.number,
+  simple: PropTypes.bool,
+  item: PropTypes.string,
 };
 
 GiniChart.defaultProps = {
   classes: { root: "", ChartWrapper: "" },
   ratio: 1,
+  simple: false,
+  item: "single",
 };

@@ -46,13 +46,13 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   tablePaper: {
-    overflowY: "scroll",
+    overflow: "hidden",
     height: "63.1vh",
     padding: theme.spacing(1),
   },
   distPaper: { height: "32vh" },
   giniPaper: {
-    height: "44vh",
+    height: "43.7vh",
     display: "flex",
     flexDirection: "column",
     justifyContent: "space-between",
@@ -316,6 +316,8 @@ export default function Compare(props) {
                         <Status value={state.giniA.gini}>Imbalanced</Status>
 
                         <GiniChart
+                          simple
+                          item="A"
                           labels={state.giniA.percentileData}
                           data={state.giniA.data}
                           gini={state.giniA.gini}
@@ -348,6 +350,8 @@ export default function Compare(props) {
                       >
                         <Status value={state.giniB.gini}>Imbalanced</Status>
                         <GiniChart
+                          simple
+                          item="B"
                           labels={state.giniB.percentileData}
                           data={state.giniB.data}
                           gini={state.giniB.gini}

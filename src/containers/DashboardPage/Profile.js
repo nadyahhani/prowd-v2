@@ -49,6 +49,10 @@ const useStyles = makeStyles((theme) => ({
     overflowY: "scroll",
     height: "fit-content",
   },
+  tablePaperLoad: {
+    overflowY: "hidden",
+    height: "65vh",
+  },
   distPaper: { height: "32vh" },
   giniPaper: {
     height: "45.85vh",
@@ -240,7 +244,13 @@ export default function Profile(props) {
         <Grid item xs={5} classes={{ root: classes.columnGrid }}>
           <Grid container direction="column" spacing={1}>
             <Grid item xs={12} style={{ marginBottom: `-8vh` }}>
-              <Paper className={classes.tablePaper}>
+              <Paper
+                className={
+                  state.loading.gini || state.loading.properties
+                    ? classes.tablePaperLoad
+                    : classes.tablePaper
+                }
+              >
                 {state.loading.gini || state.loading.properties ? (
                   <Loading />
                 ) : (

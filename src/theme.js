@@ -1,5 +1,5 @@
 import { createMuiTheme } from "@material-ui/core/styles";
-import { grey } from "@material-ui/core/colors";
+import { grey, green, amber, red } from "@material-ui/core/colors";
 
 const theme = createMuiTheme({
   palette: {
@@ -7,10 +7,14 @@ const theme = createMuiTheme({
     disabled: { light: grey[100], main: grey[200] },
     accent: { main: grey[400] },
     background: { light: "#ecf3f7", main: "#E8F1F5", dark: "#a2a8ab" },
-    chart: { main: "rgba(141, 185, 207,.6)" },
-    itemB: { main: "rgba(219,127,103,.6)" },
-    itemA: { main: "rgba(95,158,189,.6)" },
+    chart: { main: "rgba(141, 185, 207,.5)", opaque: "rgba(141, 185, 207,1)" },
+    itemB: { main: "rgba(219,127,103,.5)", opaque: "rgba(219,127,103,1)" },
+    itemA: { main: "rgba(95,158,189,.5)", opaque: "rgba(95,158,189,1)" },
+    giniArea: { main: "rgba(51,153,103,.2)", opaque: "rgba(51,153,103,1)" },
     itemMerge: { main: "#AD7F89" },
+    success: { main: green[500], transparent: "rgba(80,174,85,.2)" },
+    warning: { main: amber[600], transparent: "rgba(254,192,47,.2)" },
+    error: { main: red[500], transparent: "rgba(209,49,53,.2)" },
   },
   //   spacing: 4,
   typography: {

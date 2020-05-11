@@ -36,7 +36,8 @@ const useStyles = makeStyles(() => ({
     // maxHeight: "800px",
     // minHeight: "722px",
     backgroundColor: theme.palette.background.main,
-    overflow: "hidden",
+    overflowX: "hidden",
+    overflowY: "scroll",
   },
   titleInput: {
     fontSize: theme.typography.h2.fontSize,
