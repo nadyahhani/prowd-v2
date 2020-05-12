@@ -451,9 +451,7 @@ export default function Compare(props) {
                       datasets: [
                         {
                           data: state.giniA.histogramData.map(
-                            (num) =>
-                              (num * 100) /
-                              Math.max.apply(Math, state.giniA.histogramData)
+                            (num) => (num * 100) / state.giniA.amount
                           ),
                           borderColor: theme.palette.itemA.main,
                           backgroundColor: theme.palette.itemA.main,
@@ -461,9 +459,7 @@ export default function Compare(props) {
                         },
                         {
                           data: state.giniB.histogramData.map(
-                            (num) =>
-                              (num * 100) /
-                              Math.max.apply(Math, state.giniB.histogramData)
+                            (num) => (num * 100) / state.giniB.amount
                           ),
                           borderColor: theme.palette.itemB.main,
                           backgroundColor: theme.palette.itemB.main,
@@ -471,6 +467,7 @@ export default function Compare(props) {
                         },
                       ],
                     }}
+                    maxValue={100}
                     classes={{ ChartWrapper: classes.histogramChart }}
                   />
                 ) : (

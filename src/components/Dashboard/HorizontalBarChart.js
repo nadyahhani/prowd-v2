@@ -93,6 +93,7 @@ export default function HorizontalBarChart(props) {
             z: 1,
             padding: -10,
             fontColor: theme.palette.common.black,
+            
           },
           stacked: true,
         },

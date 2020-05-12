@@ -206,3 +206,183 @@ const temp = {
     "100%",
   ],
 };
+
+// LANDING TRASH
+
+<div
+          style={{ width: "100%", display: "flex", flexDirection: "column" }}
+        >
+          <div style={{ width: "100%", display: "flex", flexDirection: "row" }}>
+            <div className={`${classes.mainDiv} ${classes.centerContent}`}>
+              <Typography className={classes.tagline}>
+                Visualize Knowledge
+              </Typography>
+            </div>
+            <div className={classes.mainDiv}>
+              <Typography variant="h2">
+                <Box fontWeight="bold">
+                  What Imbalance do you want to check?
+                </Box>
+              </Typography>
+              <Paper className={classes.inputBox} elevation={1}>
+                <Grid
+                  container
+                  justify="center"
+                  spacing={2}
+                  direction="column"
+                  className={classes.inputInput}
+                >
+                  <Grid item>
+                    <VirtualAutocomp
+                      label="Class"
+                      placeholder="e.g. Human, Disease, Country"
+                      options={state.classes}
+                      loading={state.classes.length === 0}
+                      inputValue={state.classInput}
+                      value={state.selectedClass}
+                      onInputChange={(e) => {
+                        // console.log(e);
+                        if (e) {
+                          const tempval = e.target.value;
+                          setState((s) => ({
+                            ...s,
+                            classInput: tempval,
+                            // classes: [],
+                          }));
+
+                          getClasses(e.target.value, (response) => {
+                            response.success &&
+                              setState((s) => ({
+                                ...s,
+                                classes: getUnique(
+                                  [...s.classes, ...response.entities],
+                                  "id"
+                                ),
+                              }));
+                          });
+                        }
+                      }}
+                      onChange={(event, newValue, reason) => {
+                        if (newValue) {
+                          setState((s) => ({
+                            ...s,
+                            selectedClass: newValue,
+                            classInput: `${newValue.label} (${newValue.id})`,
+                          }));
+                        }
+                        if (reason === "clear") {
+                          setState((s) => ({
+                            ...s,
+                            selectedClass: null,
+                            classInput: "",
+                          }));
+                        }
+                      }}
+                      onClose={(event, reason) => {
+                        console.log(reason, state.selectedClass);
+
+                        if (
+                          reason !== "select-option" &&
+                          !state.selectedClass
+                        ) {
+                          setState((s) => ({
+                            ...s,
+                            classInput: "",
+                            selectedClass: null,
+                          }));
+                        }
+                      }}
+                      getOptionLabel={(option) => {
+                        return `${option.label} (${option.id})${
+                          option.aliases
+                            ? ` also known as ${option.aliases.join(", ")}`
+                            : ""
+                        }`;
+                      }}
+                      renderOption={(option) => (
+                        <div>
+                          <Typography
+                            noWrap
+                          >{`${option.label} (${option.id})`}</Typography>
+                          <Typography
+                            variant="caption"
+                            style={{ lineHeight: "1.3vmin" }}
+                          >
+                            {cut(option.description, 80)}
+                          </Typography>
+                        </div>
+                      )}
+                    />
+                  </Grid>
+                  <Grid item>
+                    <FilterBox
+                      class={state.selectedClass}
+                      options={state.appliedFilters}
+                      propertiesOptions={state.propertiesOptions}
+                      selectedClass={state.selectedClass}
+                      disabled={!state.selectedClass}
+                      onApply={(applied) =>
+                        setState((s) => ({ ...s, appliedFilters: applied }))
+                      }
+                      renderTagText={(opt) =>
+                        cut(`${opt.property.label}: ${opt.values.label}`, 1000)
+                      }
+                      onDelete={(idx) => {
+                        const temp = [...state.appliedFilters];
+                        temp.splice(idx, 1);
+                        setState((s) => ({ ...s, appliedFilters: temp }));
+                      }}
+                    />
+                  </Grid>
+                  <Grid item xs={5}>
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      disableElevation
+                      fullWidth
+                      disabled={state.selectedClass === null}
+                      onClick={() => {
+                        createDashboard(
+                          state.selectedClass.id,
+                          state.appliedFilters.map((x) => {
+                            let temp = {};
+                            temp[x.property.id] = x.values.id;
+                            return temp;
+                          }),
+                          (response) =>
+                            history.push(
+                              `/dashboards/${response.hashCode}/profile`
+                            )
+                        );
+                      }}
+                    >
+                      Check
+                    </Button>
+                  </Grid>
+                </Grid>
+              </Paper>
+              <Grid container spacing={2} style={{ width: "41.67vw" }}>
+                {tempData.ex.map((x, idx) => (
+                  <Grid item key={idx}>
+                    <ButtonBase
+                      onClick={() => {
+                        setState((s) => ({
+                          ...s,
+                          selectedClass: x.class,
+                          classInput: `${x.class.label} (${x.class.id})`,
+                          appliedFilters: x.filters,
+                        }));
+                      }}
+                    >
+                      <Card className={classes.exampleList}>
+                        <Typography variant="body1" color="primary">
+                          {x.label}
+                        </Typography>
+                      </Card>
+                    </ButtonBase>
+                  </Grid>
+                ))}
+              </Grid>
+            </div>
+          </div>
+        </div>
