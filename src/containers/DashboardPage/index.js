@@ -456,12 +456,8 @@ export default function DashboardPage(props) {
                     >{`${state.globalData.entity.entityLabel} (${state.globalData.entity.entityID})`}</a>
                   </Typography>
                   <Typography>
-                    {cut(
-                      "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed et varius diam, a euismod erat. Curabitur vestibulum iaculis elit, ac fringilla sem convallis vitae. Pellentesque et lobortis quam. Sed rutrum massa ac nisl convallis luctus. Mauris fringilla id orci sed varius. Curabitur non vehicula est, non vestibulum odio. Donec venenatis enim ligula, et auctor ipsum vehicula id. Nullam interdum purus magna, vel volutpat metus elementum eleifend. Curabitur feugiat lectus ante, eu pulvinar mi blandit id. Aliquam neque eros, finibus vitae ultricies sit amet, rhoncus ac erat. Quisque a metus lacus. Fusce facilisis leo erat, eget malesuada ex condimentum ut. Donec vestibulum nunc eu ligula mollis, eleifend lobortis sapien gravida. Sed pellentesque imperdiet nisi in ultricies. Sed at pellentesque magna.",
-                      190
-                    )}
+                    {cut(state.globalData.entity.entityDescription, 190)}
                   </Typography>
-                  {/* state.globalData.entity.entityDescription */}
                 </Paper>
               </Grid>
               <Grid item style={{ height: "100%" }} xs={7}>
