@@ -15,6 +15,7 @@ function renderRow(props) {
   return React.cloneElement(data[index], {
     style: {
       ...style,
+      // overflowX: "hidden",
       top: style.top + LISTBOX_PADDING,
     },
   });
@@ -55,7 +56,7 @@ const ListboxComponent = React.forwardRef(function ListboxComponent(
   };
 
   return (
-    <div ref={ref}>
+    <div ref={ref} style={{ overflowX: "hidden" }}>
       <OuterElementContext.Provider value={other}>
         <VariableSizeList
           itemData={itemData}
@@ -109,10 +110,10 @@ export default function VirtualAutocomp(props) {
       <Autocomplete
         size="small"
         loading={props.loading}
-        disableListWrap
+        // disableListWrap
         classes={{ listbox: classes.listbox, option: classes.option }}
-        ListboxComponent={ListboxComponent}
-        renderGroup={renderGroup}
+        // ListboxComponent={ListboxComponent}
+        // renderGroup={renderGroup}
         value={props.value}
         onChange={props.onChange}
         options={props.options}
@@ -123,7 +124,6 @@ export default function VirtualAutocomp(props) {
         onInputChange={props.onInputChange}
         noOptionsText={props.noOptionsText}
         onClose={props.onClose}
-        ListboxProps={{ style: { width: "fit-content", overflowX: "hidden" } }}
         renderInput={(params) => (
           <TextField
             {...params}

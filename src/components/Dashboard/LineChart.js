@@ -15,6 +15,40 @@ function LineChart(props) {
         display: false,
         text: "Distribution Comparison",
       },
+      tooltips: {
+        titleSpacing: 6,
+        xPadding: 20,
+        yPadding: 20,
+        callbacks: {
+          label: function (tooltipItem, data) {
+            const maxItem = data.datasets[tooltipItem.datasetIndex].entityCount;
+            const maxProps = Math.max.apply(
+              Math,
+              data.datasets[tooltipItem.datasetIndex].actualLabels
+            );
+            const items =
+              data.datasets[tooltipItem.datasetIndex].actualValues[
+                tooltipItem.index
+              ];
+            const number =
+              data.datasets[tooltipItem.datasetIndex].actualLabels[
+                tooltipItem.index
+              ];
+            const percent = data.datasets[tooltipItem.datasetIndex].data[
+              tooltipItem.index
+            ].toFixed(2);
+            const labels = data.labels[tooltipItem.index];
+            let label =
+              `${items} item${
+                items > 1 ? "s" : ""
+              } (${percent}% of ${maxItem}) has ${number} propert${
+                number > 1 ? "ies" : "y"
+              } (${labels} of ${maxProps})` || "";
+
+            return label;
+          },
+        },
+      },
       scales: {
         xAxes: [
           {
@@ -33,7 +67,7 @@ function LineChart(props) {
             },
             scaleLabel: {
               display: true,
-              labelString: "Number of Properties",
+              labelString: "Percentage of Properties",
               lineHeight: 1,
               padding: 0,
             },
@@ -47,7 +81,7 @@ function LineChart(props) {
             },
             scaleLabel: {
               display: true,
-              labelString: "Number of Entities",
+              labelString: "Percentage of Entities",
             },
           },
         ],

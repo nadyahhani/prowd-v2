@@ -23,13 +23,16 @@ import Loading from "../Misc/Loading";
 const useStyles = makeStyles({
   table: {
     // minWidth: 650,
-    // "& > * > * > *": {
-    //   paddingLeft: "1%",
-    //   paddingRight: "1%",
-    // },
+    "& > * > * > *": {
+      // paddingTop: theme.spacing(1),
+      // paddingBottom: theme.spacing(1),
+      // paddingLeft: "1%",
+      // paddingRight: "1%",
+      padding: theme.spacing(1),
+    },
   },
   inputCell: {
-    // width: ""
+    // padding: 0,
   },
 });
 
@@ -37,8 +40,8 @@ export default function DiscoverDimension(props) {
   const classes = useStyles();
   const [state, setState] = React.useState({
     data: [],
-    temp: { property: "", valueA: "", valueB: "" },
-    selectedTemp: { property: null, valueA: null, valueB: null },
+    temp: "",
+    selectedTemp: null,
     propertiesOptions: [],
     properties: [],
     entities: [],
@@ -55,8 +58,8 @@ export default function DiscoverDimension(props) {
   const eraseInput = () => {
     setState((s) => ({
       ...s,
-      temp: { property: "", valueA: "", valueB: "" },
-      selectedTemp: { property: null, valueA: null, valueB: null },
+      temp: "",
+      selectedTemp: null,
     }));
   };
 
@@ -74,34 +77,23 @@ export default function DiscoverDimension(props) {
   );
 
   const onInputChange = (e, val, reason, col) => {
-    const input = val;
-    let t = { ...state.temp };
-    t[col] = val;
+    // const input = val;
+    // let t = { ...state.temp };
+    // t[col] = val;
     setState((s) => ({
       ...s,
-      temp: t,
+      temp: val,
       loading: { ...s.loading, properties: true },
     }));
-    if (col === "property") {
-      searchProperties(input, (r) => {
-        if (r.success) {
-          setState((s) => ({
-            ...s,
-            loading: { ...s.loading, properties: true },
-            properties: getUnique([...s.properties, ...r.properties], "id"),
-          }));
-        }
-      });
-    } else {
-      getClasses(input, (r) => {
-        if (r.success) {
-          setState((s) => ({
-            ...s,
-            entities: getUnique([...s.entities, ...r.entities], "id"),
-          }));
-        }
-      });
-    }
+    searchProperties(val, (r) => {
+      if (r.success) {
+        setState((s) => ({
+          ...s,
+          loading: { ...s.loading, properties: true },
+          properties: getUnique([...s.properties, ...r.properties], "id"),
+        }));
+      }
+    });
   };
 
   return (
@@ -116,11 +108,13 @@ export default function DiscoverDimension(props) {
           className={`${classes.table} `}
           aria-label="simple table"
           size="small"
-          padding="default"
+          padding="none"
         >
           <TableHead>
             <TableRow>
-              <TableCell key={1}>Property</TableCell>
+              <TableCell key={1} colSpan={3}>
+                Property
+              </TableCell>
               <TableCell />
             </TableRow>
           </TableHead>
@@ -128,7 +122,7 @@ export default function DiscoverDimension(props) {
             {!props.loading ? (
               state.data.map((row, idx) => (
                 <TableRow key={idx}>
-                  <TableCell>{row.property.label}</TableCell>
+                  <TableCell colSpan={2}>{row.label}</TableCell>
                   <TableCell>
                     <IconButton
                       size="small"
@@ -150,7 +144,7 @@ export default function DiscoverDimension(props) {
               ))
             ) : (
               <TableRow>
-                <TableCell colSpan={2}>
+                <TableCell colSpan={3}>
                   <Loading />
                 </TableCell>
               </TableRow>
@@ -159,11 +153,12 @@ export default function DiscoverDimension(props) {
               <TableCell
                 component="th"
                 scope="row"
+                colSpan={2}
                 className={classes.inputCell}
               >
                 <Autocomplete
                   renderTags={(value) => <Typography>{value.label}</Typography>}
-                  value={state.selectedTemp["property"]}
+                  value={state.selectedTemp}
                   getOptionLabel={(option) => {
                     return `${option.label} (${option.id})${
                       option.aliases
@@ -171,7 +166,7 @@ export default function DiscoverDimension(props) {
                         : ""
                     }`;
                   }}
-                  inputValue={state.temp["property"]}
+                  inputValue={state.temp}
                   renderOption={(option) => (
                     <div>
                       <Typography>{`${option.label} (${option.id})`}</Typography>
@@ -180,15 +175,17 @@ export default function DiscoverDimension(props) {
                       </Typography>
                     </div>
                   )}
+                  noOptionsText={
+                    state.properties.length === 0
+                      ? "Type to search for a property"
+                      : "There are no properties with that name"
+                  }
                   onChange={(e, value, reason) => {
                     if (reason === "select-option") {
                       setState((s) => ({
                         ...s,
-                        selectedTemp: { ...s.selectedTemp, property: value },
-                        temp: {
-                          ...s.temp,
-                          property: `${value.label} (${value.id})`,
-                        },
+                        selectedTemp: value,
+                        temp: `${value.label} (${value.id})`,
                       }));
                     }
                   }}
@@ -205,11 +202,7 @@ export default function DiscoverDimension(props) {
                   size="small"
                   edge="end"
                   onClick={() => {
-                    if (
-                      state.selectedTemp.property &&
-                      state.selectedTemp.valueA &&
-                      state.selectedTemp.valueB
-                    ) {
+                    if (state.selectedTemp) {
                       setState((s) => {
                         let t = [...s.data];
                         t.push(s.selectedTemp);

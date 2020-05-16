@@ -20,25 +20,30 @@ const theme = createMuiTheme({
   typography: {
     fontFamily: "Open Sans",
     // fontSize: "1.556vmin",
-    fontSize: 11,
+    fontSize: 12,
     fontWeightRegular: 400,
     fontWeightMedium: 600,
     fontWeightBold: 700,
+    color: "#1A1A1A",
     body1: {
       // fontSize: "1.556vmin",
-      fontSize: 11,
+      fontSize: 12,
+      // color: "#1A1A1A",
     },
     h1: {
       // fontSize: "3.889vmin",
       fontSize: 35,
+      color: "#1A1A1A",
     },
     h2: {
       // fontSize: "2.7vmin",
       fontSize: 20,
+      color: "#1A1A1A",
     },
     caption: {
       // fontSize: "1.3vmin",
       fontSize: 9,
+      color: "#1A1A1A",
     },
   },
   overrides: {

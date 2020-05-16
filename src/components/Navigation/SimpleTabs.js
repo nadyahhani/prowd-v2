@@ -166,7 +166,10 @@ export default function SimpleTabs(props) {
           <Analysis
             data={props.data}
             hash={props.dashId}
+            fetchData={props.fetchData}
             updateData={props.updateData}
+            state={props.states.discover}
+            setState={props.setStates.discover}
           />
         </TabPanel>
       </Paper>

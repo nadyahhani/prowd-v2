@@ -25,6 +25,7 @@ import { countProperties, sortProperties, cut } from "../../global";
 import SettingsIcon from "@material-ui/icons/Settings";
 import Loading from "../../components/Misc/Loading";
 import FilterBox from "../../components/Inputs/FilterBox";
+import Notif from "../../components/Misc/Notif";
 
 const useStyles = makeStyles(() => ({
   content: {
@@ -49,7 +50,7 @@ const useStyles = makeStyles(() => ({
     width: "100%",
   },
   filters: {
-    // width: "100%",
+    width: "97%",
   },
 }));
 
@@ -59,6 +60,7 @@ export default function DashboardPage(props) {
     loading: true,
     globalData: {},
     update: false,
+    notif: { open: false, severity: "info", message: "" },
   });
 
   const [profileState, setProfileState] = React.useState({
@@ -70,6 +72,7 @@ export default function DashboardPage(props) {
     propertySort: 0,
     gap: [],
     tableSearch: "",
+    tableSort: 0,
 
     // loading states
     loading: {
@@ -101,14 +104,32 @@ export default function DashboardPage(props) {
     },
   });
 
+  const [discoverState, setDiscoverState] = React.useState({
+    loaded: false,
+    dimensions: [],
+    // loading states
+    loading: {
+      dimensions: true,
+    },
+  });
+
   const fetchData = React.useCallback(
     (scope = "") => {
       // Global
-      if (scope === "" || scope === "compare") {
+      if (
+        scope === "" ||
+        scope === "compare" ||
+        scope === "info" ||
+        scope === "discover"
+      ) {
         setState((s) => ({ ...s, loading: true }));
         setCompareState((s) => ({
           ...s,
           loading: { ...s.loading, compareFilters: true },
+        }));
+        setDiscoverState((s) => ({
+          ...s,
+          loading: { ...s.loading, dimensions: true },
         }));
         getDashInfo(props.match.params.id, (r) => {
           if (r.success) {
@@ -134,6 +155,21 @@ export default function DashboardPage(props) {
                 valueB: item.value.item2,
               })),
               loading: { ...s.loading, compareFilters: false },
+            }));
+            setDiscoverState((s) => ({
+              ...s,
+              dimensions: r.analysisInfo,
+              loading: { ...s.loading, dimensions: false },
+            }));
+          } else {
+            setState((s) => ({
+              ...s,
+              notif: {
+                open: true,
+                message: "An Error Occured",
+                severity: "error",
+                action: () => fetchData("info"),
+              },
             }));
           }
         });
@@ -161,6 +197,16 @@ export default function DashboardPage(props) {
               mappedProperties: temp,
               loading: { ...s.loading, properties: false },
             }));
+          } else {
+            setState((s) => ({
+              ...s,
+              notif: {
+                open: true,
+                message: "An Error Occured",
+                severity: "error",
+                action: () => fetchData("profile"),
+              },
+            }));
           }
         });
         getGiniEntity(props.match.params.id, null, (r) => {
@@ -183,6 +229,16 @@ export default function DashboardPage(props) {
               },
               loading: { ...s.loading, gini: false },
             }));
+          } else {
+            setState((s) => ({
+              ...s,
+              notif: {
+                open: true,
+                message: "An Error Occured",
+                severity: "error",
+                action: () => fetchData("profile"),
+              },
+            }));
           }
         });
       }
@@ -204,6 +260,16 @@ export default function DashboardPage(props) {
               giniA: { ...r },
               loading: { ...s.loading, giniA: false },
             }));
+          } else {
+            setState((s) => ({
+              ...s,
+              notif: {
+                open: true,
+                message: "An Error Occured",
+                severity: "error",
+                action: () => fetchData("compare"),
+              },
+            }));
           }
         });
         getCompareGini(props.match.params.id, 2, (r) => {
@@ -212,6 +278,16 @@ export default function DashboardPage(props) {
               ...s,
               giniB: { ...r },
               loading: { ...s.loading, giniB: false },
+            }));
+          } else {
+            setState((s) => ({
+              ...s,
+              notif: {
+                open: true,
+                message: "An Error Occured",
+                severity: "error",
+                action: () => fetchData("compare"),
+              },
             }));
           }
         });
@@ -224,6 +300,16 @@ export default function DashboardPage(props) {
               properties: r.result,
               mappedProperties: temp,
               loading: { ...s.loading, properties: false },
+            }));
+          } else {
+            setState((s) => ({
+              ...s,
+              notif: {
+                open: true,
+                message: "An Error Occured",
+                severity: "error",
+                action: () => fetchData("compare"),
+              },
             }));
           }
         });
@@ -238,6 +324,7 @@ export default function DashboardPage(props) {
 
   return (
     <ThemeProvider theme={theme}>
+      <Notif {...state.notif} />
       <Navbar />
       <div className={classes.content}>
         <div
@@ -356,12 +443,25 @@ export default function DashboardPage(props) {
             <Grid container spacing={1} style={{ height: "100%" }}>
               <Grid item style={{ height: "100%" }} xs={5}>
                 <Paper style={{ height: "100%", padding: theme.spacing(1) }}>
-                  <Typography variant="h2">
-                    {`${state.globalData.entity.entityLabel} (${state.globalData.entity.entityID})`}
+                  <Typography
+                    variant="h2"
+                    component="div"
+                    style={{ marginBottom: theme.spacing(1) }}
+                  >
+                    <a
+                      style={{ textDecoration: "none" }}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      href={`https://www.wikidata.org/wiki/${state.globalData.entity.entityID}`}
+                    >{`${state.globalData.entity.entityLabel} (${state.globalData.entity.entityID})`}</a>
                   </Typography>
                   <Typography>
-                    {state.globalData.entity.entityDescription}
+                    {cut(
+                      "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed et varius diam, a euismod erat. Curabitur vestibulum iaculis elit, ac fringilla sem convallis vitae. Pellentesque et lobortis quam. Sed rutrum massa ac nisl convallis luctus. Mauris fringilla id orci sed varius. Curabitur non vehicula est, non vestibulum odio. Donec venenatis enim ligula, et auctor ipsum vehicula id. Nullam interdum purus magna, vel volutpat metus elementum eleifend. Curabitur feugiat lectus ante, eu pulvinar mi blandit id. Aliquam neque eros, finibus vitae ultricies sit amet, rhoncus ac erat. Quisque a metus lacus. Fusce facilisis leo erat, eget malesuada ex condimentum ut. Donec vestibulum nunc eu ligula mollis, eleifend lobortis sapien gravida. Sed pellentesque imperdiet nisi in ultricies. Sed at pellentesque magna.",
+                      190
+                    )}
                   </Typography>
+                  {/* state.globalData.entity.entityDescription */}
                 </Paper>
               </Grid>
               <Grid item style={{ height: "100%" }} xs={7}>
@@ -427,9 +527,18 @@ export default function DashboardPage(props) {
             dashId={props.match.params.id}
             selectedTab={props.match.params.page}
             data={state.globalData}
+            updateData={setState}
             fetchData={fetchData}
-            states={{ profile: profileState, compare: compareState }}
-            setStates={{ profile: setProfileState, compare: setCompareState }}
+            states={{
+              profile: profileState,
+              compare: compareState,
+              discover: discoverState,
+            }}
+            setStates={{
+              profile: setProfileState,
+              compare: setCompareState,
+              discover: setDiscoverState,
+            }}
           />
         </div>
       </div>

@@ -166,3 +166,48 @@ export function getCompareProperties(hash, afterFunc) {
       afterFunc({ success: false, ...err });
     });
 }
+
+// DISCOVER
+export function editDiscover(hash, filters, afterFunc) {
+  axios
+    .post(
+      `${url}/api/dashboard/edit/analysis
+    `,
+      {
+        hashCode: hash,
+        analysisFilters: filters,
+      }
+    )
+    .then(
+      (response) => {
+        afterFunc({ success: true, ...response.data });
+      },
+      (error) => {
+        afterFunc({ success: false, ...error });
+      }
+    )
+    .catch((err) => {
+      afterFunc({ success: false, ...err });
+    });
+}
+
+export function getPropertyValues(hash, id, afterFunc) {
+  axios
+    .get(
+      `${url}/api/entity/analysis/information?hash_code=${hash}&property_id=${id}
+    `
+    )
+    .then(
+      (response) => {
+        afterFunc({ success: true, ...response.data });
+      },
+      (error) => {
+        afterFunc({ success: false, ...error });
+      }
+    )
+    .catch((err) => {
+      afterFunc({ success: false, ...err });
+    });
+}
+
+

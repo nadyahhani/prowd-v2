@@ -133,10 +133,37 @@ export const sortProperties = (props, compare = false) => {
 };
 
 // function to filter table
-export const filterEntities = (data, param) => {
+export const filterEntities = (data, param, sort = 0) => {
   let result = data.filter((item) =>
     item.label.toLowerCase().includes(param.toLowerCase())
   );
+  result.sort((b, a) => {
+    // property check
+    if (sort === 2) {
+      return a.entityProperties ? 1 : -1;
+    }
+    // entity label
+    else if (sort === 1) {
+      return b.label.toLowerCase() > a.label.toLowerCase() ? 1 : -1;
+    }
+    // # of properties
+    else {
+      if (a.propertyCount > b.propertyCount) {
+        return 1;
+      } else if (a.propertyCount === b.propertyCount) {
+        if (
+          parseInt(a.percentile.slice(0, -1)) >
+          parseInt(b.percentile.slice(0, -1))
+        ) {
+          return 1;
+        } else {
+          return -1;
+        }
+      } else {
+        return -1;
+      }
+    }
+  });
   return result;
 };
 

@@ -73,7 +73,7 @@ export default function FilterModal(props) {
                     noWrap
                   >{`${option.label} (${option.id})`}</Typography>
                   <Typography variant="caption">
-                    {cut(option.description, 200)}
+                    {cut(option.description, 500)}
                   </Typography>
                 </div>
               )}
@@ -163,7 +163,7 @@ export default function FilterModal(props) {
                   >{`${option.label} (${option.id})`}</Typography>
                   <Typography variant="caption">
                     {option.description
-                      ? cut(option.description, 200)
+                      ? cut(option.description, 500)
                       : "No description available"}
                   </Typography>
                 </div>

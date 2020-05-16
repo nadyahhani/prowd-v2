@@ -308,7 +308,7 @@ const temp = {
                             variant="caption"
                             style={{ lineHeight: "1.3vmin" }}
                           >
-                            {cut(option.description, 80)}
+                            {cut(option.description, 500)}
                           </Typography>
                         </div>
                       )}

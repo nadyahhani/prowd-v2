@@ -15,8 +15,10 @@ import FilterModal from "../../components/Inputs/FilterModal";
 
 const useStyles = makeStyles(() => ({
   filters: {
-    height: "8vh",
+    height: theme.spacing(8),
     overflowY: "scroll",
+    overflowX: "hidden",
+    width: "100%",
     padding: theme.spacing(1),
   },
 }));
@@ -49,7 +51,7 @@ export default function FilterBox(props) {
         }`}
         variant="outlined"
         elevation={0}
-        style={props.cols ? { height: `${props.cols * 4}vh` } : {}}
+        style={props.cols ? { height: theme.spacing(props.cols * 3) } : {}}
       >
         <Grid container spacing={1}>
           {props.disableModal ? (

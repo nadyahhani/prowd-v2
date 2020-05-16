@@ -176,7 +176,7 @@ class MuiVirtualizedTable extends React.PureComponent {
                   fullWidth
                   margin="dense"
                   size="small"
-                  placeholder="Select Property"
+                  placeholder="Property Check"
                   inputProps={{
                     ...params.inputProps,
                     autoComplete: "new-password",

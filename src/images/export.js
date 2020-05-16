@@ -4,8 +4,15 @@ import All_B from "./All_B.svg";
 import Exclusive_A from "./Exclusive_A.svg";
 import Exclusive_B from "./Exclusive_B.svg";
 import intersection from "./Intersection.svg";
+import LandingTop from "./LandingTop.svg";
+import analysis_1 from "./analysis_ 1.svg";
+import files_and_folder_1 from "./files_and_folder 1.svg";
+import compare_illustration from "./CompareIllustration.svg";
+import mindmap from "./mindmap.svg";
+import logo from "./logo.svg";
 import All from "./All.svg";
 import theme from "../theme";
+
 const SIZE = 20;
 const EDGE = SIZE - theme.typography.body1.fontSize;
 const STYLE_IMG = {
@@ -63,6 +70,27 @@ function IntersectionIcon(props) {
   );
 }
 
+function LandingTopIcon(props) {
+  return <img {...props} src={LandingTop} alt="white-wave" />;
+}
+
+function AnalysisIcon(props) {
+  return <img {...props} src={analysis_1} alt="white-wave" />;
+}
+
+function FoldersIcon(props) {
+  return <img {...props} src={files_and_folder_1} alt="white-wave" />;
+}
+function CompareIllustrationIcon(props) {
+  return <img {...props} src={compare_illustration} alt="compare" />;
+}
+function MindMapIcon(props) {
+  return <img {...props} src={mindmap} alt="mindmap" />;
+}
+function ProwdLogo(props) {
+  return <img {...props} src={logo} alt="logo" />;
+}
+
 export {
   AllIcon,
   AllAIcon,
@@ -70,4 +98,10 @@ export {
   ExclusiveAIcon,
   ExclusiveBIcon,
   IntersectionIcon,
+  LandingTopIcon,
+  AnalysisIcon,
+  FoldersIcon,
+  CompareIllustrationIcon,
+  MindMapIcon,
+  ProwdLogo,
 };

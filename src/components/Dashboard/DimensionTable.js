@@ -181,6 +181,11 @@ export default function DimensionTable(props) {
                         : ""
                     }`;
                   }}
+                  noOptionsText={
+                    state.properties.length === 0
+                      ? "Type to search for a property"
+                      : "There are no properties with that name"
+                  }
                   inputValue={state.temp["property"]}
                   renderOption={(option) => (
                     <div>
@@ -235,6 +240,11 @@ export default function DimensionTable(props) {
                       </Typography>
                     </div>
                   )}
+                  noOptionsText={
+                    state.entities.length === 0
+                      ? "Type to search for an item"
+                      : "There are no items with that name"
+                  }
                   onChange={(e, value, reason) => {
                     if (reason === "select-option") {
                       setState((s) => ({
@@ -271,6 +281,11 @@ export default function DimensionTable(props) {
                         : ""
                     }`;
                   }}
+                  noOptionsText={
+                    state.entities.length === 0
+                      ? "Type to search for an item"
+                      : "There are no items with that name"
+                  }
                   inputValue={state.temp["valueB"]}
                   renderOption={(option) => (
                     <div>

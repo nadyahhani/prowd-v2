@@ -66,6 +66,7 @@ function GiniChart(props) {
       {
         type: "line",
         data: props.data,
+        actual: [0, ...props.actual],
         fill: true,
         borderColor: getColor(),
         backgroundColor: getColor("transparent"),
@@ -84,6 +85,8 @@ function GiniChart(props) {
               props.data.length
             )
           : null,
+        pointRadius: 0,
+        actual: [],
         fill: true,
         borderColor: getGiniAreaColor("transparent"),
         backgroundColor: getGiniAreaColor(),
@@ -106,6 +109,15 @@ function GiniChart(props) {
       titleSpacing: 6,
       xPadding: 20,
       yPadding: 20,
+      callbacks: {
+        label: function (tooltipItem, data) {
+          let label =
+            data.datasets[tooltipItem.datasetIndex].actual[tooltipItem.index] ||
+            "";
+
+          return label;
+        },
+      },
     },
     elements: {
       line: {
@@ -123,11 +135,25 @@ function GiniChart(props) {
             max: 1,
             display: !props.simple,
           },
+          scaleLabel: {
+            display: true,
+            labelString: "Accumulative Percentage of Properties",
+            lineHeight: 1,
+            padding: 0,
+            display: !props.simple,
+          },
         },
       ],
       xAxes: [
         {
           ticks: {
+            display: !props.simple,
+          },
+          scaleLabel: {
+            display: true,
+            labelString: "Accumulative Percentage of Items",
+            lineHeight: 1,
+            padding: 0,
             display: !props.simple,
           },
         },
@@ -175,4 +201,5 @@ GiniChart.defaultProps = {
   ratio: 1,
   simple: false,
   item: "single",
+  actual: [],
 };

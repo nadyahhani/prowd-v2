@@ -16,18 +16,10 @@ import GiniChart from "../../components/Dashboard/GiniChart";
 import HorizontalBarChart from "../../components/Dashboard/HorizontalBarChart";
 import theme from "../../theme";
 import { KeyboardArrowRight } from "@material-ui/icons";
-import {
-  AllIcon,
-  AllAIcon,
-  AllBIcon,
-  ExclusiveAIcon,
-  ExclusiveBIcon,
-  IntersectionIcon,
-} from "../../images/export";
 import Loading from "../../components/Misc/Loading";
 import Status from "../../components/Misc/Status";
 import Help from "../../components/Misc/Help";
-import { editCompare } from "../../services/dashboard";
+import { editCompare, editDiscover } from "../../services/dashboard";
 import LineChart from "../../components/Dashboard/LineChart";
 import DiscoverDimension from "../../components/Dashboard/DiscoverDimension";
 
@@ -44,6 +36,7 @@ const useStyles = makeStyles((theme) => ({
   },
   tablePaper: {
     overflowY: "scroll",
+    overflowX: "hidden",
     height: "63.1vh",
     padding: theme.spacing(1),
   },
@@ -88,7 +81,7 @@ const useStyles = makeStyles((theme) => ({
   },
   dimensionTable: {
     width: "100%",
-    height: "100%",
+    height: "97%",
   },
 
   // =====
@@ -109,24 +102,39 @@ export default function Analysis(props) {
 
   const applyFilter = (data) => {
     let temp = [];
+    console.log(data);
+
     data.forEach((item) => {
-      temp.push({
-        propertyID: item.property.id,
-        value: {
-          item1: item.valueA.id,
-          item2: item.valueB.id,
-        },
-      });
+      temp.push(item.id);
     });
-    editCompare(props.hash, temp, (r) => {
+    editDiscover(props.hash, temp, (r) => {
       if (r.success) {
-        props.fetchData("compare");
+        props.fetchData("discover");
+        props.updateData((s) => ({
+          ...s,
+          notif: {
+            open: true,
+            message: "Dashboard Successfully Edited",
+            severity: "success",
+            action: () => {},
+          },
+        }));
+      } else {
+        props.updateData((s) => ({
+          ...s,
+          notif: {
+            open: true,
+            message: "Dashboard Edit Failed",
+            severity: "error",
+            action: () => {},
+          },
+        }));
       }
     });
   };
 
   const propertiesChart = () => {
-    if (!state.loading.properties) {
+    if (false) {
       const dataStacked = {
         labels: state.mappedProperties.labels.slice(0, 5),
 
@@ -175,7 +183,7 @@ export default function Analysis(props) {
         direction="row"
         classes={{ root: classes.root }}
       >
-        <Grid item xs={3}>
+        <Grid item xs={2}>
           <Paper className={classes.tablePaper}>
             <Grid
               container
@@ -184,349 +192,125 @@ export default function Analysis(props) {
               style={{ height: "100%" }}
             >
               <Grid item>
-                <Typography>DIMENSIONS</Typography>
+                <Typography>
+                  <Box fontWeight="bold">
+                    DIMENSIONS{" "}
+                    <Help
+                      text={
+                        <Typography>{`Select the piece of information (property) you would want to know more about.`}</Typography>
+                      }
+                    />
+                  </Box>
+                </Typography>
               </Grid>
               <Grid item style={{ height: "87%" }}>
                 <DiscoverDimension
                   classes={{ root: classes.dimensionTable }}
-                  appliedDimensions={[]}
+                  appliedDimensions={state.dimensions}
                   onApply={applyFilter}
-                  loading={false}
+                  loading={state.loading.dimensions}
                 />
               </Grid>
             </Grid>
           </Paper>
         </Grid>
-        {false ? (
+        {true ? (
           <React.Fragment>
             <Grid item xs={4}>
-              <Grid container spacing={1}>
-                <Grid item xs={12}>
-                  <Grid container spacing={1}>
-                    <Grid item xs={6}>
-                      <Paper classes={{ root: classes.card }}>
-                        {!state.loading.giniA && !state.loading.giniB ? (
-                          <div style={{ width: "100%", height: "100%" }}>
-                            <Typography
-                              component="div"
-                              style={{
-                                display: "flex",
-                                flexDirection: "row",
-                                justifyContent: "space-between",
-                                alignItems: "center",
-                              }}
-                            >
-                              <Box fontWeight="bold">Entities</Box>
-                            </Typography>
-                            <HorizontalBarChart
-                              key={3}
-                              simple
-                              data={{
-                                labels: [
-                                  `A: ${state.giniA.amount}`,
-                                  `B: ${state.giniB.amount}`,
-                                ],
-                                datasets: [
-                                  {
-                                    label: "# of Entities",
-                                    backgroundColor: [
-                                      theme.palette.itemA.main,
-                                      theme.palette.itemB.main,
-                                    ],
-                                    data: [
-                                      state.giniA.amount,
-                                      state.giniB.amount,
-                                    ],
-                                  },
-                                ],
-                              }}
-                              classes={{
-                                root: classes.horizontalbar,
-                                ChartWrapper: classes.horizontalbarchart,
-                              }}
-                            />
-                            <Button
-                              color="primary"
-                              endIcon={<KeyboardArrowRight />}
-                              size="small"
-                            >
-                              read more
-                            </Button>
-                          </div>
-                        ) : (
-                          <Loading />
-                        )}
-                      </Paper>
-                    </Grid>
-                    <Grid item xs={6}>
-                      <Paper classes={{ root: classes.card }}>
-                        {!state.loading.giniA ? (
-                          <div style={{ width: "100%", height: "100%" }}>
-                            <Typography
-                              component="div"
-                              style={{
-                                display: "flex",
-                                flexDirection: "row",
-                                justifyContent: "space-between",
-                                alignItems: "center",
-                              }}
-                            >
-                              <Box fontWeight="bold">Distinct Properties</Box>
-                            </Typography>
-                            <HorizontalBarChart
-                              key={3}
-                              simple
-                              data={{
-                                labels: ["A", "B"],
-                                datasets: [
-                                  {
-                                    label: "# of Distinct Properties",
-                                    backgroundColor: [
-                                      theme.palette.itemA.main,
-                                      theme.palette.itemB.main,
-                                    ],
-                                    data: [10, 20],
-                                  },
-                                ],
-                              }}
-                              max={20}
-                              classes={{
-                                root: classes.horizontalbar,
-                                ChartWrapper: classes.horizontalbarchart,
-                              }}
-                            />
-                            <Button
-                              color="primary"
-                              endIcon={<KeyboardArrowRight />}
-                              size="small"
-                            >
-                              read more
-                            </Button>
-                          </div>
-                        ) : (
-                          <Loading />
-                        )}
-                      </Paper>
-                    </Grid>
-                  </Grid>
-                </Grid>
-                <Grid item xs={12} classes={{ root: classes.gridItem }}>
-                  <Paper classes={{ root: classes.giniPaper }}>
-                    <div
-                      style={{
-                        display: "flex",
-                        flexDirection: "row",
-                        justifyContent: "space-between",
-                        alignItems: "center",
-                        width: "100%",
-                      }}
-                    >
-                      <Typography
-                        component="div"
-                        style={{
-                          display: "flex",
-                          flexDirection: "row",
-                          justifyContent: "space-between",
-                          alignItems: "center",
-                        }}
-                      >
-                        <Box fontWeight="bold">Gini Coefficient</Box>
-                        <Help text="//TODO" />
-                      </Typography>
-                    </div>
-                    <Grid
-                      container
-                      direction="row"
-                      spacing={1}
-                      style={{ height: "100%", width: "100%" }}
-                    >
-                      <Grid item xs={6}>
-                        <Typography>
-                          A:{" "}
-                          {state.compareFilters.length > 0
-                            ? state.compareFilters
-                                .map((item) => `${item.valueA.label}`)
-                                .join("-")
-                            : "-"}
-                        </Typography>
-                        {!state.loading.giniA ? (
-                          <Paper
-                            variant="outlined"
-                            elevation={0}
-                            className={classes.giniSubPaper}
-                          >
-                            <Status value={state.giniA.gini}>Imbalanced</Status>
-
-                            <GiniChart
-                              labels={state.giniA.percentileData}
-                              data={state.giniA.data}
-                              gini={state.giniA.gini}
-                              insight={state.giniA.insight}
-                              classes={{
-                                root: classes.giniChart,
-                                ChartWrapper: classes.giniChart,
-                              }}
-                            />
-                          </Paper>
-                        ) : (
-                          <Loading />
-                        )}
-                      </Grid>
-                      <Grid item xs={6}>
-                        <Typography>
-                          B:{" "}
-                          {state.compareFilters.length > 0
-                            ? state.compareFilters
-                                .map((item) => `${item.valueB.label}`)
-                                .join("-")
-                            : "-"}
-                        </Typography>
-                        {!state.loading.giniB ? (
-                          <Paper
-                            variant="outlined"
-                            elevation={0}
-                            className={classes.giniSubPaper}
-                          >
-                            <Status value={state.giniB.gini}>Imbalanced</Status>
-                            <GiniChart
-                              labels={state.giniB.percentileData}
-                              data={state.giniB.data}
-                              gini={state.giniB.gini}
-                              insight={state.giniB.insight}
-                              classes={{
-                                root: classes.giniChart,
-                                ChartWrapper: classes.giniChart,
-                              }}
-                            />
-                          </Paper>
-                        ) : (
-                          <Loading />
-                        )}
-                      </Grid>
-                    </Grid>
-                  </Paper>
-                </Grid>
-              </Grid>
+              <div
+                style={{
+                  width: "100%",
+                  height: "100%",
+                  display: "flex",
+                  flexDirection: "column",
+                }}
+              >
+                <Paper
+                  style={{
+                    width: "100%",
+                    height: "50%",
+                    marginBottom: theme.spacing(1),
+                  }}
+                />
+                <Paper style={{ width: "100%", flex: "1 1 auto" }} />
+              </div>
             </Grid>
             <Grid item xs={4}>
-              <Grid container spacing={1}>
-                <Grid item xs={12} classes={{ root: classes.gridItem }}>
-                  <Paper classes={{ root: classes.propertiesPaper }}>
-                    <Typography
-                      component="div"
-                      style={{
-                        display: "flex",
-                        flexDirection: "row",
-                        justifyContent: "space-between",
-                      }}
+              <div
+                style={{
+                  width: "100%",
+                  height: "100%",
+                  display: "flex",
+                  flexDirection: "column",
+                }}
+              >
+                <Paper
+                  style={{
+                    width: "100%",
+                    height: "45%",
+                    marginBottom: theme.spacing(1),
+                  }}
+                >
+                  <Typography
+                    component="div"
+                    style={{
+                      display: "flex",
+                      flexDirection: "row",
+                      justifyContent: "space-between",
+                    }}
+                  >
+                    <Box fontWeight="bold">Property Frequency</Box>
+                    <FormControl
+                      variant="outlined"
+                      size="small"
+                      className={classes.formControl}
                     >
-                      <Box fontWeight="bold">Property Frequency</Box>
-                      <FormControl
-                        variant="outlined"
-                        size="small"
-                        className={classes.formControl}
-                      >
-                        <Select
-                          value={state.propertySort}
-                          defaultValue={0}
-                          onChange={(e, child) => {
-                            setState((s) => ({
-                              ...s,
-                              propertySort: child.props.value,
-                            }));
-                          }}
-                        >
-                          <MenuItem value={0}>
-                            <ListItemIcon>
-                              <AllIcon />
-                            </ListItemIcon>
-                            All
-                          </MenuItem>
-                          <MenuItem value={1}>
-                            <ListItemIcon>
-                              <ExclusiveAIcon />
-                            </ListItemIcon>
-                            Exclusive A
-                          </MenuItem>
-                          <MenuItem value={2}>
-                            <ListItemIcon>
-                              <ExclusiveBIcon />
-                            </ListItemIcon>
-                            Exclusive B
-                          </MenuItem>
-                          <MenuItem value={3}>
-                            <ListItemIcon>
-                              <AllAIcon />
-                            </ListItemIcon>
-                            All A
-                          </MenuItem>
-                          <MenuItem value={4}>
-                            <ListItemIcon>
-                              <AllBIcon />
-                            </ListItemIcon>
-                            All B
-                          </MenuItem>
-                          <MenuItem value={5}>
-                            <ListItemIcon>
-                              <IntersectionIcon />
-                            </ListItemIcon>
-                            Intersection
-                          </MenuItem>
-                        </Select>
-                      </FormControl>
-                    </Typography>
-                    {propertiesChart()}
-                  </Paper>
-                </Grid>
-                <Grid item xs={12} classes={{ root: classes.gridItem }}>
-                  <Paper classes={{ root: classes.distPaper }}>
-                    <Typography component="div">
-                      <Box fontWeight="bold">Property Distribution</Box>
-                    </Typography>
-                    {!state.loading.giniA && !state.loading.giniB ? (
-                      <LineChart
-                        percentage
-                        data={{
-                          labels: state.giniA.percentileData,
-                          datasets: [
-                            {
-                              data: state.giniA.histogramData.map(
-                                (num) =>
-                                  (num * 100) /
-                                  Math.max.apply(
-                                    Math,
-                                    state.giniA.histogramData
-                                  )
-                              ),
-                              // label: "Africa",
-                              borderColor: theme.palette.itemA.main,
-                              backgroundColor: theme.palette.itemA.main,
-                              fill: false,
-                            },
-                            {
-                              data: state.giniB.histogramData.map(
-                                (num) =>
-                                  (num * 100) /
-                                  Math.max.apply(
-                                    Math,
-                                    state.giniB.histogramData
-                                  )
-                              ),
-                              // label: "Africa",
-                              borderColor: theme.palette.itemB.main,
-                              backgroundColor: theme.palette.itemB.main,
-                              fill: false,
-                            },
-                          ],
-                        }}
-                        classes={{ ChartWrapper: classes.histogramChart }}
-                      />
-                    ) : (
-                      <Loading />
-                    )}
-                  </Paper>
-                </Grid>
-              </Grid>
+                      <Select defaultValue={0} onChange={() => {}}></Select>
+                    </FormControl>
+                  </Typography>
+                  {propertiesChart()}
+                </Paper>
+                <Paper style={{ width: "100%", flex: "1 1 auto" }}>
+                  <Typography component="div">
+                    <Box fontWeight="bold">Property Distribution</Box>
+                  </Typography>
+                  {false ? (
+                    <LineChart
+                      percentage
+                      data={{
+                        labels: state.giniA.percentileData,
+                        datasets: [
+                          {
+                            data: state.giniA.histogramData.map(
+                              (num) =>
+                                (num * 100) /
+                                Math.max.apply(Math, state.giniA.histogramData)
+                            ),
+                            // label: "Africa",
+                            borderColor: theme.palette.itemA.main,
+                            backgroundColor: theme.palette.itemA.main,
+                            fill: false,
+                          },
+                          {
+                            data: state.giniB.histogramData.map(
+                              (num) =>
+                                (num * 100) /
+                                Math.max.apply(Math, state.giniB.histogramData)
+                            ),
+                            // label: "Africa",
+                            borderColor: theme.palette.itemB.main,
+                            backgroundColor: theme.palette.itemB.main,
+                            fill: false,
+                          },
+                        ],
+                      }}
+                      classes={{ ChartWrapper: classes.histogramChart }}
+                    />
+                  ) : (
+                    <Loading />
+                  )}
+                </Paper>
+              </div>
             </Grid>
           </React.Fragment>
         ) : (
@@ -534,6 +318,25 @@ export default function Analysis(props) {
             <Typography>compare values</Typography>
           </Grid>
         )}
+        <Grid item xs={2}>
+          <div
+            style={{
+              width: "100%",
+              height: "100%",
+              display: "flex",
+              flexDirection: "column",
+            }}
+          >
+            <Paper
+              style={{
+                width: "100%",
+                height: "50%",
+                marginBottom: theme.spacing(1),
+              }}
+            />
+            <Paper style={{ width: "100%", flex: "1 1 auto" }} />
+          </div>
+        </Grid>
       </Grid>
     </ThemeProvider>
   );

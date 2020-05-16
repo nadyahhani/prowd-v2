@@ -31,6 +31,7 @@ import { getGiniEntity } from "../../services/dashboard";
 import { filterEntities } from "../../global";
 import PercentageSwitch from "../../components/Inputs/PercentageSwitch";
 import ProfileProperties from "../../components/Dashboard/ProfileProperties";
+import TableSort from "../../components/Misc/TableSort";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -110,7 +111,7 @@ const tableColumns = [
   },
   {
     width: 200,
-    label: "Entity",
+    label: "Item",
     dataKey: "label",
     linkKey: "entityLink",
     link: true,
@@ -188,7 +189,7 @@ export default function Profile(props) {
                       justify="center"
                       alignItems="center"
                     >
-                      <Grid item xs={10}>
+                      <Grid item xs={7}>
                         <TextField
                           placeholder="Search entity..."
                           size="small"
@@ -207,6 +208,13 @@ export default function Profile(props) {
                           }}
                         />
                       </Grid>
+                      <Grid item xs={3}>
+                        <TableSort
+                          onChange={(val) =>
+                            setState((s) => ({ ...s, tableSort: val }))
+                          }
+                        />
+                      </Grid>
                       <Grid item>
                         <IconButton size="small" edge="end">
                           <SaveAltIcon color="primary" />
@@ -220,7 +228,11 @@ export default function Profile(props) {
                     </Grid>
                     <div className={classes.table}>
                       <VirtualizedTable
-                        rows={filterEntities(state.entities, state.tableSearch)}
+                        rows={filterEntities(
+                          state.entities,
+                          state.tableSearch,
+                          state.tableSort
+                        )}
                         columns={tableColumns}
                         rowHeight={50}
                         headerHeight={60}
@@ -331,8 +343,17 @@ export default function Profile(props) {
                       alignItems: "center",
                     }}
                   >
-                    <Box fontWeight="bold">Gini Coefficient</Box>
-                    <Help text="//TODO" />
+                    <Box fontWeight="bold">Profile Imbalance</Box>
+                    <Help
+                      text={
+                        <Typography component="div">
+                          {`A higher imbalance score indicates that items of the 
+                          profile have less information (property) compared to other items of the same profile.
+                           The imbalance rate is based on the Gini coefficient.`}
+                          <Box fontWeight="bold">{`Click for more info...`}</Box>
+                        </Typography>
+                      }
+                    />
                   </Typography>
 
                   <Status value={state.giniData.gini}>Imbalanced</Status>
@@ -342,6 +363,7 @@ export default function Profile(props) {
                     labels={state.giniData.percentileData}
                     data={state.giniData.data}
                     gini={state.giniData.gini}
+                    actual={state.giniData.each_amount}
                     insight={state.giniData.insight}
                     classes={{
                       root: classes.giniChart,
@@ -369,7 +391,13 @@ export default function Profile(props) {
                   }}
                 >
                   <Box fontWeight="bold">
-                    Property Frequency <Help text="//TODO" />
+                    Property Frequency{" "}
+                    <Help
+                      text={
+                        <Typography>{`For every distinct property, the number of items which possess that property is summed up. 
+                      You can see which properties are the most common ones, and which are not as common.`}</Typography>
+                      }
+                    />
                   </Box>
                   <Typography
                     component="div"
@@ -425,16 +453,34 @@ export default function Profile(props) {
               <Paper classes={{ root: classes.distPaper }}>
                 <Typography component="div">
                   <Box fontWeight="bold">
-                    Property Distribution <Help text="//TODO" />
+                    Property Distribution{" "}
+                    <Help
+                      text={
+                        <Typography>{`Items with the same number of properties are counted and sorted. 
+                    From the shape of the distribution, you can see whether each 
+                    item of the class has the same amount of information (property) or not.`}</Typography>
+                      }
+                    />
                   </Box>
                 </Typography>
                 {!state.loading.gini ? (
                   <LineChart
                     data={{
-                      labels: state.distribution.labels,
+                      labels: state.distribution.labels.map(
+                        (item) =>
+                          `${(
+                            (item * 100) /
+                            state.distribution.maxLabel
+                          ).toFixed(1)}%`
+                      ),
                       datasets: [
                         {
-                          data: state.distribution.values,
+                          data: state.distribution.values.map(
+                            (item) => (item * 100) / state.giniData.amount
+                          ),
+                          actualLabels: state.distribution.labels,
+                          actualValues: state.distribution.values,
+                          entityCount: state.giniData.amount,
                           // label: "Africa",
                           borderColor: theme.palette.chart.main,
                           backgroundColor: theme.palette.chart.main,
@@ -442,6 +488,7 @@ export default function Profile(props) {
                         },
                       ],
                     }}
+                    maxValue={100}
                     classes={{ ChartWrapper: classes.histogramChart }}
                   />
                 ) : (

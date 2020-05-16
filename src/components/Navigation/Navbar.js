@@ -7,10 +7,11 @@ import SearchIcon from "@material-ui/icons/Search";
 import { TextField, InputAdornment, Button, Grid } from "@material-ui/core";
 import theme from "../../theme";
 import { useHistory } from "react-router-dom";
+import { ProwdLogo } from "../../images/export";
 
 const useStyles = makeStyles(() => ({
   root: {
-    flexGrow: 1,
+    // flexGrow: 1,
     position: "relative",
     height: "7vh",
   },
@@ -100,12 +101,17 @@ export default function Navbar() {
             style={{ padding: `0 ${theme.spacing(2)}px` }}
           >
             <Grid item xs={3}>
-              <Typography className={classes.title} variant="h2" noWrap>
-                ProWD
+              <Typography
+                className={classes.title}
+                variant="h2"
+                noWrap
+                component="div"
+              >
+                <ProwdLogo style={{ height: "12px" }} />
               </Typography>
             </Grid>
             <Grid item xs={3}>
-              <Grid container justify="center" spacing={2}>
+              <Grid container justify="center" spacing={4}>
                 <Grid item>
                   <Button onClick={() => history.push("/")}>Home</Button>
                 </Grid>

@@ -1,5 +1,5 @@
 import React from "react";
-import { makeStyles } from "@material-ui/core";
+import { makeStyles, Typography } from "@material-ui/core";
 import HorizontalBarChart from "./HorizontalBarChart";
 import theme from "../../theme";
 import Loading from "../Misc/Loading";
@@ -147,43 +147,58 @@ export default function VennProperties(props) {
       (item, idx) =>
         `${tempLabels[idx]}: ${tempValuesA[idx] + tempValuesB[idx]}`
     );
-    return (
-      <React.Fragment>
-        <HorizontalBarChart
-          key={`${getType(props.selected)}`}
-          data={{
-            labels: tempLabels.slice(0, 5),
+    if (tempLabels.length > 0) {
+      return (
+        <React.Fragment>
+          <HorizontalBarChart
+            key={`${getType(props.selected)}`}
+            data={{
+              labels: tempLabels.slice(0, 5),
 
-            datasets: [
-              {
-                data: tempValuesA.slice(0, 5),
-                backgroundColor: theme.palette.itemA.main,
-              },
-              {
-                data: tempValuesB.slice(0, 5),
-                backgroundColor: theme.palette.itemB.main,
-              },
-            ],
+              datasets: [
+                {
+                  data: tempValuesA.slice(0, 5),
+                  backgroundColor: theme.palette.itemA.main,
+                },
+                {
+                  data: tempValuesB.slice(0, 5),
+                  backgroundColor: theme.palette.itemB.main,
+                },
+              ],
+            }}
+            max={state[getType(props.selected)].count}
+            stacked
+            classes={{
+              root: classes.horizontalbar,
+              ChartWrapper: classes.horizontalbarchart,
+            }}
+          />
+          <AllPropertiesModal
+            key="modal-asc"
+            stacked
+            data={{
+              labels: tempLabels,
+              valuesA: tempValuesA,
+              valuesB: tempValuesB,
+              max: state[getType(props.selected)].count,
+            }}
+          />
+        </React.Fragment>
+      );
+    } else {
+      return (
+        <div
+          className={classes.horizontalbar}
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
           }}
-          max={state[getType(props.selected)].count}
-          stacked
-          classes={{
-            root: classes.horizontalbar,
-            ChartWrapper: classes.horizontalbarchart,
-          }}
-        />
-        <AllPropertiesModal
-          key="modal-asc"
-          stacked
-          data={{
-            labels: tempLabels,
-            valuesA: tempValuesA,
-            valuesB: tempValuesB,
-            max: state[getType(props.selected)].count,
-          }}
-        />
-      </React.Fragment>
-    );
+        >
+          <Typography>No Properties</Typography>
+        </div>
+      );
+    }
   } else {
     return <Loading />;
   }
