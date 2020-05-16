@@ -396,8 +396,8 @@ export default function Profile(props) {
                     Property Frequency{" "}
                     <Help
                       text={
-                        <Typography>{`For every distinct property, the number of items which possess that property is summed up. 
-                      You can see which properties are the most common ones, and which are not as common.`}</Typography>
+                        <Typography>{`Every item in Wikidata is linked with information (property). Property frequency is how many items possess a certain piece of information (property). 
+                      You can see which properties are common, and those which are less common.`}</Typography>
                       }
                     />
                   </Box>

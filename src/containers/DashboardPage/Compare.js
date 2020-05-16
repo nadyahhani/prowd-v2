@@ -123,7 +123,7 @@ export default function Compare(props) {
           ...s,
           notif: {
             open: true,
-            message: "Dashboard Successfully Editted",
+            message: "Dashboard Successfully Edited",
             severity: "success",
             action: () => {},
           },
