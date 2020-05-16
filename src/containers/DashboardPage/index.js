@@ -168,7 +168,17 @@ export default function DashboardPage(props) {
                 open: true,
                 message: "An Error Occured",
                 severity: "error",
-                action: () => fetchData("info"),
+                action: () => {
+                  fetchData("info");
+                  setState((s) => ({
+                    ...s,
+                    notif: {
+                      open: true,
+                      message: "Retrying... Please Wait.",
+                      severity: "Warning",
+                    },
+                  }));
+                },
               },
             }));
           }
@@ -204,7 +214,17 @@ export default function DashboardPage(props) {
                 open: true,
                 message: "An Error Occured",
                 severity: "error",
-                action: () => fetchData("profile"),
+                action: () => {
+                  fetchData("profile");
+                  setState((s) => ({
+                    ...s,
+                    notif: {
+                      open: true,
+                      message: "Retrying... Please Wait.",
+                      severity: "Warning",
+                    },
+                  }));
+                },
               },
             }));
           }
@@ -236,7 +256,17 @@ export default function DashboardPage(props) {
                 open: true,
                 message: "An Error Occured",
                 severity: "error",
-                action: () => fetchData("profile"),
+                action: () => {
+                  fetchData("profile");
+                  setState((s) => ({
+                    ...s,
+                    notif: {
+                      open: true,
+                      message: "Retrying... Please Wait.",
+                      severity: "Warning",
+                    },
+                  }));
+                },
               },
             }));
           }
@@ -267,7 +297,17 @@ export default function DashboardPage(props) {
                 open: true,
                 message: "An Error Occured",
                 severity: "error",
-                action: () => fetchData("compare"),
+                action: () => {
+                  fetchData("compare");
+                  setState((s) => ({
+                    ...s,
+                    notif: {
+                      open: true,
+                      message: "Retrying... Please Wait.",
+                      severity: "Warning",
+                    },
+                  }));
+                },
               },
             }));
           }
@@ -286,7 +326,17 @@ export default function DashboardPage(props) {
                 open: true,
                 message: "An Error Occured",
                 severity: "error",
-                action: () => fetchData("compare"),
+                action: () => {
+                  fetchData("compare");
+                  setState((s) => ({
+                    ...s,
+                    notif: {
+                      open: true,
+                      message: "Retrying... Please Wait.",
+                      severity: "Warning",
+                    },
+                  }));
+                },
               },
             }));
           }
@@ -308,7 +358,17 @@ export default function DashboardPage(props) {
                 open: true,
                 message: "An Error Occured",
                 severity: "error",
-                action: () => fetchData("compare"),
+                action: () => {
+                  fetchData("compare");
+                  setState((s) => ({
+                    ...s,
+                    notif: {
+                      open: true,
+                      message: "Retrying... Please Wait.",
+                      severity: "Warning",
+                    },
+                  }));
+                },
               },
             }));
           }

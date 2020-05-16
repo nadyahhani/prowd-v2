@@ -201,7 +201,7 @@ export default function Compare(props) {
                                 alignItems: "center",
                               }}
                             >
-                              <Box fontWeight="bold">Entities</Box>
+                              <Box fontWeight="bold">Item Count</Box>
                             </Typography>
                             <HorizontalBarChart
                               key={3}
@@ -213,7 +213,7 @@ export default function Compare(props) {
                                 ],
                                 datasets: [
                                   {
-                                    label: "# of Entities",
+                                    label: "Number of Items",
                                     backgroundColor: [
                                       theme.palette.itemA.main,
                                       theme.palette.itemB.main,
@@ -320,11 +320,11 @@ export default function Compare(props) {
                           alignItems: "center",
                         }}
                       >
-                        <Box fontWeight="bold">Profile Imbalance</Box>
+                        <Box fontWeight="bold">Imbalance Rate</Box>
                         <Help
                           text={
                             <Typography>{`Comparing imbalances can show you which subprofile is more even in terms
-                     of the amount of information the items posess.`}</Typography>
+                     of the amount of information each items of the subprofile possess.`}</Typography>
                           }
                         />
                       </Typography>

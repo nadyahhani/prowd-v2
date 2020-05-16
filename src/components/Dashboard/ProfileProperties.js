@@ -74,7 +74,7 @@ export default function ProfileProperties(props) {
             labels: tempLabels.slice(0, 5),
             datasets: [
               {
-                label: "# of Entities with this property",
+                label: "Number of Entities",
                 backgroundColor: theme.palette.chart.main,
                 data: state[key].values.slice(0, 5),
               },

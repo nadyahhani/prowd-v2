@@ -65,7 +65,10 @@ export default function Notif(props) {
               {state.message === "An Error Occured" ? (
                 <Button
                   size="small"
-                  onClick={props.action}
+                  onClick={() => {
+                    handleClose();
+                    props.action();
+                  }}
                   style={{ color: theme.palette.common.white }}
                 >
                   TRY AGAIN

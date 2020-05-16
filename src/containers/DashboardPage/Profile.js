@@ -32,6 +32,7 @@ import { filterEntities } from "../../global";
 import PercentageSwitch from "../../components/Inputs/PercentageSwitch";
 import ProfileProperties from "../../components/Dashboard/ProfileProperties";
 import TableSort from "../../components/Misc/TableSort";
+import Onboarding from "../../components/Misc/Onboarding";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -156,6 +157,7 @@ export default function Profile(props) {
 
   return (
     <ThemeProvider theme={theme}>
+      {/* <Onboarding /> */}
       <Grid
         container
         spacing={1}
@@ -271,7 +273,7 @@ export default function Profile(props) {
                             alignItems: "center",
                           }}
                         >
-                          <Box fontWeight="bold">Entities</Box>
+                          <Box fontWeight="bold">Items</Box>
                           {state.giniData.exceedLimit ? (
                             <Tooltip
                               title="This number is limited and is only a sample of the whole population"
@@ -343,7 +345,7 @@ export default function Profile(props) {
                       alignItems: "center",
                     }}
                   >
-                    <Box fontWeight="bold">Profile Imbalance</Box>
+                    <Box fontWeight="bold">Imbalance Rate</Box>
                     <Help
                       text={
                         <Typography component="div">
