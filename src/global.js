@@ -176,3 +176,30 @@ export const extend = (a, target, sources) => {
   });
   return target;
 };
+
+// function to portion compare properties
+
+export const compareDistinctProps = (properties) => {
+  const tempProps = Object.values(properties);
+  const result = {
+    countA: 0,
+    countB: 0,
+    countAB: 0,
+  };
+
+  tempProps.forEach((item) => {
+    const count1int = parseInt(item.count1);
+    const count2int = parseInt(item.count2);
+    //count
+    if (count1int > 0) {
+      result.countA += 1;
+    }
+    if (count2int > 0) {
+      result.countB += 1;
+    }
+    if (count1int > 0 && count2int > 0) {
+      result.countAB += 1;
+    }
+  });
+  return result;
+};

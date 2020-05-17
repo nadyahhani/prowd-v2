@@ -10,8 +10,13 @@ function App() {
     <Router>
       <Switch>
         <Route exact path="/" component={Landing} />
-        <Route exact path="/dashboards" component={BrowsePage} />
+        <Route exact path="/browse/:search" component={BrowsePage} />
         <Route exact path="/dashboards/:id/:page" component={DashboardPage} />
+        <Route
+          exact
+          path="/dashboards/:id/:page/:subpage"
+          component={DashboardPage}
+        />
       </Switch>
     </Router>
   );

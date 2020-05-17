@@ -71,7 +71,7 @@ const useStyles = makeStyles((theme) => ({
 export default function SimpleTabs(props) {
   const classes = useStyles();
   const history = useHistory();
-  const [value, setValue] = React.useState(0);
+  const [value, setValue] = React.useState(null);
 
   React.useEffect(() => {
     switch (props.selectedTab) {
@@ -91,88 +91,90 @@ export default function SimpleTabs(props) {
     <div
       className={`${classes.root} ${props.className ? props.className : ""}`}
     >
-      <Paper>
-        <Tabs
-          value={value}
-          aria-label="Dashboard Navigation"
-          classes={{ root: classes.tabs }}
-          TabIndicatorProps={{ className: classes.indicator }}
-        >
-          <Tab
-            component="a"
-            onClick={() => {
-              history.push(`/dashboards/${props.dashId}/profile`);
-            }}
-            classes={{ selected: classes.selectedTab, root: classes.tab }}
-            label={
-              <Typography component="div">
-                <Box fontWeight="bold">Profile</Box>
-              </Typography>
-            }
-            {...a11yProps(0)}
-          />
-          <Tab
-            component="a"
-            onClick={() => {
-              history.push(`/dashboards/${props.dashId}/compare`);
-            }}
-            classes={{ selected: classes.selectedTab, root: classes.tab }}
-            className={classes.tab}
-            label={
-              <Typography component="div">
-                <Box fontWeight="bold">Compare</Box>
-              </Typography>
-            }
-            {...a11yProps(1)}
-          />
-          <Tab
-            component="a"
-            onClick={() => {
-              history.push(`/dashboards/${props.dashId}/analysis`);
-            }}
-            classes={{ selected: classes.selectedTab, root: classes.tab }}
-            className={classes.tab}
-            label={
-              <Typography component="div">
-                <Box fontWeight="bold">Discover</Box>
-              </Typography>
-            }
-            {...a11yProps(2)}
-          />
-          {/* <div className={classes.fillerTab} /> */}
-        </Tabs>
+      {value === 0 || value === 1 || value === 2 ? (
+        <Paper>
+          <Tabs
+            value={value}
+            aria-label="Dashboard Navigation"
+            classes={{ root: classes.tabs }}
+            TabIndicatorProps={{ className: classes.indicator }}
+          >
+            <Tab
+              component="a"
+              onClick={() => {
+                history.push(`/dashboards/${props.dashId}/profile`);
+              }}
+              classes={{ selected: classes.selectedTab, root: classes.tab }}
+              label={
+                <Typography component="div">
+                  <Box fontWeight="bold">Profile</Box>
+                </Typography>
+              }
+              {...a11yProps(0)}
+            />
+            <Tab
+              component="a"
+              onClick={() => {
+                history.push(`/dashboards/${props.dashId}/compare`);
+              }}
+              classes={{ selected: classes.selectedTab, root: classes.tab }}
+              className={classes.tab}
+              label={
+                <Typography component="div">
+                  <Box fontWeight="bold">Compare</Box>
+                </Typography>
+              }
+              {...a11yProps(1)}
+            />
+            <Tab
+              component="a"
+              onClick={() => {
+                history.push(`/dashboards/${props.dashId}/analysis`);
+              }}
+              classes={{ selected: classes.selectedTab, root: classes.tab }}
+              className={classes.tab}
+              label={
+                <Typography component="div">
+                  <Box fontWeight="bold">Discover</Box>
+                </Typography>
+              }
+              {...a11yProps(2)}
+            />
+            {/* <div className={classes.fillerTab} /> */}
+          </Tabs>
 
-        <TabPanel value={value} index={0}>
-          <Profile
-            data={props.data}
-            hash={props.dashId}
-            fetchData={props.fetchData}
-            updateData={props.updateData}
-            state={props.states.profile}
-            setState={props.setStates.profile}
-          />
-        </TabPanel>
-        <TabPanel value={value} index={1}>
-          <Compare
-            data={props.data}
-            hash={props.dashId}
-            fetchData={props.fetchData}
-            updateData={props.updateData}
-            state={props.states.compare}
-            setState={props.setStates.compare}
-          />
-        </TabPanel>
-        <TabPanel value={value} index={2}>
-          <Analysis
-            data={props.data}
-            hash={props.dashId}
-            fetchData={props.fetchData}
-            updateData={props.updateData}
-            state={props.states.discover}
-            setState={props.setStates.discover}
-          />
-        </TabPanel>
-      </Paper>
+          <TabPanel value={value} index={0}>
+            <Profile
+              data={props.data}
+              hash={props.dashId}
+              fetchData={props.fetchData}
+              updateData={props.updateData}
+              state={props.states.profile}
+              setState={props.setStates.profile}
+            />
+          </TabPanel>
+          <TabPanel value={value} index={1}>
+            <Compare
+              data={props.data}
+              hash={props.dashId}
+              fetchData={props.fetchData}
+              updateData={props.updateData}
+              state={props.states.compare}
+              setState={props.setStates.compare}
+            />
+          </TabPanel>
+          <TabPanel value={value} index={2}>
+            <Analysis
+              data={props.data}
+              hash={props.dashId}
+              fetchData={props.fetchData}
+              updateData={props.updateData}
+              state={props.states.discover}
+              setState={props.setStates.discover}
+            />
+          </TabPanel>
+        </Paper>
+      ) : null}
     </div>
   );
 }

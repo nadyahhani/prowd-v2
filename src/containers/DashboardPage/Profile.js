@@ -136,7 +136,15 @@ export default function Profile(props) {
   const classes = useStyles();
   const { state, setState } = props;
 
-  React.useEffect(() => {}, [state]);
+  React.useEffect(() => {
+    if (!props.data.loaded.profile) {
+      props.fetchData("profile");
+      props.updateData((s) => ({
+        ...s,
+        loaded: { ...s.loaded, profile: true },
+      }));
+    }
+  }, [state, props.data.loaded.profile, props.fetchData, props.updateData]);
 
   const checkProperty = (value) => {
     const id = value.slice(value.indexOf("(") + 1, value.indexOf(")"));
@@ -193,7 +201,7 @@ export default function Profile(props) {
                     >
                       <Grid item xs={7}>
                         <TextField
-                          placeholder="Search entity..."
+                          placeholder="Search for item..."
                           size="small"
                           variant="outlined"
                           fullWidth
@@ -299,11 +307,11 @@ export default function Profile(props) {
                 </Grid>
                 <Grid item xs={6}>
                   <Paper classes={{ root: classes.card }}>
-                    {!state.loading.gini ? (
+                    {!state.loading.properties ? (
                       <React.Fragment>
                         <Typography variant="h1" component="div">
                           <Box fontWeight="medium">
-                            {state.distribution.maxLabel}
+                            {state.mappedProperties.labels.length}
                           </Box>
                         </Typography>
                         <Typography

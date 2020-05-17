@@ -103,7 +103,15 @@ export default function Compare(props) {
   const classes = useStyles();
   const { state, setState } = props;
 
-  React.useEffect(() => {}, [state]);
+  React.useEffect(() => {
+    if (!props.data.loaded.compare) {
+      props.fetchData("compare");
+      props.updateData((s) => ({
+        ...s,
+        loaded: { ...s.loaded, compare: true },
+      }));
+    }
+  }, [state, props.data.loaded.compare, props.fetchData, props.updateData]);
 
   const applyFilter = (data) => {
     let temp = [];
@@ -263,8 +271,9 @@ export default function Compare(props) {
                               simple
                               data={{
                                 labels: [
-                                  `A: ${state.mappedProperties.countA}`,
-                                  `B: ${state.mappedProperties.countB}`,
+                                  `A: ${state.distinctProps.countA}`,
+                                  `B: ${state.distinctProps.countB}`,
+                                  `Shared: ${state.distinctProps.countAB}`,
                                 ],
                                 datasets: [
                                   {
@@ -272,10 +281,12 @@ export default function Compare(props) {
                                     backgroundColor: [
                                       theme.palette.itemA.main,
                                       theme.palette.itemB.main,
+                                      theme.palette.itemMerge.main,
                                     ],
                                     data: [
-                                      state.mappedProperties.countA,
-                                      state.mappedProperties.countB,
+                                      state.distinctProps.countA,
+                                      state.distinctProps.countB,
+                                      state.distinctProps.countAB,
                                     ],
                                   },
                                 ],
@@ -323,8 +334,8 @@ export default function Compare(props) {
                         <Box fontWeight="bold">Imbalance Rate</Box>
                         <Help
                           text={
-                            <Typography>{`Comparing imbalances can show you which subprofile is more even in terms
-                     of the amount of information each items of the subprofile possess.`}</Typography>
+                            <Typography>{`Comparing imbalances can show you which subclass is more even in terms
+                     of the amount of information each items of the subclass possess.`}</Typography>
                           }
                         />
                       </Typography>

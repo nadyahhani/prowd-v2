@@ -88,9 +88,10 @@ export function getPropertyGap(hash, afterFunc) {
     });
 }
 
-export function editGlobal(hash, classID, filters, afterFunc) {
+export function editGlobal(hash, classID, filters, dashData, afterFunc) {
   axios
     .post(`${url}/api/dashboard/edit/global`, {
+      ...dashData,
       hashCode: hash,
       entityID: classID,
       filters: filters,
@@ -210,4 +211,21 @@ export function getPropertyValues(hash, id, afterFunc) {
     });
 }
 
-
+export function getDiscoverGini(hash, afterFunc) {
+  axios
+    .get(
+      `${url}/api/entity/gini/analysis?hash_code=${hash}
+    `
+    )
+    .then(
+      (response) => {
+        afterFunc({ success: true, ...response.data });
+      },
+      (error) => {
+        afterFunc({ success: false, ...error });
+      }
+    )
+    .catch((err) => {
+      afterFunc({ success: false, ...err });
+    });
+}

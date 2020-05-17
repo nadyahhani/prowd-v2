@@ -23,6 +23,7 @@ import { editCompare, editDiscover } from "../../services/dashboard";
 import LineChart from "../../components/Dashboard/LineChart";
 import DiscoverDimension from "../../components/Dashboard/DiscoverDimension";
 import AllPropertiesModal from "../../components/Dashboard/AllPropertiesModal";
+import { DiscoverIllustration } from "../../images/export";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -102,7 +103,15 @@ export default function Analysis(props) {
   const classes = useStyles();
   const { state, setState } = props;
 
-  React.useEffect(() => {}, [state]);
+  React.useEffect(() => {
+    if (!props.data.loaded.discover) {
+      props.fetchData("discover");
+      props.updateData((s) => ({
+        ...s,
+        loaded: { ...s.loaded, discover: true },
+      }));
+    }
+  }, [state, props.data.loaded.discover, props.fetchData, props.updateData]);
 
   const applyFilter = (data) => {
     let temp = [];
@@ -137,70 +146,132 @@ export default function Analysis(props) {
     });
   };
   function itemCountChart() {
-    const dataTemp = {
-      labels: ["a", "b", "c", "d", "e"],
-      datasets: [
-        {
-          label: "Number of Entities",
-          data: [1, 5, 4, 6, 3],
-          backgroundColor: theme.palette.chart.main,
-        },
-      ],
-    };
-    return (
-      <React.Fragment>
-        <HorizontalBarChart
-          key={"item-0"}
-          data={dataTemp}
-          classes={{
-            root: classes.horizontalbar,
-            ChartWrapper: classes.horizontalbarchart,
-          }}
-          max={10}
-        />
-        <AllPropertiesModal
-          key="modal-desc"
-          data={{
-            labels: ["a", "b", "c", "d", "e"],
-            values: [1, 5, 4, 6, 3],
-            max: 10,
-          }}
-        />
-      </React.Fragment>
-    );
+    if (!state.loading.gini) {
+      let labels = [];
+      let values = [];
+      const sorted = [...state.gini].sort((b, a) => {
+        if (a.amount > b.amount) {
+          return 1;
+        } else {
+          return -1;
+        }
+      });
+      sorted.forEach((item) => {
+        labels.push(
+          `${
+            item.analysis_info.item_1_label
+              ? item.analysis_info.item_1_label
+              : ""
+          }${
+            item.analysis_info.item_2_label
+              ? `-${item.analysis_info.item_2_label}`
+              : ""
+          }${
+            item.analysis_info.item_3_label
+              ? `-${item.analysis_info.item_3_label}`
+              : ""
+          }: ${item.amount}`
+        );
+        values.push(item.amount);
+      });
+      const dataTemp = {
+        labels: [...labels].splice(0, 5),
+        datasets: [
+          {
+            label: "Number of Entities",
+            data: [...values].splice(0, 5),
+            backgroundColor: theme.palette.chart.main,
+          },
+        ],
+      };
+      return (
+        <React.Fragment>
+          <HorizontalBarChart
+            key={"item-0"}
+            data={dataTemp}
+            classes={{
+              root: classes.horizontalbar,
+              ChartWrapper: classes.horizontalbarchart,
+            }}
+            // max={10}
+          />
+          <AllPropertiesModal
+            key="modal-desc"
+            data={{
+              labels: labels,
+              values: values,
+              // max: 10,
+            }}
+          />
+        </React.Fragment>
+      );
+    } else {
+      return <Loading />;
+    }
   }
   function giniChart() {
-    const dataTemp = {
-      labels: ["a", "b", "c", "d", "e"],
-      datasets: [
-        {
-          label: "Number of Entities",
-          data: [1, 5, 4, 6, 3],
-          backgroundColor: theme.palette.chart.main,
-        },
-      ],
-    };
-    return (
-      <React.Fragment>
-        <HorizontalBarChart
-          key={"gini-0"}
-          data={dataTemp}
-          classes={{
-            root: classes.horizontalbar,
-            ChartWrapper: classes.horizontalbarchart,
-          }}
-          max={10}
-        />
-        <AllPropertiesModal
-          key="modal-desc"
-          data={{
-            labels: ["a", "b", "c", "d", "e"],
-            values: [1, 5, 4, 6, 3],
-            max: 10,
-          }}
-        />
-      </React.Fragment>
-    );
+    if (!state.loading.gini) {
+      let labels = [];
+      let values = [];
+      const sorted = [...state.gini].sort((b, a) => {
+        if (a.gini > b.gini) {
+          return 1;
+        } else {
+          return -1;
+        }
+      });
+      sorted.forEach((item) => {
+        labels.push(
+          `${
+            item.analysis_info.item_1_label
+              ? item.analysis_info.item_1_label
+              : ""
+          }${
+            item.analysis_info.item_2_label
+              ? `-${item.analysis_info.item_2_label}`
+              : ""
+          }${
+            item.analysis_info.item_3_label
+              ? `-${item.analysis_info.item_3_label}`
+              : ""
+          }: ${item.gini}`
+        );
+        values.push(item.gini);
+      });
+      const dataTemp = {
+        labels: [...labels].splice(0, 5),
+        datasets: [
+          {
+            label: "Gini Coefficient",
+            data: [...values].splice(0, 5),
+            backgroundColor: theme.palette.chart.main,
+          },
+        ],
+      };
+      return (
+        <React.Fragment>
+          <HorizontalBarChart
+            key={"gini-0"}
+            data={dataTemp}
+            classes={{
+              root: classes.horizontalbar,
+              ChartWrapper: classes.horizontalbarchart,
+            }}
+            max={1}
+          />
+          <AllPropertiesModal
+            key="modal-desc"
+            data={{
+              labels: labels,
+              values: values,
+              max: 1,
+            }}
+          />
+        </React.Fragment>
+      );
+    } else {
+      return <Loading />;
+    }
   }
 
   function propertyChart() {
@@ -276,7 +347,7 @@ export default function Analysis(props) {
             </Grid>
           </Paper>
         </Grid>
-        {true ? (
+        {state.loading.dimensions || state.dimensions.length > 0 ? (
           <React.Fragment>
             <Grid item xs classes={{ root: classes.outerGrid }}>
               <div
@@ -304,9 +375,7 @@ export default function Analysis(props) {
                       width: "100%",
                     }}
                   >
-                    <Box fontWeight="bold">
-                      Item Count{" "}
-                    </Box>
+                    <Box fontWeight="bold">Item Count </Box>
                     <Typography
                       component="div"
                       style={{
@@ -354,9 +423,7 @@ export default function Analysis(props) {
                       width: "100%",
                     }}
                   >
-                    <Box fontWeight="bold">
-                      Imbalance Rate{" "}
-                    </Box>
+                    <Box fontWeight="bold">Imbalance Rate </Box>
                     <Typography
                       component="div"
                       style={{
@@ -526,8 +593,21 @@ export default function Analysis(props) {
             </Grid>
           </React.Fragment>
         ) : (
-          <Grid item xs={9}>
-            <Typography>compare values</Typography>
+          <Grid
+            item
+            xs
+            style={{
+              height: "60vh",
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <Typography variant="h2">
+              Discover facts about all subclasses of the Profile
+            </Typography>
+            <DiscoverIllustration />
           </Grid>
         )}
       </Grid>

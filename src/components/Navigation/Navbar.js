@@ -4,7 +4,13 @@ import Toolbar from "@material-ui/core/Toolbar";
 import Typography from "@material-ui/core/Typography";
 import { fade, makeStyles } from "@material-ui/core/styles";
 import SearchIcon from "@material-ui/icons/Search";
-import { TextField, InputAdornment, Button, Grid } from "@material-ui/core";
+import {
+  TextField,
+  InputAdornment,
+  Button,
+  Grid,
+  ButtonBase,
+} from "@material-ui/core";
 import theme from "../../theme";
 import { useHistory } from "react-router-dom";
 import { ProwdLogo } from "../../images/export";
@@ -75,7 +81,11 @@ const useStyles = makeStyles(() => ({
 export default function Navbar() {
   const classes = useStyles();
   const history = useHistory();
+  const [state, useState] = React.useState({ search: "" });
 
+  React.useEffect(() => {
+    console.log(window.location.pathname);
+  }, []);
   return (
     <div className={classes.root}>
       <AppBar
@@ -101,27 +111,50 @@ export default function Navbar() {
             style={{ padding: `0 ${theme.spacing(2)}px` }}
           >
             <Grid item xs={3}>
-              <Typography
-                className={classes.title}
-                variant="h2"
-                noWrap
-                component="div"
-              >
-                <ProwdLogo style={{ height: "12px" }} />
-              </Typography>
+              <ButtonBase onClick={() => history.push("/")}>
+                <Typography
+                  className={classes.title}
+                  variant="h2"
+                  noWrap
+                  component="div"
+                >
+                  <ProwdLogo style={{ height: "12px" }} />
+                </Typography>
+              </ButtonBase>
             </Grid>
             <Grid item xs={3}>
               <Grid container justify="center" spacing={4}>
                 <Grid item>
-                  <Button onClick={() => history.push("/")}>Home</Button>
+                  <Button
+                    color={window.location.pathname === "/" ? "primary" : ""}
+                    onClick={() => history.push("/")}
+                  >
+                    Home
+                  </Button>
                 </Grid>
                 <Grid item>
-                  <Button onClick={() => history.push("/dashboards/")}>
+                  <Button
+                    color={
+                      window.location.pathname.includes("/browse/")
+                        ? "primary"
+                        : ""
+                    }
+                    onClick={() => history.push("/browse/search=")}
+                  >
                     Browse
                   </Button>
                 </Grid>
                 <Grid item>
-                  <Button onClick={() => history.push("/#")}>About</Button>
+                  <Button
+                    color={
+                      window.location.pathname.includes("/about")
+                        ? "primary"
+                        : ""
+                    }
+                    onClick={() => history.push("/#")}
+                  >
+                    About
+                  </Button>
                 </Grid>
               </Grid>
             </Grid>
@@ -130,6 +163,16 @@ export default function Navbar() {
                 size="small"
                 variant="outlined"
                 placeholder="Search for dashboards..."
+                // value={state.search}
+                onKeyDown={(e) => {
+                  const val = e.target.value;
+                  const key = e.keyCode;
+
+                  // setState(s => ({...s, search: val}))
+                  if (key === 13) {
+                    history.push(`/browse/search=${val.replace(/ /g, "+")}`);
+                  }
+                }}
                 fullWidth
                 InputProps={{
                   classes: {

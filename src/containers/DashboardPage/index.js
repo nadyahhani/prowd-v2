@@ -11,6 +11,7 @@ import {
   Grid,
   Paper,
 } from "@material-ui/core";
+import Settings from "../../components/Misc/Settings";
 import theme from "../../theme";
 import SimpleTabs from "../../components/Navigation/SimpleTabs";
 import Navbar from "../../components/Navigation/Navbar";
@@ -19,13 +20,21 @@ import {
   editGlobal,
   getCompareGini,
   getCompareProperties,
+  getDiscoverGini,
 } from "../../services/dashboard";
 import { getGiniEntity, getAllProperties } from "../../services/dashboard";
-import { countProperties, sortProperties, cut } from "../../global";
+import {
+  countProperties,
+  sortProperties,
+  cut,
+  compareDistinctProps,
+} from "../../global";
 import SettingsIcon from "@material-ui/icons/Settings";
 import Loading from "../../components/Misc/Loading";
 import FilterBox from "../../components/Inputs/FilterBox";
 import Notif from "../../components/Misc/Notif";
+import Onboarding from "../../components/Misc/Onboarding";
+import { useHistory } from "react-router-dom";
 
 const useStyles = makeStyles(() => ({
   content: {
@@ -56,7 +65,21 @@ const useStyles = makeStyles(() => ({
 
 export default function DashboardPage(props) {
   const classes = useStyles();
+  const history = useHistory();
   const [state, setState] = React.useState({
+    loaded: {
+      global: false,
+      profile: false,
+      compare: false,
+      discover: false,
+    },
+    onboarding: {
+      page: "profile",
+      step: 0,
+      running: false,
+      class: "",
+      filters: "",
+    },
     loading: true,
     globalData: {},
     update: false,
@@ -93,6 +116,7 @@ export default function DashboardPage(props) {
     mappedProperties: {},
     propertySort: 0,
     propertyPercent: 0,
+    distinctProps: {},
     // loading states
     loading: {
       giniA: true,
@@ -107,22 +131,45 @@ export default function DashboardPage(props) {
   const [discoverState, setDiscoverState] = React.useState({
     loaded: false,
     dimensions: [],
+    gini: [],
     // loading states
     loading: {
       dimensions: true,
+      gini: true,
     },
   });
+  const onboardingChangeHandler = (e) => {
+    if (e.reason === "stop") {
+      setState((s) => ({
+        ...s,
+        onboarding: { ...s.onboarding, running: false },
+      }));
+      history.push(
+        `/dashboards/${props.match.params.id}/${props.match.params.page}`
+      );
+    }
+  };
 
   const fetchData = React.useCallback(
     (scope = "") => {
+      console.log("scope: ", scope);
+
       // Global
       if (
-        scope === "" ||
-        scope === "compare" ||
-        scope === "info" ||
-        scope === "discover"
+        !state.loaded.global &&
+        (scope === "" ||
+          scope === "profile" ||
+          scope === "compare" ||
+          scope === "info" ||
+          scope === "discover")
       ) {
-        setState((s) => ({ ...s, loading: true }));
+        console.log("global pull");
+
+        setState((s) => ({
+          ...s,
+          loading: true,
+          loaded: { ...s.loaded, global: true },
+        }));
         setCompareState((s) => ({
           ...s,
           loading: { ...s.loading, compareFilters: true },
@@ -187,6 +234,7 @@ export default function DashboardPage(props) {
 
       // Profile
       if (scope === "" || scope === "profile") {
+        console.log("profile pull");
         setProfileState((s) => ({
           ...s,
           loading: {
@@ -274,6 +322,7 @@ export default function DashboardPage(props) {
       }
       // Compare
       if (scope === "" || scope === "compare") {
+        console.log("compare pull");
         setCompareState((s) => ({
           ...s,
           loading: {
@@ -348,6 +397,7 @@ export default function DashboardPage(props) {
             setCompareState((s) => ({
               ...s,
               properties: r.result,
+              distinctProps: compareDistinctProps(r.result),
               mappedProperties: temp,
               loading: { ...s.loading, properties: false },
             }));
@@ -374,17 +424,71 @@ export default function DashboardPage(props) {
           }
         });
       }
+      if (scope === "" || scope === "discover") {
+        console.log("discover pull");
+        setDiscoverState((s) => ({
+          ...s,
+          loading: { ...s.loading, gini: true },
+        }));
+        getDiscoverGini(props.match.params.id, (r) => {
+          if (r.success) {
+            setDiscoverState((s) => ({
+              ...s,
+              gini: r.data,
+              loading: { ...s.loading, gini: false },
+            }));
+          } else {
+            setState((s) => ({
+              ...s,
+              notif: {
+                open: true,
+                message: "An Error Occured",
+                severity: "error",
+                action: () => {
+                  fetchData("discover");
+                  setState((s) => ({
+                    ...s,
+                    notif: {
+                      open: true,
+                      message: "Retrying... Please Wait.",
+                      severity: "Warning",
+                    },
+                  }));
+                },
+              },
+            }));
+          }
+        });
+      }
     },
     [props.match.params.id]
   );
 
   React.useEffect(() => {
-    fetchData();
-  }, [fetchData]);
+    if (props.match.params.subpage && state.globalData.entity) {
+      switch (props.match.params.subpage) {
+        case "onboarding":
+          setState((s) => ({
+            ...s,
+            onboarding: {
+              page: "profile",
+              step: 0,
+              running: true,
+              class: `${state.globalData.entity.entityLabel} (${state.globalData.entity.entityID})`,
+              filters: "",
+            },
+          }));
+          return;
+        default:
+          return;
+      }
+    }
+  }, [props.match.params.subpage, state.globalData.entity]);
 
   return (
     <ThemeProvider theme={theme}>
       <Notif {...state.notif} />
+      <Onboarding {...state.onboarding} onChange={onboardingChangeHandler} />
       <Navbar />
       <div className={classes.content}>
         <div
@@ -478,9 +582,22 @@ export default function DashboardPage(props) {
                   hash,
                   state.globalData.entity.entityID,
                   tempFilter,
+                  {
+                    name: state.globalData.name,
+                    author: state.globalData.author,
+                  },
                   (r) => {
                     if (r.success) {
-                      fetchData();
+                      setState((s) => ({
+                        ...s,
+                        loaded: {
+                          global: false,
+                          profile: false,
+                          compare: false,
+                          discover: false,
+                        },
+                      }));
+                      fetchData(props.match.params.page);
                     }
                   }
                 );
@@ -488,9 +605,15 @@ export default function DashboardPage(props) {
             >
               Apply
             </Button>
-            <IconButton size="small" edge="end">
-              <SettingsIcon color="primary" />
-            </IconButton>
+            <Settings
+              onChange={(e) => {
+                if (e.reason === "restart_onboarding") {
+                  history.push(
+                    `/dashboards/${props.match.params.id}/${props.match.params.page}/onboarding`
+                  );
+                }
+              }}
+            />
           </div>
         </div>
         <div
@@ -582,7 +705,7 @@ export default function DashboardPage(props) {
             className={classes.tabs}
             dashId={props.match.params.id}
             selectedTab={props.match.params.page}
-            data={state.globalData}
+            data={{ ...state.globalData, loaded: { ...state.loaded } }}
             updateData={setState}
             fetchData={fetchData}
             states={{

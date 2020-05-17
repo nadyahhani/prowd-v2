@@ -8,6 +8,7 @@ import LandingTop from "./LandingTop.svg";
 import analysis_1 from "./analysis_ 1.svg";
 import files_and_folder_1 from "./files_and_folder 1.svg";
 import compare_illustration from "./CompareIllustration.svg";
+import discover_illustration from "./discover_illustration.svg";
 import mindmap from "./mindmap.svg";
 import logo from "./logo.svg";
 import All from "./All.svg";
@@ -90,7 +91,9 @@ function MindMapIcon(props) {
 function ProwdLogo(props) {
   return <img {...props} src={logo} alt="logo" />;
 }
-
+function DiscoverIllustration(props) {
+  return <img {...props} src={discover_illustration} alt="logo" />;
+}
 export {
   AllIcon,
   AllAIcon,
@@ -104,4 +107,5 @@ export {
   CompareIllustrationIcon,
   MindMapIcon,
   ProwdLogo,
+  DiscoverIllustration,
 };

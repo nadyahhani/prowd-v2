@@ -13,6 +13,7 @@ import {
   ButtonBase,
   GridList,
   GridListTile,
+  InputLabel,
 } from "@material-ui/core";
 import tempData from "./tempData";
 import Navbar from "../../components/Navigation/Navbar";
@@ -28,6 +29,7 @@ import {
   MindMapIcon,
 } from "../../images/export";
 import { NavigateNext, ExpandMore } from "@material-ui/icons";
+import Help from "../../components/Misc/Help";
 
 const useStyles = makeStyles(() => ({
   centerContent: {
@@ -193,6 +195,9 @@ function Landing(props) {
                 }}
                 color="primary"
                 endIcon={<NavigateNext />}
+                onClick={() => history.push(
+                  "/dashboards/cffdb9749649/profile/onboarding"
+                )}
               >
                 Show me
               </Button>
@@ -206,86 +211,105 @@ function Landing(props) {
                   direction="column"
                   className={classes.inputInput}
                 >
-                  <Grid item>
-                    <VirtualAutocomp
-                      label="Class"
-                      placeholder="e.g. Human, Disease, Country"
-                      options={state.classes}
-                      loading={state.classes.length === 0}
-                      inputValue={state.classInput}
-                      value={state.selectedClass}
-                      onInputChange={(e) => {
-                        // console.log(e);
-                        if (e) {
-                          const tempval = e.target.value;
-                          setState((s) => ({
-                            ...s,
-                            classInput: tempval,
-                            // classes: [],
-                          }));
+                  <Grid
+                    item
+                    style={{
+                      display: "flex",
+                      flexDirection: "row",
+                      alignItems: "center",
+                      justifyContent: "space-between",
+                    }}
+                  >
+                    <div style={{ width: "94%" }}>
+                      <VirtualAutocomp
+                        label="Class"
+                        placeholder="e.g. Human, Disease, Country"
+                        options={state.classes}
+                        loading={state.classes.length === 0}
+                        inputValue={state.classInput}
+                        value={state.selectedClass}
+                        onInputChange={(e) => {
+                          // console.log(e);
+                          if (e) {
+                            const tempval = e.target.value;
+                            setState((s) => ({
+                              ...s,
+                              classInput: tempval,
+                              // classes: [],
+                            }));
 
-                          getClasses(e.target.value, (response) => {
-                            response.success &&
-                              setState((s) => ({
-                                ...s,
-                                classes: getUnique(
-                                  [...s.classes, ...response.entities],
-                                  "id"
-                                ),
-                              }));
-                          });
-                        }
-                      }}
-                      onChange={(event, newValue, reason) => {
-                        if (newValue) {
-                          setState((s) => ({
-                            ...s,
-                            selectedClass: newValue,
-                            classInput: `${newValue.label} (${newValue.id})`,
-                          }));
-                        }
-                        if (reason === "clear") {
-                          setState((s) => ({
-                            ...s,
-                            selectedClass: null,
-                            classInput: "",
-                          }));
-                        }
-                      }}
-                      onClose={(event, reason) => {
-                        console.log(reason, state.selectedClass);
+                            getClasses(e.target.value, (response) => {
+                              response.success &&
+                                setState((s) => ({
+                                  ...s,
+                                  classes: getUnique(
+                                    [...s.classes, ...response.entities],
+                                    "id"
+                                  ),
+                                }));
+                            });
+                          }
+                        }}
+                        onChange={(event, newValue, reason) => {
+                          if (newValue) {
+                            setState((s) => ({
+                              ...s,
+                              selectedClass: newValue,
+                              classInput: `${newValue.label} (${newValue.id})`,
+                            }));
+                          }
+                          if (reason === "clear") {
+                            setState((s) => ({
+                              ...s,
+                              selectedClass: null,
+                              classInput: "",
+                            }));
+                          }
+                        }}
+                        onClose={(event, reason) => {
+                          console.log(reason, state.selectedClass);
 
-                        if (
-                          reason !== "select-option" &&
-                          !state.selectedClass
-                        ) {
-                          setState((s) => ({
-                            ...s,
-                            classInput: "",
-                            selectedClass: null,
-                          }));
-                        }
-                      }}
-                      getOptionLabel={(option) => {
-                        return `${option.label} (${option.id})${
-                          option.aliases
-                            ? ` also known as ${option.aliases.join(", ")}`
-                            : ""
-                        }`;
-                      }}
-                      renderOption={(option) => (
-                        <div>
-                          <Typography
-                            noWrap
-                          >{`${option.label} (${option.id})`}</Typography>
-                          <Typography
-                            variant="caption"
-                            style={{ lineHeight: "1.3vmin" }}
-                          >
-                            {cut(option.description, 500)}
-                          </Typography>
-                        </div>
-                      )}
+                          if (
+                            reason !== "select-option" &&
+                            !state.selectedClass
+                          ) {
+                            setState((s) => ({
+                              ...s,
+                              classInput: "",
+                              selectedClass: null,
+                            }));
+                          }
+                        }}
+                        getOptionLabel={(option) => {
+                          return `${option.label} (${option.id})${
+                            option.aliases
+                              ? ` also known as ${option.aliases.join(", ")}`
+                              : ""
+                          }`;
+                        }}
+                        renderOption={(option) => (
+                          <div>
+                            <Typography
+                              noWrap
+                            >{`${option.label} (${option.id})`}</Typography>
+                            <Typography
+                              variant="caption"
+                              style={{ lineHeight: "1.3vmin" }}
+                            >
+                              {cut(option.description, 500)}
+                            </Typography>
+                          </div>
+                        )}
+                      />
+                    </div>
+                    <Help
+                      text={
+                        <Typography>
+                          What is the classification of the object of your
+                          interest? Is it human? Or maybe an animal? Click on
+                          the examples if you are stuck.
+                        </Typography>
+                      }
                     />
                   </Grid>
                   <Grid item>
@@ -295,7 +319,8 @@ function Landing(props) {
                       options={state.appliedFilters}
                       propertiesOptions={state.propertiesOptions}
                       selectedClass={state.selectedClass}
-                      disabled={!state.selectedClass}
+                      // disabled={!state.selectedClass}
+
                       onApply={(applied) =>
                         setState((s) => ({ ...s, appliedFilters: applied }))
                       }
@@ -331,11 +356,20 @@ function Landing(props) {
                         );
                       }}
                     >
-                      Check
+                      VIEW
                     </Button>
                   </Grid>
                 </Grid>
               </Paper>
+              <InputLabel
+                style={{
+                  width: "90%",
+                  marginRight: theme.spacing(1),
+                  marginBottom: theme.spacing(1),
+                }}
+              >
+                Examples:
+              </InputLabel>
               <GridList
                 spacing={2}
                 cols={3.2}
@@ -389,7 +423,7 @@ function Landing(props) {
 
                 <Box className={classes.subTextDesc}>
                   Find dominant topics and existing imbalance in general
-                  knowledge on Wikidata
+                  knowledge on Wikidata with ProWD
                 </Box>
               </Typography>
             </div>
@@ -405,7 +439,7 @@ function Landing(props) {
               <div style={{ width: "70%" }}>
                 <Typography variant="h2" component="div">
                   <Box fontSize={40} fontWeight="bold">
-                    Source
+                    About Wikidata
                     <div className={classes.textAccent} />
                   </Box>
                   <Box
