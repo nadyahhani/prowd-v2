@@ -195,9 +195,9 @@ function Landing(props) {
                 }}
                 color="primary"
                 endIcon={<NavigateNext />}
-                onClick={() => history.push(
-                  "/dashboards/cffdb9749649/profile/onboarding"
-                )}
+                onClick={() =>
+                  history.push("/dashboards/cffdb9749649/profile/onboarding")
+                }
               >
                 Show me
               </Button>
@@ -351,7 +351,7 @@ function Landing(props) {
                           }),
                           (response) =>
                             history.push(
-                              `/dashboards/${response.hashCode}/profile`
+                              `/dashboards/${response.hashCode}/profile/onboarding`
                             )
                         );
                       }}
