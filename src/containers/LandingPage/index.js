@@ -224,7 +224,7 @@ function Landing(props) {
                 color="primary"
                 endIcon={<NavigateNext />}
                 onClick={() =>
-                  history.push("/dashboards/cffdb9749649/profile/onboarding")
+                  history.push("/dashboards/cffdb9749649/profile/onboarding-example")
                 }
               >
                 Show me
@@ -430,7 +430,7 @@ function Landing(props) {
                               }),
                               (response) =>
                                 history.push(
-                                  `/dashboards/${response.hashCode}/profile/onboarding`
+                                  `/dashboards/${response.hashCode}/profile/onboarding-profile`
                                 )
                             );
                           }}

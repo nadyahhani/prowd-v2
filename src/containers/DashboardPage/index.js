@@ -556,11 +556,23 @@ export default function DashboardPage(props) {
   React.useEffect(() => {
     if (props.match.params.subpage && state.globalData.entity) {
       switch (props.match.params.subpage) {
-        case "onboarding":
+        case "onboarding-profile":
           setState((s) => ({
             ...s,
             onboarding: {
               page: "profile",
+              step: 0,
+              running: true,
+              class: `${state.globalData.entity.entityLabel} (${state.globalData.entity.entityID})`,
+              filters: "",
+            },
+          }));
+          return;
+        case "onboarding-example":
+          setState((s) => ({
+            ...s,
+            onboarding: {
+              page: "example",
               step: 0,
               running: true,
               class: `${state.globalData.entity.entityLabel} (${state.globalData.entity.entityID})`,
@@ -616,7 +628,7 @@ export default function DashboardPage(props) {
       </Dialog>
       {/* modals end */}
       <Navbar />
-      <div className={classes.content} >
+      <div className={classes.content}>
         <div
           style={{
             marginBottom: theme.spacing(1),
@@ -742,7 +754,7 @@ export default function DashboardPage(props) {
               onChange={(e) => {
                 if (e.reason === "restart_onboarding") {
                   history.push(
-                    `/dashboards/${props.match.params.id}/${props.match.params.page}/onboarding`
+                    `/dashboards/${props.match.params.id}/${props.match.params.page}/onboarding-${props.match.params.page}`
                   );
                 }
               }}
