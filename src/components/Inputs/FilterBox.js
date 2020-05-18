@@ -8,6 +8,7 @@ import {
   Grid,
   Chip,
   InputLabel,
+  ButtonBase,
 } from "@material-ui/core";
 import AddCircleIcon from "@material-ui/icons/AddCircle";
 import AdvChip from "../../components/Inputs/AdvChip";
@@ -27,6 +28,7 @@ export default function FilterBox(props) {
   const classes = useStyles();
   const [state, setState] = React.useState({
     modalOpen: false,
+    anchorEl: null,
   });
   return (
     <React.Fragment>
@@ -35,6 +37,7 @@ export default function FilterBox(props) {
       ) : (
         <FilterModal
           open={state.modalOpen}
+          anchorEl={state.anchorEl}
           onClose={() => setState((s) => ({ ...s, modalOpen: false }))}
           propertiesOptions={props.propertiesOptions}
           appliedFilters={props.options}
@@ -42,9 +45,10 @@ export default function FilterBox(props) {
           selectedClass={props.selectedClass}
           onApply={props.onApply}
           onDelete={props.onDelete}
+          onClear={props.onClear}
         />
       )}
-      {props.hideLabel ? null : <InputLabel shrink={true}>Filters</InputLabel>}
+      {props.hideLabel ? null : <InputLabel shrink={true}>Filters </InputLabel>}
       <Paper
         className={`${classes.filters}${
           props.classes.root ? " " + props.classes.root : ""
@@ -63,8 +67,12 @@ export default function FilterBox(props) {
                 disabled={props.disabled}
                 color="primary"
                 label={<Typography>Add Filter</Typography>}
-                onClick={() => {
-                  setState((s) => ({ ...s, modalOpen: true }));
+                onClick={(e) => {
+                  setState((s) => ({
+                    ...s,
+                    modalOpen: true,
+                    anchorEl: e.currentTarget,
+                  }));
                 }}
                 icon={<AddCircleIcon style={{ fontSize: "3vh" }} />}
               />

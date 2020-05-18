@@ -24,6 +24,7 @@ import LineChart from "../../components/Dashboard/LineChart";
 import DiscoverDimension from "../../components/Dashboard/DiscoverDimension";
 import AllPropertiesModal from "../../components/Dashboard/AllPropertiesModal";
 import { DiscoverIllustration } from "../../images/export";
+import DistributionCustomize from "../../components/Dashboard/DistributionCustomize";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -186,6 +187,45 @@ export default function Analysis(props) {
       };
       return (
         <React.Fragment>
+          <Typography
+            component="div"
+            style={{
+              display: "flex",
+              flexDirection: "row",
+              justifyContent: "space-between",
+              width: "100%",
+            }}
+          >
+            <Box fontWeight="bold">Item Count </Box>
+            <Typography
+              component="div"
+              style={{
+                display: "flex",
+                flexDirection: "row",
+                justifyContent: "space-between",
+                alignItems: "center",
+                width: "fit-content",
+              }}
+            >
+              <Box>
+                <FormControl
+                  variant="outlined"
+                  size="small"
+                  className={classes.formControl}
+                >
+                  <Select
+                    value={0}
+                    onChange={() => {
+                      //TODO
+                    }}
+                  >
+                    <MenuItem value={0}>Descending</MenuItem>
+                    <MenuItem value={1}>Ascending</MenuItem>
+                  </Select>
+                </FormControl>
+              </Box>
+            </Typography>
+          </Typography>
           <HorizontalBarChart
             key={"item-0"}
             data={dataTemp}
@@ -250,6 +290,45 @@ export default function Analysis(props) {
       };
       return (
         <React.Fragment>
+          <Typography
+            component="div"
+            style={{
+              display: "flex",
+              flexDirection: "row",
+              justifyContent: "space-between",
+              width: "100%",
+            }}
+          >
+            <Box fontWeight="bold">Imbalance Rate </Box>
+            <Typography
+              component="div"
+              style={{
+                display: "flex",
+                flexDirection: "row",
+                justifyContent: "space-between",
+                alignItems: "center",
+                width: "fit-content",
+              }}
+            >
+              <Box>
+                <FormControl
+                  variant="outlined"
+                  size="small"
+                  className={classes.formControl}
+                >
+                  <Select
+                    value={0}
+                    onChange={() => {
+                      //TODO
+                    }}
+                  >
+                    <MenuItem value={0}>Descending</MenuItem>
+                    <MenuItem value={1}>Ascending</MenuItem>
+                  </Select>
+                </FormControl>
+              </Box>
+            </Typography>
+          </Typography>
           <HorizontalBarChart
             key={"gini-0"}
             data={dataTemp}
@@ -275,37 +354,117 @@ export default function Analysis(props) {
   }
 
   function propertyChart() {
-    const dataTemp = {
-      labels: ["a", "b", "c", "d", "e"],
-      datasets: [
-        {
-          label: "Number of Entities",
-          data: [1, 5, 4, 6, 3],
-          backgroundColor: theme.palette.chart.main,
-        },
-      ],
-    };
-    return (
-      <React.Fragment>
-        <HorizontalBarChart
-          key={"prop-0"}
-          data={dataTemp}
-          classes={{
-            root: classes.horizontalbar,
-            ChartWrapper: classes.horizontalbarchart,
-          }}
-          max={10}
-        />
-        <AllPropertiesModal
-          key="modal-desc"
-          data={{
-            labels: ["a", "b", "c", "d", "e"],
-            values: [1, 5, 4, 6, 3],
-            max: 10,
-          }}
-        />
-      </React.Fragment>
-    );
+    if (!state.loading.gini) {
+      let labels = [];
+      let values = [];
+
+      const sorted = [...state.gini].sort((b, a) => {
+        if (
+          a.statistics.average_distinct_properties >
+          b.statistics.average_distinct_properties
+        ) {
+          return 1;
+        } else {
+          return -1;
+        }
+      });
+      sorted.forEach((item) => {
+        labels.push(
+          `${
+            item.analysis_info.item_1_label
+              ? item.analysis_info.item_1_label
+              : ""
+          }${
+            item.analysis_info.item_2_label
+              ? `-${item.analysis_info.item_2_label}`
+              : ""
+          }${
+            item.analysis_info.item_3_label
+              ? `-${item.analysis_info.item_3_label}`
+              : ""
+          }: ${item.statistics.average_distinct_properties}`
+        );
+        values.push(item.statistics.average_distinct_properties);
+      });
+      const dataTemp = {
+        labels: [...labels].splice(0, 5),
+        datasets: [
+          {
+            label: "Average Distinct Properties",
+            data: [...values].splice(0, 5),
+            backgroundColor: theme.palette.chart.main,
+          },
+        ],
+      };
+      return (
+        <React.Fragment>
+          <Typography
+            component="div"
+            style={{
+              display: "flex",
+              flexDirection: "row",
+              justifyContent: "space-between",
+              width: "100%",
+            }}
+          >
+            <Box fontWeight="bold">
+              Property Frequency{" "}
+              {/* <Help
+                        text={
+                          <Typography>{`For every distinct property, the number of items which possess that property is summed up. 
+                      You can see which properties are the most common ones, and which are not as common.`}</Typography>
+                        }
+                      /> */}
+            </Box>
+            <Typography
+              component="div"
+              style={{
+                display: "flex",
+                flexDirection: "row",
+                justifyContent: "space-between",
+                alignItems: "center",
+                width: "fit-content",
+              }}
+            >
+              <Box>
+                <FormControl
+                  variant="outlined"
+                  size="small"
+                  className={classes.formControl}
+                >
+                  <Select
+                    value={0}
+                    onChange={() => {
+                      //TODO
+                    }}
+                  >
+                    <MenuItem value={0}>Descending</MenuItem>
+                    <MenuItem value={1}>Ascending</MenuItem>
+                  </Select>
+                </FormControl>
+              </Box>
+            </Typography>
+          </Typography>
+          <HorizontalBarChart
+            key={"gini-0"}
+            data={dataTemp}
+            classes={{
+              root: classes.horizontalbar,
+              ChartWrapper: classes.horizontalbarchart,
+            }}
+          />
+          <AllPropertiesModal
+            key="modal-desc"
+            data={{
+              labels: labels,
+              values: values,
+            }}
+          />
+        </React.Fragment>
+      );
+    } else {
+      return <Loading />;
+    }
   }
 
   return (
@@ -347,7 +506,7 @@ export default function Analysis(props) {
             </Grid>
           </Paper>
         </Grid>
-        {state.loading.dimensions || state.dimensions.length > 0 ? (
+        {!state.loading.dimensions && state.dimensions.length > 0 ? (
           <React.Fragment>
             <Grid item xs classes={{ root: classes.outerGrid }}>
               <div
@@ -366,45 +525,6 @@ export default function Analysis(props) {
                     padding: theme.spacing(1),
                   }}
                 >
-                  <Typography
-                    component="div"
-                    style={{
-                      display: "flex",
-                      flexDirection: "row",
-                      justifyContent: "space-between",
-                      width: "100%",
-                    }}
-                  >
-                    <Box fontWeight="bold">Item Count </Box>
-                    <Typography
-                      component="div"
-                      style={{
-                        display: "flex",
-                        flexDirection: "row",
-                        justifyContent: "space-between",
-                        alignItems: "center",
-                        width: "fit-content",
-                      }}
-                    >
-                      <Box>
-                        <FormControl
-                          variant="outlined"
-                          size="small"
-                          className={classes.formControl}
-                        >
-                          <Select
-                            value={0}
-                            onChange={() => {
-                              //TODO
-                            }}
-                          >
-                            <MenuItem value={0}>Descending</MenuItem>
-                            <MenuItem value={1}>Ascending</MenuItem>
-                          </Select>
-                        </FormControl>
-                      </Box>
-                    </Typography>
-                  </Typography>
                   {itemCountChart()}
                 </Paper>
                 <Paper
@@ -414,45 +534,6 @@ export default function Analysis(props) {
                     height: "45%",
                   }}
                 >
-                  <Typography
-                    component="div"
-                    style={{
-                      display: "flex",
-                      flexDirection: "row",
-                      justifyContent: "space-between",
-                      width: "100%",
-                    }}
-                  >
-                    <Box fontWeight="bold">Imbalance Rate </Box>
-                    <Typography
-                      component="div"
-                      style={{
-                        display: "flex",
-                        flexDirection: "row",
-                        justifyContent: "space-between",
-                        alignItems: "center",
-                        width: "fit-content",
-                      }}
-                    >
-                      <Box>
-                        <FormControl
-                          variant="outlined"
-                          size="small"
-                          className={classes.formControl}
-                        >
-                          <Select
-                            value={0}
-                            onChange={() => {
-                              //TODO
-                            }}
-                          >
-                            <MenuItem value={0}>Descending</MenuItem>
-                            <MenuItem value={1}>Ascending</MenuItem>
-                          </Select>
-                        </FormControl>
-                      </Box>
-                    </Typography>
-                  </Typography>
                   {giniChart()}
                 </Paper>
               </div>
@@ -474,53 +555,6 @@ export default function Analysis(props) {
                     padding: theme.spacing(1),
                   }}
                 >
-                  <Typography
-                    component="div"
-                    style={{
-                      display: "flex",
-                      flexDirection: "row",
-                      justifyContent: "space-between",
-                      width: "100%",
-                    }}
-                  >
-                    <Box fontWeight="bold">
-                      Property Frequency{" "}
-                      {/* <Help
-                        text={
-                          <Typography>{`For every distinct property, the number of items which possess that property is summed up. 
-                      You can see which properties are the most common ones, and which are not as common.`}</Typography>
-                        }
-                      /> */}
-                    </Box>
-                    <Typography
-                      component="div"
-                      style={{
-                        display: "flex",
-                        flexDirection: "row",
-                        justifyContent: "space-between",
-                        alignItems: "center",
-                        width: "fit-content",
-                      }}
-                    >
-                      <Box>
-                        <FormControl
-                          variant="outlined"
-                          size="small"
-                          className={classes.formControl}
-                        >
-                          <Select
-                            value={0}
-                            onChange={() => {
-                              //TODO
-                            }}
-                          >
-                            <MenuItem value={0}>Descending</MenuItem>
-                            <MenuItem value={1}>Ascending</MenuItem>
-                          </Select>
-                        </FormControl>
-                      </Box>
-                    </Typography>
-                  </Typography>
                   {propertyChart()}
                 </Paper>
                 <Paper
@@ -530,11 +564,11 @@ export default function Analysis(props) {
                     padding: theme.spacing(1),
                   }}
                 >
-                  <Typography component="div">
-                    <Box fontWeight="bold">Property Distribution</Box>
-                  </Typography>
-                  {true ? (
+                  {!state.loading.gini ? (
                     <React.Fragment>
+                      <Typography component="div">
+                        <Box fontWeight="bold">Property Distribution</Box>
+                      </Typography>
                       <LineChart
                         percentage
                         data={{
@@ -550,40 +584,20 @@ export default function Analysis(props) {
                             "90",
                             "100",
                           ],
-                          datasets: [
-                            {
-                              data: [12, 32, 14, 23, 43, 21, 65, 23, 54, 32],
-                              // label: "Africa",
-                              borderColor: theme.palette.itemA.main,
-                              backgroundColor: theme.palette.itemA.main,
-                              fill: true,
-                            },
-                            {
-                              data: [74, 34, 52, 34, 54, 23, 12, 43, 23, 43],
-                              // label: "Africa",
-                              borderColor: theme.palette.itemB.main,
-                              backgroundColor: theme.palette.itemB.main,
-                              fill: true,
-                            },
-                            {
-                              data: [14, 23, 43, 20, 80, 34, 52, 34, 54, 34],
-                              // label: "Africa",
-                              borderColor: theme.palette.itemMerge.main,
-                              backgroundColor: theme.palette.itemMerge.main,
-                              fill: true,
-                            },
-                          ],
+                          datasets: state.distributions.map((item) => ({
+                            data: item.data,
+                            // label: "Africa",
+                            borderColor: item.color,
+                            fill: false,
+                          })),
                         }}
-                        max={100}
+                        // max={100}
                         classes={{ ChartWrapper: classes.histogramChart }}
                       />
-                      <Button
-                        color="primary"
-                        endIcon={<KeyboardArrowRight />}
-                        size="small"
-                      >
-                        Customize
-                      </Button>
+                      <DistributionCustomize
+                        data={state.distributions}
+                        allData={state.gini}
+                      />
                     </React.Fragment>
                   ) : (
                     <Loading />

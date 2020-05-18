@@ -12,9 +12,10 @@ import {
   Slider,
   Box,
   InputAdornment,
+  Popover,
 } from "@material-ui/core";
 import { makeStyles, ThemeProvider } from "@material-ui/core/styles";
-import { getDashboards } from "../../services/general";
+import { getDashboards, getClasses } from "../../services/general";
 import Table from "@material-ui/core/Table";
 import TableBody from "@material-ui/core/TableBody";
 import TableCell from "@material-ui/core/TableCell";
@@ -27,10 +28,13 @@ import Navbar from "../../components/Navigation/Navbar";
 import Loading from "../../components/Misc/Loading";
 import { NavigateNext, ExpandMore, Search } from "@material-ui/icons";
 import { useHistory } from "react-router-dom";
+import Autocomplete from "@material-ui/lab/Autocomplete";
+import FilterBox from "../../components/Inputs/FilterBox";
+import { getUnique, cut } from "../../global";
 
 const useStyles = makeStyles({
   table: {
-    height: "85vh",
+    height: theme.spacing(77),
     overflowY: "scroll",
   },
   content: {
@@ -56,6 +60,12 @@ export default function BrowsePage(props) {
     dashboards: [],
     search: "",
     loading: true,
+    sortby: 0,
+    classFilterValue: null,
+    classFilterInput: "",
+    appliedFilters: [],
+    classes: [],
+    classLoading: false,
   });
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [open, setOpen] = React.useState(false);
@@ -71,94 +81,217 @@ export default function BrowsePage(props) {
 
   return (
     <ThemeProvider theme={theme}>
-      <Popper
+      <Popover
         open={open}
         anchorEl={anchorEl}
-        placement="bottom"
-        transition
-        style={{ zIndex: theme.zIndex.modal }}
+        anchorOrigin={{
+          vertical: "bottom",
+          horizontal: "center",
+        }}
+        transformOrigin={{
+          vertical: "top",
+          horizontal: "center",
+        }}
+        onClose={() => {
+          setOpen(false);
+        }}
+        classes={{ paper: classes.filterPopup }}
       >
-        {({ TransitionProps }) => (
-          <Fade {...TransitionProps} timeout={350}>
-            <Paper classes={{ root: classes.filterPopup }}>
-              <Grid container spacing={1} direction="column">
-                <Grid item>
-                  <Typography component="div">
-                    <Box fontWeight="bold">Filter Dashboards</Box>
+        <Grid container spacing={1} direction="column">
+          <Grid item>
+            <Typography component="div">
+              <Box fontWeight="bold">Filter Dashboards</Box>
+            </Typography>
+          </Grid>
+          <Grid item>
+            <Typography>Class</Typography>
+            <Autocomplete
+              disableClearable
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  fullWidth
+                  variant="outlined"
+                  size="small"
+                />
+              )}
+              getOptionLabel={(option) => {
+                return `${option.label} (${option.id})${
+                  option.aliases
+                    ? ` also known as ${option.aliases.join(", ")}`
+                    : ""
+                }`;
+              }}
+              renderOption={(option) => (
+                <div>
+                  <Typography>{`${option.label} (${option.id})`}</Typography>
+                  <Typography variant="caption">
+                    {option.description}
                   </Typography>
-                </Grid>
-                <Grid item>
-                  <Typography>Class</Typography>
-                  <TextField fullWidth variant="outlined" size="small" />
-                </Grid>
-                <Grid item>
-                  <Typography>Filters</Typography>
-                  <TextField fullWidth variant="outlined" size="small" />
-                </Grid>
-                {/* <Grid item>
-                  <Typography>Imbalance Rate</Typography>
-                  <Slider
-                    step={0.01}
-                    min={0}
-                    max={1}
-                    value={giniRange}
-                    onChange={(e, val) => setRange(val)}
-                    valueLabelDisplay="auto"
-                    aria-labelledby="range-slider"
-                  />
-                </Grid> */}
-              </Grid>
-            </Paper>
-          </Fade>
-        )}
-      </Popper>
+                </div>
+              )}
+              loading={state.classLoading}
+              options={state.classes}
+              value={state.classFilterValue}
+              inputValue={state.classFilterInput}
+              onChange={(e, value, reason) => {
+                if (reason === "select-option") {
+                  setState((s) => ({
+                    ...s,
+                    classFilterValue: value,
+                    classFilterInput: `${value.label} (${value.id})`,
+                  }));
+                }
+              }}
+              onInputChange={(e, val, reason) => {
+                setState((s) => ({
+                  ...s,
+                  classLoading: true,
+                  classFilterInput: val,
+                }));
+                getClasses(val, (r) => {
+                  if (r.success) {
+                    setState((s) => ({
+                      ...s,
+                      classes: getUnique([...s.classes, ...r.entities], "id"),
+                      classLoading: false,
+                    }));
+                  }
+                });
+              }}
+            />
+          </Grid>
+          <Grid item>
+            <Typography>Filters</Typography>
+            <FilterBox
+              classes={{ root: classes.filters }}
+              options={state.appliedFilters}
+              selectedClass={state.classFilterValue}
+              hideLabel
+              cols={2}
+              onApply={(applied) => {
+                setState((s) => ({
+                  ...s,
+                  appliedFilters: applied,
+                }));
+              }}
+              renderTagText={(opt) =>
+                cut(`${opt.property.label}: ${opt.value.label}`, 43)
+              }
+              onDelete={(idx) => {
+                let temp = [...state.appliedFilters];
+                temp.splice(idx, 1);
+                setState((s) => ({
+                  ...s,
+                  appliedFilters: temp,
+                }));
+              }}
+              onClear={() =>
+                setState((s) => ({
+                  ...s,
+                  appliedFilters: [],
+                }))
+              }
+            />
+          </Grid>
+        </Grid>
+        <Grid item>
+          <Button
+            style={{ color: theme.palette.error.main }}
+            size="small"
+            onClick={() => {
+              setState((s) => ({
+                ...s,
+                classFilterValue: null,
+                classFilterInput: "",
+                appliedFilters: [],
+              }));
+            }}
+          >
+            Clear
+          </Button>
+        </Grid>
+      </Popover>
       <div className={classes.bg}>
         <Navbar />
         <div className={classes.content}>
+          <TableContainer component={Paper}>
+            <Table stickyHeader>
+              <TableHead>
+                <TableRow>
+                  <TableCell>
+                    <Grid container spacing={1}>
+                      <Grid item xs={9}>
+                        <TextField
+                          InputProps={{
+                            startAdornment: (
+                              <InputAdornment position="start">
+                                <Search />
+                              </InputAdornment>
+                            ),
+                          }}
+                          placeholder="Search for Dashboards..."
+                          fullWidth
+                          value={`${props.match.params.search
+                            .slice(7)
+                            .replace(/\+/g, " ")}`}
+                          onChange={(e) => {
+                            const val = e.target.value;
+                            // setState((s) => ({ ...s, search: val }));
+                            history.push(
+                              `/browse/search=${val.replace(/ /g, "+")}`
+                            );
+                          }}
+                          variant="outlined"
+                          size="small"
+                        />
+                      </Grid>
+                      <Grid item xs={2}>
+                        <TextField
+                          select
+                          label="Sort by"
+                          fullWidth
+                          variant="outlined"
+                          size="small"
+                          value={state.sortby}
+                          onChange={(e, child) =>
+                            setState((s) => ({
+                              ...s,
+                              sortby: child.props.value,
+                            }))
+                          }
+                        >
+                          <MenuItem value={0}>Date Created (Newest)</MenuItem>
+                          <MenuItem value={1}>Date Created (Oldest)</MenuItem>
+                          <MenuItem value={2}>Title (A-Z)</MenuItem>
+                          <MenuItem value={3}>Title (Z-A)</MenuItem>
+                          <MenuItem value={4}>Author (A-Z)</MenuItem>
+                          <MenuItem value={5}>Author (Z-A)</MenuItem>
+                        </TextField>
+                      </Grid>
+                      <Grid item xs={1}>
+                        <Button
+                          color="primary"
+                          size="small"
+                          endIcon={<ExpandMore />}
+                          fullWidth
+                          onClick={(event) => {
+                            setAnchorEl(event.currentTarget);
+                            setOpen(true);
+                          }}
+                        >
+                          Filter
+                        </Button>
+                      </Grid>
+                    </Grid>
+                  </TableCell>
+                </TableRow>
+              </TableHead>
+            </Table>
+          </TableContainer>
           <TableContainer component={Paper} className={classes.table}>
             <Table aria-label="simple table" stickyHeader>
               <TableHead>
-                <TableRow>
-                  <TableCell colSpan={5}>
-                    <TextField
-                      InputProps={{
-                        startAdornment: (
-                          <InputAdornment position="start">
-                            <Search />
-                          </InputAdornment>
-                        ),
-                      }}
-                      placeholder="Search for Dashboards..."
-                      fullWidth
-                      value={`${props.match.params.search
-                        .slice(7)
-                        .replace(/\+/g, " ")}`}
-                      onChange={(e) => {
-                        const val = e.target.value;
-                        // setState((s) => ({ ...s, search: val }));
-                        history.push(
-                          `/browse/search=${val.replace(/ /g, "+")}`
-                        );
-                      }}
-                      variant="outlined"
-                      size="small"
-                    />
-                  </TableCell>
-                  <TableCell colSpan={1}>
-                    <Button
-                      color="primary"
-                      size="small"
-                      endIcon={<ExpandMore />}
-                      fullWidth
-                      onClick={(event) => {
-                        setAnchorEl(event.currentTarget);
-                        setOpen(!open);
-                      }}
-                    >
-                      Filter
-                    </Button>
-                  </TableCell>
-                </TableRow>
                 <TableRow>
                   <TableCell>Title</TableCell>
                   <TableCell>Author</TableCell>
@@ -181,12 +314,46 @@ export default function BrowsePage(props) {
                           ? "anonymous"
                           : item.author.toLowerCase()
                       }`;
-                      return name.includes(
-                        props.match.params.search
-                          .slice(7)
-                          .replace(/\+/g, " ")
-                          .toLowerCase()
+                      return (
+                        (state.classFilterValue
+                          ? item.entityInfo.entityID ===
+                            state.classFilterValue.id
+                          : true) &&
+                        name.includes(
+                          props.match.params.search
+                            .slice(7)
+                            .replace(/\+/g, " ")
+                            .toLowerCase()
+                        )
                       );
+                    })
+                    .sort((b, a) => {
+                      switch (state.sortby) {
+                        case 1:
+                          return a.timestamp < b.timestamp ? 1 : -1;
+                        case 2:
+                          if (a.name === "") {
+                            return "untitled dashboard" < b.name ? 1 : -1;
+                          }
+                          return a.name < b.name ? 1 : -1;
+                        case 3:
+                          if (a.name === "") {
+                            return "untitled dashboard" > b.name ? 1 : -1;
+                          }
+                          return a.name > b.name ? 1 : -1;
+                        case 4:
+                          if (a.name === "") {
+                            return "anonymous" > b.author ? 1 : -1;
+                          }
+                          return a.author < b.author ? 1 : -1;
+                        case 5:
+                          if (a.name === "") {
+                            return "anonymous" > b.author ? 1 : -1;
+                          }
+                          return a.author > b.author ? 1 : -1;
+                        default:
+                          return a.timestamp > b.timestamp ? 1 : -1;
+                      }
                     })
                     .map((row, index) => (
                       <TableRow key={index}>

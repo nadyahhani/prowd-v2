@@ -37,7 +37,6 @@ export const getUnique = (arr, comp) => {
     // eliminate the dead keys & store unique objects
     .filter((e) => arr[e])
     .map((e) => arr[e]);
-
   return unique;
 };
 

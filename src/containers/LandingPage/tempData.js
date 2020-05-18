@@ -40,7 +40,7 @@ const tempData = {
             },
             category: "C",
           },
-          values: {
+          value: {
             id: "Q30",
             title: "Q30",
             pageid: 126,
@@ -68,7 +68,7 @@ const tempData = {
             match: { type: "label", language: "en", text: "occupation" },
             category: "O",
           },
-          values: {
+          value: {
             id: "Q82955",
             title: "Q82955",
             pageid: 85366,
@@ -84,7 +84,7 @@ const tempData = {
       ],
     },
     {
-      label: "Actors and Actresses",
+      label: "Writers",
       class: {
         id: "Q5",
         title: "Q5",
@@ -113,44 +113,17 @@ const tempData = {
             match: { type: "label", language: "en", text: "occupation" },
             category: "O",
           },
-          values: {
-            id: "Q33999",
-            title: "Q33999",
-            pageid: 36800,
+          value: {
+            id: "Q36180",
+            title: "Q36180",
+            pageid: 38833,
             repository: "local",
-            url: "//www.wikidata.org/wiki/Q33999",
-            concepturi: "http://www.wikidata.org/entity/Q33999",
-            label: "actor",
+            url: "//www.wikidata.org/wiki/Q36180",
+            concepturi: "http://www.wikidata.org/entity/Q36180",
+            label: "writer",
             description:
-              "person who acts in a dramatic or comic production and works in film, television, theatre, or radio",
-            match: { type: "label", language: "en", text: "actor" },
-          },
-        },
-        {
-          property: {
-            id: "P106",
-            title: "Property:P106",
-            pageid: 4164914,
-            repository: "local",
-            url: "//www.wikidata.org/wiki/Property:P106",
-            datatype: "wikibase-item",
-            concepturi: "http://www.wikidata.org/entity/P106",
-            label: "occupation",
-            description:
-              'occupation of a person; see also "field of work" (Property:P101), "position held" (Property:P39)',
-            match: { type: "label", language: "en", text: "occupation" },
-            category: "O",
-          },
-          values: {
-            id: "Q21169216",
-            title: "Q21169216",
-            pageid: 23216531,
-            repository: "local",
-            url: "//www.wikidata.org/wiki/Q21169216",
-            concepturi: "http://www.wikidata.org/entity/Q21169216",
-            label: "actress",
-            description: "female actor",
-            match: { type: "label", language: "en", text: "actress" },
+              "person who uses written words to communicate ideas and to produce works of literature",
+            match: { type: "label", language: "en", text: "writer" },
           },
         },
       ],
@@ -191,3 +164,51 @@ const tempData = {
 };
 
 export default tempData;
+
+const temp = {
+  class: {
+    id: "Q5",
+    label: "human",
+    description:
+      "common name of Homo sapiens, unique extant species of the genus Homo",
+    match: { type: "label", language: "en", text: "human" },
+  },
+  filters: [
+    {
+      property: {
+        id: "P27",
+        label: "country of citizenship",
+        description:
+          "the object is a country that recognizes the subject as its citizen",
+        match: {
+          type: "label",
+          language: "en",
+          text: "country of citizenship",
+        },
+      },
+      value: {
+        id: "Q30",
+        label: "United States of America",
+        description: "sovereign state in North America",
+        match: { type: "alias", language: "en", text: "USA" },
+        aliases: ["USA"],
+      },
+    },
+    {
+      property: {
+        id: "P106",
+        label: "occupation",
+        description:
+          'occupation of a person; see also "field of work" (Property:P101), "position held" (Property:P39)',
+        match: { type: "label", language: "en", text: "occupation" },
+      },
+      value: {
+        id: "Q82955",
+        label: "politician",
+        description:
+          "person involved in politics, person who holds or seeks positions in government",
+        match: { type: "label", language: "en", text: "politician" },
+      },
+    },
+  ],
+};

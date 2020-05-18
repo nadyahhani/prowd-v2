@@ -86,3 +86,20 @@ export function getDashboards(afterFunc) {
       afterFunc({ success: false, ...err });
     });
 }
+
+
+export function getEntityInfo(id, afterFunc) {
+  axios
+    .get(`${url}/api/entity/info?entity_id=${id}`)
+    .then(
+      (response) => {
+        afterFunc({ success: true, ...response.data });
+      },
+      (error) => {
+        afterFunc({ success: false, ...error });
+      }
+    )
+    .catch((err) => {
+      afterFunc({ success: false, ...err });
+    });
+}

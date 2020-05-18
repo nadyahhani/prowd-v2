@@ -10,6 +10,11 @@ import {
   Button,
   Grid,
   Paper,
+  Popover,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
 } from "@material-ui/core";
 import Settings from "../../components/Misc/Settings";
 import theme from "../../theme";
@@ -29,12 +34,13 @@ import {
   cut,
   compareDistinctProps,
 } from "../../global";
-import SettingsIcon from "@material-ui/icons/Settings";
+import FileCopyOutlinedIcon from "@material-ui/icons/FileCopyOutlined";
 import Loading from "../../components/Misc/Loading";
 import FilterBox from "../../components/Inputs/FilterBox";
 import Notif from "../../components/Misc/Notif";
 import Onboarding from "../../components/Misc/Onboarding";
 import { useHistory } from "react-router-dom";
+import EditClass from "../../components/Inputs/EditClass";
 
 const useStyles = makeStyles(() => ({
   content: {
@@ -80,6 +86,7 @@ export default function DashboardPage(props) {
       class: "",
       filters: "",
     },
+    copyDialogOpen: false,
     loading: true,
     globalData: {},
     update: false,
@@ -132,6 +139,7 @@ export default function DashboardPage(props) {
     loaded: false,
     dimensions: [],
     gini: [],
+    distributions: [],
     // loading states
     loading: {
       dimensions: true,
@@ -169,6 +177,7 @@ export default function DashboardPage(props) {
           ...s,
           loading: true,
           loaded: { ...s.loaded, global: true },
+          update: false,
         }));
         setCompareState((s) => ({
           ...s,
@@ -435,6 +444,86 @@ export default function DashboardPage(props) {
             setDiscoverState((s) => ({
               ...s,
               gini: r.data,
+              distributions: (() => {
+                let result = [];
+                const sortedbyGini = [...r.data].sort((b, a) => {
+                  if (a.gini > b.gini) {
+                    return 1;
+                  } else {
+                    return -1;
+                  }
+                });
+                const getName = (info) =>
+                  `${info.item_1_label ? info.item_1_label : ""}${
+                    info.item_2_label ? `-${info.item_2_label}` : ""
+                  }${info.item_3_label ? `-${info.item_3_label}` : ""}`;
+                if (sortedbyGini.length > 2) {
+                  console.log(sortedbyGini[sortedbyGini.length - 1]);
+
+                  result.push({
+                    ...sortedbyGini[0],
+                    data: sortedbyGini[0].histogram_data
+                      ? sortedbyGini[0].histogram_data.map(
+                          (num) => (num * 100) / sortedbyGini[0].amount
+                        )
+                      : [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                    name: getName(sortedbyGini[0].analysis_info),
+                    color: theme.palette.itemA.opaque,
+                  });
+                  result.push({
+                    ...sortedbyGini[Math.ceil(sortedbyGini.length / 2)],
+                    data: sortedbyGini[Math.ceil(sortedbyGini.length / 2)]
+                      .histogram_data
+                      ? sortedbyGini[
+                          Math.ceil(sortedbyGini.length / 2)
+                        ].histogram_data.map(
+                          (num) =>
+                            (num * 100) /
+                            sortedbyGini[Math.ceil(sortedbyGini.length / 2)]
+                              .amount
+                        )
+                      : [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                    name: getName(
+                      sortedbyGini[Math.ceil(sortedbyGini.length / 2)]
+                        .analysis_info
+                    ),
+                    color: theme.palette.itemB.opaque,
+                  });
+                  result.push({
+                    ...sortedbyGini[sortedbyGini.length - 1],
+                    data: sortedbyGini[sortedbyGini.length - 1].histogram_data
+                      ? sortedbyGini[
+                          sortedbyGini.length - 1
+                        ].histogram_data.map(
+                          (num) =>
+                            (num * 100) /
+                            sortedbyGini[sortedbyGini.length - 1].amount
+                        )
+                      : [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                    name: getName(
+                      sortedbyGini[sortedbyGini.length - 1].analysis_info
+                    ),
+                    color: theme.palette.itemMerge.main,
+                  });
+                } else {
+                  const colors = [
+                    theme.palette.itemA.opaque,
+                    theme.palette.itemB.opaque,
+                    theme.palette.itemMerge.main,
+                  ];
+                  result = sortedbyGini.map((item, idx) => ({
+                    ...item,
+                    data: item.histogram_data
+                      ? item.histogram_data.map(
+                          (num) => (num * 100) / item.amount
+                        )
+                      : [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                    name: getName(item.analysis_info),
+                    color: colors[idx],
+                  }));
+                }
+                return result;
+              })(),
               loading: { ...s.loading, gini: false },
             }));
           } else {
@@ -487,8 +576,45 @@ export default function DashboardPage(props) {
 
   return (
     <ThemeProvider theme={theme}>
+      {/* modals */}
       <Notif {...state.notif} />
       <Onboarding {...state.onboarding} onChange={onboardingChangeHandler} />
+      <Dialog
+        open={state.copyDialogOpen}
+        onClose={() => setState((s) => ({ ...s, copyDialogOpen: false }))}
+      >
+        <DialogContent>
+          <Typography variant="h2" component="div">
+            <Box fontWeight="bold">
+              Do you want to create a copy of this Dashboard?
+            </Box>
+          </Typography>
+        </DialogContent>
+        <DialogContent>
+          <Typography>
+            This will create a new dashboard with the same configuration. You
+            can change the configuration of the new dashboard later on.
+          </Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button
+            onClick={() => alert("//todo")}
+            size="small"
+            color="primary"
+            variant="contained"
+          >
+            yes
+          </Button>
+          <Button
+            style={{ color: theme.palette.error.main }}
+            size="small"
+            onClick={() => setState((s) => ({ ...s, copyDialogOpen: false }))}
+          >
+            no
+          </Button>
+        </DialogActions>
+      </Dialog>
+      {/* modals end */}
       <Navbar />
       <div className={classes.content}>
         <div
@@ -605,6 +731,13 @@ export default function DashboardPage(props) {
             >
               Apply
             </Button>
+            <IconButton
+              color="primary"
+              size="small"
+              onClick={() => setState((s) => ({ ...s, copyDialogOpen: true }))}
+            >
+              <FileCopyOutlinedIcon />
+            </IconButton>
             <Settings
               onChange={(e) => {
                 if (e.reason === "restart_onboarding") {
@@ -629,7 +762,11 @@ export default function DashboardPage(props) {
                   <Typography
                     variant="h2"
                     component="div"
-                    style={{ marginBottom: theme.spacing(1) }}
+                    style={{
+                      marginBottom: theme.spacing(1),
+                      display: "flex",
+                      justifyContent: "space-between",
+                    }}
                   >
                     <a
                       style={{ textDecoration: "none" }}
@@ -637,6 +774,22 @@ export default function DashboardPage(props) {
                       rel="noopener noreferrer"
                       href={`https://www.wikidata.org/wiki/${state.globalData.entity.entityID}`}
                     >{`${state.globalData.entity.entityLabel} (${state.globalData.entity.entityID})`}</a>
+                    <EditClass
+                      onChange={(value) => {
+                        setState((s) => ({
+                          ...s,
+                          update: true,
+                          globalData: {
+                            ...s.globalData,
+                            entity: {
+                              entityLabel: value.label,
+                              entityID: value.id,
+                              entityDescription: value.description,
+                            },
+                          },
+                        }));
+                      }}
+                    />
                   </Typography>
                   <Typography>
                     {cut(state.globalData.entity.entityDescription, 190)}
@@ -662,9 +815,9 @@ export default function DashboardPage(props) {
                           filterDescription: item.property.description,
                           filterID: item.property.id,
                           filterLabel: item.property.label,
-                          filterValueDescription: item.values.description,
-                          filterValueID: item.values.id,
-                          filterValueLabel: item.values.label,
+                          filterValueDescription: item.value.description,
+                          filterValueID: item.value.id,
+                          filterValueLabel: item.value.label,
                         };
                       });
                       setState((s) => ({
@@ -678,7 +831,7 @@ export default function DashboardPage(props) {
                         `${
                           opt.property ? opt.property.label : opt.filterLabel
                         }: ${
-                          opt.values ? opt.values.label : opt.filterValueLabel
+                          opt.value ? opt.value.label : opt.filterValueLabel
                         }`,
                         43
                       )
@@ -692,6 +845,13 @@ export default function DashboardPage(props) {
                         globalData: { ...s.globalData, filters: temp },
                       }));
                     }}
+                    onClear={() =>
+                      setState((s) => ({
+                        ...s,
+                        update: true,
+                        globalData: { ...s.globalData, filters: [] },
+                      }))
+                    }
                   />
                 </Paper>
               </Grid>

@@ -335,51 +335,53 @@ export default function Profile(props) {
             </Grid>
             <Grid item xs={12} classes={{ root: classes.gridItem }}>
               <Paper classes={{ root: classes.giniPaper }}>
-                <div
-                  style={{
-                    display: "flex",
-                    flexDirection: "row",
-                    justifyContent: "space-between",
-                    alignItems: "center",
-                    width: "100%",
-                  }}
-                >
-                  <Typography
-                    component="div"
-                    style={{
-                      display: "flex",
-                      flexDirection: "row",
-                      justifyContent: "space-between",
-                      alignItems: "center",
-                    }}
-                  >
-                    <Box fontWeight="bold">Imbalance Rate</Box>
-                    <Help
-                      text={
-                        <Typography component="div">
-                          {`A higher imbalance score indicates that items of the 
+                {!state.loading.gini ? (
+                  <React.Fragment>
+                    <div
+                      style={{
+                        display: "flex",
+                        flexDirection: "row",
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                        width: "100%",
+                      }}
+                    >
+                      <Typography
+                        component="div"
+                        style={{
+                          display: "flex",
+                          flexDirection: "row",
+                          justifyContent: "space-between",
+                          alignItems: "center",
+                        }}
+                      >
+                        <Box fontWeight="bold">Imbalance Rate</Box>
+                        <Help
+                          text={
+                            <Typography component="div">
+                              {`A higher imbalance score indicates that items of the 
                           profile have less information (property) compared to other items of the same profile.
                            The imbalance rate is based on the Gini coefficient.`}
-                          <Box fontWeight="bold">{`Click for more info...`}</Box>
-                        </Typography>
-                      }
-                    />
-                  </Typography>
+                              <Box fontWeight="bold">{`Click for more info...`}</Box>
+                            </Typography>
+                          }
+                        />
+                      </Typography>
 
-                  <Status value={state.giniData.gini}>Imbalanced</Status>
-                </div>
-                {!state.loading.gini ? (
-                  <GiniChart
-                    labels={state.giniData.percentileData}
-                    data={state.giniData.data}
-                    gini={state.giniData.gini}
-                    actual={state.giniData.each_amount}
-                    insight={state.giniData.insight}
-                    classes={{
-                      root: classes.giniChart,
-                      ChartWrapper: classes.giniChart,
-                    }}
-                  />
+                      <Status value={state.giniData.gini}>Imbalanced</Status>
+                    </div>
+                    <GiniChart
+                      labels={state.giniData.percentileData}
+                      data={state.giniData.data}
+                      gini={state.giniData.gini}
+                      actual={state.giniData.each_amount}
+                      insight={state.giniData.insight}
+                      classes={{
+                        root: classes.giniChart,
+                        ChartWrapper: classes.giniChart,
+                      }}
+                    />
+                  </React.Fragment>
                 ) : (
                   <Loading />
                 )}
@@ -391,69 +393,71 @@ export default function Profile(props) {
           <Grid container spacing={1}>
             <Grid item xs={12} classes={{ root: classes.gridItem }}>
               <Paper classes={{ root: classes.propertiesPaper }}>
-                <Typography
-                  component="div"
-                  style={{
-                    display: "flex",
-                    flexDirection: "row",
-                    justifyContent: "space-between",
-                    width: "100%",
-                  }}
-                >
-                  <Box fontWeight="bold">
-                    Property Frequency{" "}
-                    <Help
-                      text={
-                        <Typography>{`Every item in Wikidata is linked with information (property). Property frequency is how many items possess a certain piece of information (property). 
-                      You can see which properties are common, and those which are less common.`}</Typography>
-                      }
-                    />
-                  </Box>
-                  <Typography
-                    component="div"
-                    style={{
-                      display: "flex",
-                      flexDirection: "row",
-                      justifyContent: "space-between",
-                      alignItems: "center",
-                      width: "43%",
-                    }}
-                  >
-                    <PercentageSwitch
-                      onChange={(newVal) =>
-                        setState((s) => ({ ...s, propertyPercent: newVal }))
-                      }
-                    />
-                    <Box>
-                      <FormControl
-                        variant="outlined"
-                        size="small"
-                        className={classes.formControl}
-                      >
-                        <Select
-                          value={state.propertySort}
-                          onChange={(e, child) => {
-                            setState((s) => ({
-                              ...s,
-                              propertySort: child.props.value,
-                            }));
-                          }}
-                        >
-                          <MenuItem value={0}>Descending</MenuItem>
-                          <MenuItem value={1}>Ascending</MenuItem>
-                        </Select>
-                      </FormControl>
-                    </Box>
-                  </Typography>
-                </Typography>
                 {!state.loading.properties && !state.loading.gini ? (
-                  <ProfileProperties
-                    max={state.giniData.amount}
-                    labels={state.mappedProperties.labels}
-                    values={state.mappedProperties.values}
-                    propertySort={state.propertySort}
-                    propertyPercent={state.propertyPercent}
-                  />
+                  <React.Fragment>
+                    <Typography
+                      component="div"
+                      style={{
+                        display: "flex",
+                        flexDirection: "row",
+                        justifyContent: "space-between",
+                        width: "100%",
+                      }}
+                    >
+                      <Box fontWeight="bold">
+                        Property Frequency{" "}
+                        <Help
+                          text={
+                            <Typography>{`Every item in Wikidata is linked with information (property). Property frequency is how many items possess a certain piece of information (property). 
+                      You can see which properties are common, and those which are less common.`}</Typography>
+                          }
+                        />
+                      </Box>
+                      <Typography
+                        component="div"
+                        style={{
+                          display: "flex",
+                          flexDirection: "row",
+                          justifyContent: "space-between",
+                          alignItems: "center",
+                          width: "43%",
+                        }}
+                      >
+                        <PercentageSwitch
+                          onChange={(newVal) =>
+                            setState((s) => ({ ...s, propertyPercent: newVal }))
+                          }
+                        />
+                        <Box>
+                          <FormControl
+                            variant="outlined"
+                            size="small"
+                            className={classes.formControl}
+                          >
+                            <Select
+                              value={state.propertySort}
+                              onChange={(e, child) => {
+                                setState((s) => ({
+                                  ...s,
+                                  propertySort: child.props.value,
+                                }));
+                              }}
+                            >
+                              <MenuItem value={0}>Descending</MenuItem>
+                              <MenuItem value={1}>Ascending</MenuItem>
+                            </Select>
+                          </FormControl>
+                        </Box>
+                      </Typography>
+                    </Typography>
+                    <ProfileProperties
+                      max={state.giniData.amount}
+                      labels={state.mappedProperties.labels}
+                      values={state.mappedProperties.values}
+                      propertySort={state.propertySort}
+                      propertyPercent={state.propertyPercent}
+                    />
+                  </React.Fragment>
                 ) : (
                   <Loading />
                 )}
@@ -461,46 +465,48 @@ export default function Profile(props) {
             </Grid>
             <Grid item xs={12} classes={{ root: classes.gridItem }}>
               <Paper classes={{ root: classes.distPaper }}>
-                <Typography component="div">
-                  <Box fontWeight="bold">
-                    Property Distribution{" "}
-                    <Help
-                      text={
-                        <Typography>{`Items with the same number of properties are counted and sorted. 
+                {!state.loading.gini ? (
+                  <React.Fragment>
+                    <Typography component="div">
+                      <Box fontWeight="bold">
+                        Property Distribution{" "}
+                        <Help
+                          text={
+                            <Typography>{`Items with the same number of properties are counted and sorted. 
                     From the shape of the distribution, you can see whether each 
                     item of the class has the same amount of information (property) or not.`}</Typography>
-                      }
+                          }
+                        />
+                      </Box>
+                    </Typography>
+                    <LineChart
+                      data={{
+                        labels: state.distribution.labels.map(
+                          (item) =>
+                            `${(
+                              (item * 100) /
+                              state.distribution.maxLabel
+                            ).toFixed(1)}%`
+                        ),
+                        datasets: [
+                          {
+                            data: state.distribution.values.map(
+                              (item) => (item * 100) / state.giniData.amount
+                            ),
+                            actualLabels: state.distribution.labels,
+                            actualValues: state.distribution.values,
+                            entityCount: state.giniData.amount,
+                            // label: "Africa",
+                            borderColor: theme.palette.chart.main,
+                            backgroundColor: theme.palette.chart.main,
+                            fill: true,
+                          },
+                        ],
+                      }}
+                      // maxValue={}
+                      classes={{ ChartWrapper: classes.histogramChart }}
                     />
-                  </Box>
-                </Typography>
-                {!state.loading.gini ? (
-                  <LineChart
-                    data={{
-                      labels: state.distribution.labels.map(
-                        (item) =>
-                          `${(
-                            (item * 100) /
-                            state.distribution.maxLabel
-                          ).toFixed(1)}%`
-                      ),
-                      datasets: [
-                        {
-                          data: state.distribution.values.map(
-                            (item) => (item * 100) / state.giniData.amount
-                          ),
-                          actualLabels: state.distribution.labels,
-                          actualValues: state.distribution.values,
-                          entityCount: state.giniData.amount,
-                          // label: "Africa",
-                          borderColor: theme.palette.chart.main,
-                          backgroundColor: theme.palette.chart.main,
-                          fill: true,
-                        },
-                      ],
-                    }}
-                    maxValue={100}
-                    classes={{ ChartWrapper: classes.histogramChart }}
-                  />
+                  </React.Fragment>
                 ) : (
                   <Loading />
                 )}

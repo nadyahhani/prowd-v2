@@ -14,12 +14,18 @@ import {
   GridList,
   GridListTile,
   InputLabel,
+  Popper,
+  Fade,
+  Tooltip,
+  Dialog,
+  TextField,
+  Chip,
 } from "@material-ui/core";
 import tempData from "./tempData";
 import Navbar from "../../components/Navigation/Navbar";
 import VirtualAutocomp from "../../components/Inputs/VirtualAutocomp";
 import FilterBox from "../../components/Inputs/FilterBox";
-import { getClasses } from "../../services/general";
+import { getClasses, getEntityInfo } from "../../services/general";
 import { createDashboard } from "../../services/dashboard";
 import { cut, getUnique } from "../../global";
 import {
@@ -129,6 +135,17 @@ const useStyles = makeStyles(() => ({
     zIndex: -1,
     backgroundColor: theme.palette.common.white,
   },
+  searchBox: {
+    minWidth: theme.spacing(70),
+    width: "90%",
+    maxWidth: theme.spacing(100),
+    height: "fit-content",
+    marginTop: theme.spacing(5),
+    marginLeft: theme.spacing(3),
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+  },
 }));
 
 function Landing(props) {
@@ -138,9 +155,18 @@ function Landing(props) {
     classes: [],
     classInput: "",
     selectedClass: null,
+    searchInput: "",
+    selectedSearch: null,
     propertiesOptions: [],
+    classOfSearch: null,
+    filtersOfSearch: [],
     selectedProps: "",
     appliedFilters: [],
+    searchisloading: false,
+    popper: {
+      open: false,
+      anchorEl: null,
+    },
   });
 
   React.useEffect(() => {
@@ -203,6 +229,34 @@ function Landing(props) {
               </Button>
             </div>
             <div className={classes.mainDiv}>
+              <GridList
+                spacing={2}
+                cols={4}
+                cellHeight="auto"
+                className={classes.exampleCarousel}
+              >
+                {tempData.ex.map((x, idx) => (
+                  <GridListTile key={idx}>
+                    <ButtonBase
+                      onClick={() => {
+                        setState((s) => ({
+                          ...s,
+                          selectedClass: x.class,
+                          classInput: `${x.class.label} (${x.class.id})`,
+                          appliedFilters: x.filters,
+                        }));
+                      }}
+                      style={{ width: "95%" }}
+                    >
+                      {/* <Card className={classes.exampleList}> */}
+                      <Typography variant="body1" color="primary">
+                        {x.label}
+                      </Typography>
+                      {/* </Card> */}
+                    </ButtonBase>
+                  </GridListTile>
+                ))}
+              </GridList>
               <Paper className={classes.inputBox} elevation={1}>
                 <Grid
                   container
@@ -304,10 +358,13 @@ function Landing(props) {
                     </div>
                     <Help
                       text={
-                        <Typography>
-                          What is the classification of the object of your
-                          interest? Is it human? Or maybe an animal? Click on
-                          the examples if you are stuck.
+                        <Typography component="div">
+                          Input the class you want to visualize and use filters
+                          to specify.{" "}
+                          <Box fontWeight="bold">
+                            No clue? use 'Search for Wikidata Item' to find the
+                            class and filters of a specific object.
+                          </Box>
                         </Typography>
                       }
                     />
@@ -325,79 +382,57 @@ function Landing(props) {
                         setState((s) => ({ ...s, appliedFilters: applied }))
                       }
                       renderTagText={(opt) =>
-                        cut(`${opt.property.label}: ${opt.values.label}`, 1000)
+                        cut(`${opt.property.label}: ${opt.value.label}`, 1000)
                       }
                       onDelete={(idx) => {
                         const temp = [...state.appliedFilters];
                         temp.splice(idx, 1);
                         setState((s) => ({ ...s, appliedFilters: temp }));
                       }}
+                      onClear={() =>
+                        setState((s) => ({ ...s, appliedFilters: [] }))
+                      }
                     />
                   </Grid>
-                  <Grid item xs={5}>
-                    <Button
-                      variant="contained"
-                      color="primary"
-                      disableElevation
-                      fullWidth
-                      disabled={state.selectedClass === null}
-                      onClick={() => {
-                        createDashboard(
-                          state.selectedClass.id,
-                          state.appliedFilters.map((x) => {
-                            let temp = {};
-                            temp[x.property.id] = x.values.id;
-                            return temp;
-                          }),
-                          (response) =>
-                            history.push(
-                              `/dashboards/${response.hashCode}/profile/onboarding`
-                            )
-                        );
+                  <Grid item xs={10}>
+                    <div
+                      style={{
+                        width: "100%",
+                        display: "flex",
+                        flexDirection: "row",
                       }}
                     >
-                      VIEW
-                    </Button>
+                      <div
+                        style={{ width: "42%", marginRight: theme.spacing(1) }}
+                      >
+                        <Button
+                          variant="contained"
+                          color="primary"
+                          disableElevation
+                          fullWidth
+                          disabled={state.selectedClass === null}
+                          onClick={() => {
+                            createDashboard(
+                              state.selectedClass.id,
+                              state.appliedFilters.map((x) => {
+                                let temp = {};
+                                temp[x.property.id] = x.value.id;
+                                return temp;
+                              }),
+                              (response) =>
+                                history.push(
+                                  `/dashboards/${response.hashCode}/profile/onboarding`
+                                )
+                            );
+                          }}
+                        >
+                          VIEW
+                        </Button>
+                      </div>
+                    </div>
                   </Grid>
                 </Grid>
               </Paper>
-              <InputLabel
-                style={{
-                  width: "90%",
-                  marginRight: theme.spacing(1),
-                  marginBottom: theme.spacing(1),
-                }}
-              >
-                Examples:
-              </InputLabel>
-              <GridList
-                spacing={2}
-                cols={3.2}
-                cellHeight="auto"
-                className={classes.exampleCarousel}
-              >
-                {tempData.ex.map((x, idx) => (
-                  <GridListTile key={idx}>
-                    <ButtonBase
-                      onClick={() => {
-                        setState((s) => ({
-                          ...s,
-                          selectedClass: x.class,
-                          classInput: `${x.class.label} (${x.class.id})`,
-                          appliedFilters: x.filters,
-                        }));
-                      }}
-                      style={{ width: "95%" }}
-                    >
-                      <Card className={classes.exampleList}>
-                        <Typography variant="body1" color="primary">
-                          {x.label}
-                        </Typography>
-                      </Card>
-                    </ButtonBase>
-                  </GridListTile>
-                ))}
-              </GridList>
             </div>
           </div>
           <div className={classes.landingRow}>

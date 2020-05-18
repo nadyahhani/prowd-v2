@@ -190,7 +190,7 @@ export default function Compare(props) {
             </Grid>
           </Paper>
         </Grid>
-        {state.loading.compareFilters || state.compareFilters.length > 0 ? (
+        {!state.loading.compareFilters && state.compareFilters.length > 0 ? (
           <React.Fragment>
             <Grid item xs={4}>
               <Grid container spacing={1}>
@@ -424,121 +424,131 @@ export default function Compare(props) {
               <Grid container spacing={1}>
                 <Grid item xs={12} classes={{ root: classes.gridItem }}>
                   <Paper classes={{ root: classes.propertiesPaper }}>
-                    <Typography
-                      component="div"
-                      style={{
-                        display: "flex",
-                        flexDirection: "row",
-                        justifyContent: "space-between",
-                      }}
-                    >
-                      <Box fontWeight="bold">
-                        Property Frequency{" "}
-                        <Help
-                          text={
-                            <Typography>{`This shows whether a particular information about the items are only present in a subclass. You can switch whether you want to see all 
-                            properties or only those presented in A or B by selecting the set operation on the right.`}</Typography>
-                          }
-                        />
-                      </Box>
-                      <FormControl
-                        variant="outlined"
-                        size="small"
-                        className={classes.formControl}
-                      >
-                        <Select
-                          value={state.propertySort}
-                          onChange={(e, child) => {
-                            setState((s) => ({
-                              ...s,
-                              propertySort: child.props.value,
-                            }));
-                          }}
-                        >
-                          {[
-                            { label: "All", icon: <AllIcon /> },
-                            { label: "Exclusive A", icon: <ExclusiveAIcon /> },
-                            { label: "Exclusive B", icon: <ExclusiveBIcon /> },
-                            { label: "All A", icon: <AllAIcon /> },
-                            { label: "All B", icon: <AllBIcon /> },
-                            {
-                              label: "Intersection",
-                              icon: <IntersectionIcon />,
-                            },
-                          ].map((item, index) => (
-                            <MenuItem key={index} value={index} dense>
-                              <ListItemIcon className={classes.venn}>
-                                {item.icon}
-                              </ListItemIcon>
-                              {item.label}
-                            </MenuItem>
-                          ))}
-                        </Select>
-                      </FormControl>
-                    </Typography>
                     {state.loading.properties ||
                     state.loading.giniA ||
                     state.loading.giniB ? (
                       <Loading />
                     ) : (
-                      <VennProperties
-                        properties={state.properties}
-                        entityCount={{
-                          entityA: state.giniA.amount,
-                          entityB: state.giniB.amount,
-                        }}
-                        selected={state.propertySort}
-                      />
+                      <React.Fragment>
+                        <Typography
+                          component="div"
+                          style={{
+                            display: "flex",
+                            flexDirection: "row",
+                            justifyContent: "space-between",
+                          }}
+                        >
+                          <Box fontWeight="bold">
+                            Property Frequency{" "}
+                            <Help
+                              text={
+                                <Typography>{`This shows whether a particular information about the items are only present in a subclass. You can switch whether you want to see all 
+                            properties or only those presented in A or B by selecting the set operation on the right.`}</Typography>
+                              }
+                            />
+                          </Box>
+                          <FormControl
+                            variant="outlined"
+                            size="small"
+                            className={classes.formControl}
+                          >
+                            <Select
+                              value={state.propertySort}
+                              onChange={(e, child) => {
+                                setState((s) => ({
+                                  ...s,
+                                  propertySort: child.props.value,
+                                }));
+                              }}
+                            >
+                              {[
+                                { label: "All", icon: <AllIcon /> },
+                                {
+                                  label: "Exclusive A",
+                                  icon: <ExclusiveAIcon />,
+                                },
+                                {
+                                  label: "Exclusive B",
+                                  icon: <ExclusiveBIcon />,
+                                },
+                                { label: "All A", icon: <AllAIcon /> },
+                                { label: "All B", icon: <AllBIcon /> },
+                                {
+                                  label: "Intersection",
+                                  icon: <IntersectionIcon />,
+                                },
+                              ].map((item, index) => (
+                                <MenuItem key={index} value={index} dense>
+                                  <ListItemIcon className={classes.venn}>
+                                    {item.icon}
+                                  </ListItemIcon>
+                                  {item.label}
+                                </MenuItem>
+                              ))}
+                            </Select>
+                          </FormControl>
+                        </Typography>
+                        <VennProperties
+                          properties={state.properties}
+                          entityCount={{
+                            entityA: state.giniA.amount,
+                            entityB: state.giniB.amount,
+                          }}
+                          selected={state.propertySort}
+                        />
+                      </React.Fragment>
                     )}
                   </Paper>
                 </Grid>
                 <Grid item xs={12} classes={{ root: classes.gridItem }}>
                   <Paper classes={{ root: classes.distPaper }}>
-                    <Typography component="div">
-                      <Box fontWeight="bold">
-                        Property Distribution{" "}
-                        <Help
-                          text={
-                            <Typography>
-                              {`Comparing distributions can show you whether
+                    {!state.loading.giniA && !state.loading.giniB ? (
+                      <React.Fragment>
+                        <Typography component="div">
+                          <Box fontWeight="bold">
+                            Property Distribution{" "}
+                            <Help
+                              text={
+                                <Typography>
+                                  {`Comparing distributions can show you whether
                               items of a subclass have an uneven amount of
                               information compared to the other subclass.`}
-                            </Typography>
-                          }
+                                </Typography>
+                              }
+                            />
+                          </Box>
+                        </Typography>
+                        <LineChart
+                          percentage
+                          data={{
+                            labels: state.giniA.percentileData,
+                            datasets: [
+                              {
+                                data: state.giniA.histogramData
+                                  ? state.giniA.histogramData.map(
+                                      (num) => (num * 100) / state.giniA.amount
+                                    )
+                                  : [],
+                                borderColor: theme.palette.itemA.main,
+                                backgroundColor: theme.palette.itemA.main,
+                                fill: true,
+                              },
+                              {
+                                data: state.giniB.histogramData
+                                  ? state.giniB.histogramData.map(
+                                      (num) => (num * 100) / state.giniB.amount
+                                    )
+                                  : [],
+                                borderColor: theme.palette.itemB.main,
+                                backgroundColor: theme.palette.itemB.main,
+                                fill: true,
+                              },
+                            ],
+                          }}
+                          // maxValue={100}
+                          classes={{ ChartWrapper: classes.histogramChart }}
                         />
-                      </Box>
-                    </Typography>
-                    {!state.loading.giniA && !state.loading.giniB ? (
-                      <LineChart
-                        percentage
-                        data={{
-                          labels: state.giniA.percentileData,
-                          datasets: [
-                            {
-                              data: state.giniA.histogramData
-                                ? state.giniA.histogramData.map(
-                                    (num) => (num * 100) / state.giniA.amount
-                                  )
-                                : [],
-                              borderColor: theme.palette.itemA.main,
-                              backgroundColor: theme.palette.itemA.main,
-                              fill: true,
-                            },
-                            {
-                              data: state.giniB.histogramData
-                                ? state.giniB.histogramData.map(
-                                    (num) => (num * 100) / state.giniB.amount
-                                  )
-                                : [],
-                              borderColor: theme.palette.itemB.main,
-                              backgroundColor: theme.palette.itemB.main,
-                              fill: true,
-                            },
-                          ],
-                        }}
-                        maxValue={100}
-                        classes={{ ChartWrapper: classes.histogramChart }}
-                      />
+                      </React.Fragment>
                     ) : (
                       <Loading />
                     )}
