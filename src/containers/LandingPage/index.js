@@ -123,6 +123,8 @@ const useStyles = makeStyles(() => ({
     flexWrap: "nowrap",
     minWidth: theme.spacing(70),
     maxWidth: theme.spacing(100),
+    margin: `4px 0 !important`,
+    overflowX: "scroll",
     "&::-webkit-scrollbar": {
       display: "none",
     },
@@ -179,7 +181,7 @@ function Landing(props) {
 
   return (
     <ThemeProvider theme={theme}>
-      <div className={classes.mainLanding}>
+      <div className={classes.mainLanding} id="home">
         <LandingTopIcon style={{ position: "absolute", width: "100%" }} />
         <Navbar />
         <div
@@ -229,15 +231,27 @@ function Landing(props) {
               </Button>
             </div>
             <div className={classes.mainDiv}>
-              <GridList
+              <Typography
+                style={{ width: "90%", marginRight: theme.spacing(2) }}
+              >
+                Examples:{" "}
+              </Typography>
+              {/* <GridList
                 spacing={2}
                 cols={4}
                 cellHeight="auto"
                 className={classes.exampleCarousel}
-              >
-                {tempData.ex.map((x, idx) => (
-                  <GridListTile key={idx}>
-                    <ButtonBase
+              > */}
+              <Grid container spacing={1} className={classes.exampleCarousel}>
+                {[...tempData.ex, ...tempData.ex].map((x, idx) => (
+                  // <GridListTile key={idx}>
+                  <Grid item key={idx}>
+                    <Chip
+                      size="small"
+                      variant="outlined"
+                      clickable
+                      style={{ width: "98%" }}
+                      color="primary"
                       onClick={() => {
                         setState((s) => ({
                           ...s,
@@ -246,17 +260,13 @@ function Landing(props) {
                           appliedFilters: x.filters,
                         }));
                       }}
-                      style={{ width: "95%" }}
-                    >
-                      {/* <Card className={classes.exampleList}> */}
-                      <Typography variant="body1" color="primary">
-                        {x.label}
-                      </Typography>
-                      {/* </Card> */}
-                    </ButtonBase>
-                  </GridListTile>
+                      label={<Typography variant="body1">{x.label}</Typography>}
+                    />
+                  </Grid>
+                  // </GridListTile>
                 ))}
-              </GridList>
+              </Grid>
+              {/* </GridList> */}
               <Paper className={classes.inputBox} elevation={1}>
                 <Grid
                   container
@@ -359,11 +369,10 @@ function Landing(props) {
                     <Help
                       text={
                         <Typography component="div">
-                          Input the class you want to visualize and use filters
-                          to specify.{" "}
+                          Click on the examples above to get a hint.{" "}
                           <Box fontWeight="bold">
-                            No clue? use 'Search for Wikidata Item' to find the
-                            class and filters of a specific object.
+                            Use 'Search for Wikidata Item' to find the class and
+                            filters of a specific object.
                           </Box>
                         </Typography>
                       }
@@ -445,7 +454,12 @@ function Landing(props) {
                 bottom: "5%",
               }}
             >
-              <Button color="primary" fullWidth endIcon={<ExpandMore />}>
+              <Button
+                color="primary"
+                fullWidth
+                endIcon={<ExpandMore />}
+                id="about"
+              >
                 Learn More
               </Button>
             </div>
@@ -523,6 +537,7 @@ function Landing(props) {
             </div>
           </div>
         </div>
+        <div style={{ height: theme.spacing(30) }}></div>
       </div>
     </ThemeProvider>
   );

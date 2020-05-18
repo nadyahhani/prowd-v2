@@ -252,6 +252,7 @@ export default function FilterModal(props) {
           <Button
             color="primary"
             variant="contained"
+            disabled={!(state.selectedProp && state.selectedValues)}
             onClick={() => {
               props.onApply([
                 ...state.appliedFilters,

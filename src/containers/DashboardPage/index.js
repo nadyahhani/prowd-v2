@@ -616,7 +616,7 @@ export default function DashboardPage(props) {
       </Dialog>
       {/* modals end */}
       <Navbar />
-      <div className={classes.content}>
+      <div className={classes.content} >
         <div
           style={{
             marginBottom: theme.spacing(1),

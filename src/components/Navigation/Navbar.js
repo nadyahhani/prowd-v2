@@ -484,8 +484,16 @@ export default function Navbar() {
               <Grid container justify="center" spacing={4}>
                 <Grid item>
                   <Button
-                    color={window.location.pathname === "/" ? "primary" : ""}
-                    onClick={() => history.push("/")}
+                    color={
+                      window.location.pathname === "/" ||
+                      window.location.hash.includes("home")
+                        ? "primary"
+                        : ""
+                    }
+                    onClick={() => {
+                      history.push("/");
+                      window.location.hash = "home";
+                    }}
                   >
                     Home
                   </Button>
@@ -503,16 +511,15 @@ export default function Navbar() {
                   </Button>
                 </Grid>
                 <Grid item>
+                  {/* <a href="/#about" style={{ textDecoration: "none" }}> */}
                   <Button
-                    color={
-                      window.location.pathname.includes("/about")
-                        ? "primary"
-                        : ""
-                    }
-                    onClick={() => history.push("/#")}
+                    onClick={() => {
+                      window.location.hash = "about";
+                    }}
                   >
                     About
                   </Button>
+                  {/* </a> */}
                 </Grid>
               </Grid>
             </Grid>

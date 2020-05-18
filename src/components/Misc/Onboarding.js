@@ -97,7 +97,7 @@ export default function Onboarding(props) {
             {`These are the items of the ${state.class} class with the filters.`}
             <Box fontWeight="bold">
               Each item has information linked to them in the form of a
-              property.
+              Statement. A statement is a coupling of a property and a value.
             </Box>
           </Typography>
         ),
@@ -124,8 +124,7 @@ export default function Onboarding(props) {
         text: (
           <Typography component="div">
             These information can give you insights on the filtered{" "}
-            {state.class}{" "}
-            class condition.{" "}
+            {state.class} class condition.{" "}
             <Box fontWeight="bold">
               Hover over <Help text="Hello!" /> to learn about each piece of
               information
