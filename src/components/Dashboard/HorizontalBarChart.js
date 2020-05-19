@@ -6,6 +6,7 @@ export default function HorizontalBarChart(props) {
   const config = {
     type: "horizontalBar",
     options: {
+      animation: false,
       responsive: true,
       legend: {
         display: false,
@@ -53,6 +54,7 @@ export default function HorizontalBarChart(props) {
   };
 
   var barOptions_stacked = {
+    animation: false,
     tooltips: {
       enabled: true,
     },
@@ -93,7 +95,6 @@ export default function HorizontalBarChart(props) {
             z: 1,
             padding: -10,
             fontColor: theme.palette.common.black,
-            
           },
           stacked: true,
         },

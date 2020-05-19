@@ -238,13 +238,13 @@ export default function Compare(props) {
                                 ChartWrapper: classes.horizontalbarchart,
                               }}
                             />
-                            <Button
+                            {/* <Button
                               color="primary"
                               endIcon={<KeyboardArrowRight />}
                               size="small"
                             >
                               read more
-                            </Button>
+                            </Button> */}
                           </div>
                         ) : (
                           <Loading />
@@ -296,13 +296,13 @@ export default function Compare(props) {
                                 ChartWrapper: classes.horizontalbarchart,
                               }}
                             />
-                            <Button
+                            {/* <Button
                               color="primary"
                               endIcon={<KeyboardArrowRight />}
                               size="small"
                             >
                               read more
-                            </Button>
+                            </Button> */}
                           </div>
                         ) : (
                           <Loading />
