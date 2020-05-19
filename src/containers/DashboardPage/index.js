@@ -734,8 +734,24 @@ export default function DashboardPage(props) {
                           compare: false,
                           discover: false,
                         },
+                        notif: {
+                          open: true,
+                          message: "Dashboard Successfully Edited",
+                          severity: "success",
+                          action: () => {},
+                        },
                       }));
                       fetchData(props.match.params.page);
+                    } else {
+                      setState((s) => ({
+                        ...s,
+                        notif: {
+                          open: true,
+                          message: "Dashboard Edit Failed",
+                          severity: "error",
+                          action: () => {},
+                        },
+                      }));
                     }
                   }
                 );

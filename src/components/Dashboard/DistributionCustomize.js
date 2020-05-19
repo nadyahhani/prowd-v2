@@ -89,7 +89,7 @@ export default function DistributionCustomize(props) {
             <Paper
               variant="outlined"
               elevation={0}
-              style={{ height: theme.spacing(20), overflowY: "scroll" }}
+              style={{ height: theme.spacing(40), overflowY: "scroll" }}
             >
               <Table size="small" padding="none">
                 {props.data.map((item) => (
@@ -97,8 +97,8 @@ export default function DistributionCustomize(props) {
                     <TableCell>
                       <div
                         style={{
-                          width: theme.spacing(4),
-                          height: theme.spacing(3),
+                          width: theme.spacing(5),
+                          height: theme.spacing(5),
                           backgroundColor: item.color,
                         }}
                       />

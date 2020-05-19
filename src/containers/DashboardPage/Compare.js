@@ -190,7 +190,7 @@ export default function Compare(props) {
             </Grid>
           </Paper>
         </Grid>
-        {!state.loading.compareFilters && state.compareFilters.length > 0 ? (
+        {state.loading.compareFilters || state.compareFilters.length > 0 ? (
           <React.Fragment>
             <Grid item xs={4}>
               <Grid container spacing={1}>
@@ -331,7 +331,7 @@ export default function Compare(props) {
                           alignItems: "center",
                         }}
                       >
-                        <Box fontWeight="bold">Imbalance Rate</Box>
+                        <Box fontWeight="bold">Subtopic Imbalance</Box>
                         <Help
                           text={
                             <Typography>{`Comparing imbalances can show you which subclass is more even in terms
@@ -378,7 +378,9 @@ export default function Compare(props) {
                             />
                           </Paper>
                         ) : (
-                          <Loading />
+                          <Loading
+                            style={{ width: "100%", height: theme.spacing(30) }}
+                          />
                         )}
                       </Grid>
                       <Grid item xs={6}>
@@ -412,7 +414,9 @@ export default function Compare(props) {
                             />
                           </Paper>
                         ) : (
-                          <Loading />
+                          <Loading
+                            style={{ width: "100%", height: theme.spacing(30) }}
+                          />
                         )}
                       </Grid>
                     </Grid>

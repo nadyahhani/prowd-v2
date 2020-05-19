@@ -299,7 +299,7 @@ export default function Analysis(props) {
               width: "100%",
             }}
           >
-            <Box fontWeight="bold">Imbalance Rate </Box>
+            <Box fontWeight="bold">Imbalance Score</Box>
             <Typography
               component="div"
               style={{
@@ -506,7 +506,7 @@ export default function Analysis(props) {
             </Grid>
           </Paper>
         </Grid>
-        {!state.loading.dimensions && state.dimensions.length > 0 ? (
+        {state.loading.dimensions || state.dimensions.length > 0 ? (
           <React.Fragment>
             <Grid item xs classes={{ root: classes.outerGrid }}>
               <div

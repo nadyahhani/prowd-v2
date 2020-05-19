@@ -355,7 +355,7 @@ export default function Profile(props) {
                           alignItems: "center",
                         }}
                       >
-                        <Box fontWeight="bold">Imbalance Rate</Box>
+                        <Box fontWeight="bold">Topic Imbalance</Box>
                         <Help
                           text={
                             <Typography component="div">
