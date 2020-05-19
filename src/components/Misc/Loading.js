@@ -17,14 +17,24 @@ export default function Loading(props) {
         <CircularProgress color="secondary" size={11} />
       ) : (
         <Skeleton
-          variant="rect"
+          variant={props.variant}
           animation="wave"
-          style={{
-            height: "100%",
-            width: "100%",
-          }}
+          style={
+            props.notfill
+              ? {}
+              : {
+                  height: "100%",
+                  width: "100%",
+                }
+          }
+          {...props}
         />
       )}
     </div>
   );
 }
+
+Loading.defaultProps = {
+  variant: "rect",
+  notfill: false,
+};

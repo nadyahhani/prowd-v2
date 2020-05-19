@@ -767,110 +767,119 @@ export default function DashboardPage(props) {
             height: "10vh",
           }}
         >
-          {state.globalData.entity ? (
-            <Grid container spacing={1} style={{ height: "100%" }}>
-              <Grid item style={{ height: "100%" }} xs={5}>
-                <Paper style={{ height: "100%", padding: theme.spacing(1) }}>
-                  <Typography
-                    variant="h2"
-                    component="div"
-                    style={{
-                      marginBottom: theme.spacing(1),
-                      display: "flex",
-                      justifyContent: "space-between",
-                    }}
-                  >
-                    <a
-                      style={{ textDecoration: "none" }}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      href={`https://www.wikidata.org/wiki/${state.globalData.entity.entityID}`}
-                    >{`${state.globalData.entity.entityLabel} (${state.globalData.entity.entityID})`}</a>
-                    <EditClass
-                      onChange={(value) => {
+          <Grid container spacing={1} style={{ height: "100%" }}>
+            <Grid item style={{ height: "100%" }} xs={5}>
+              <Paper style={{ height: "100%", padding: theme.spacing(1) }}>
+                {state.globalData.entity ? (
+                  <React.Fragment>
+                    <Typography
+                      variant="h2"
+                      component="div"
+                      style={{
+                        marginBottom: theme.spacing(1),
+                        display: "flex",
+                        justifyContent: "space-between",
+                      }}
+                    >
+                      <a
+                        style={{ textDecoration: "none" }}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        href={`https://www.wikidata.org/wiki/${state.globalData.entity.entityID}`}
+                      >{`${state.globalData.entity.entityLabel} (${state.globalData.entity.entityID})`}</a>
+                      <EditClass
+                        onChange={(value) => {
+                          setState((s) => ({
+                            ...s,
+                            update: true,
+                            globalData: {
+                              ...s.globalData,
+                              entity: {
+                                entityLabel: value.label,
+                                entityID: value.id,
+                                entityDescription: value.description,
+                              },
+                            },
+                          }));
+                        }}
+                      />
+                    </Typography>
+                    <Typography>
+                      {cut(state.globalData.entity.entityDescription, 190)}
+                    </Typography>
+                  </React.Fragment>
+                ) : (
+                  <Loading />
+                )}
+              </Paper>
+            </Grid>
+            <Grid item style={{ height: "100%" }} xs={7}>
+              <Paper style={{ height: "100%", padding: theme.spacing(1) }}>
+                {state.globalData.entity ? (
+                  <React.Fragment>
+                    <Typography>Filters</Typography>
+
+                    <FilterBox
+                      classes={{ root: classes.filters }}
+                      options={state.globalData.filters}
+                      selectedClass={state.globalData.entity}
+                      hideLabel
+                      cols={1}
+                      onApply={(applied) => {
+                        let temp = [...applied];
+                        temp = temp.map((item) => {
+                          if (!item.property) {
+                            return item;
+                          }
+                          return {
+                            filterDescription: item.property.description,
+                            filterID: item.property.id,
+                            filterLabel: item.property.label,
+                            filterValueDescription: item.value.description,
+                            filterValueID: item.value.id,
+                            filterValueLabel: item.value.label,
+                          };
+                        });
                         setState((s) => ({
                           ...s,
                           update: true,
-                          globalData: {
-                            ...s.globalData,
-                            entity: {
-                              entityLabel: value.label,
-                              entityID: value.id,
-                              entityDescription: value.description,
-                            },
-                          },
+                          globalData: { ...s.globalData, filters: temp },
                         }));
                       }}
+                      renderTagText={(opt) =>
+                        cut(
+                          `${
+                            opt.property ? opt.property.label : opt.filterLabel
+                          }: ${
+                            opt.value ? opt.value.label : opt.filterValueLabel
+                          }`,
+                          43
+                        )
+                      }
+                      onDelete={(idx) => {
+                        let temp = [...state.globalData.filters];
+                        temp.splice(idx, 1);
+                        setState((s) => ({
+                          ...s,
+                          update: true,
+                          globalData: { ...s.globalData, filters: temp },
+                        }));
+                      }}
+                      onClear={() =>
+                        setState((s) => ({
+                          ...s,
+                          update: true,
+                          globalData: { ...s.globalData, filters: [] },
+                        }))
+                      }
                     />
-                  </Typography>
-                  <Typography>
-                    {cut(state.globalData.entity.entityDescription, 190)}
-                  </Typography>
-                </Paper>
-              </Grid>
-              <Grid item style={{ height: "100%" }} xs={7}>
-                <Paper style={{ height: "100%", padding: theme.spacing(1) }}>
-                  <Typography>Filters</Typography>
-                  <FilterBox
-                    classes={{ root: classes.filters }}
-                    options={state.globalData.filters}
-                    selectedClass={state.globalData.entity}
-                    hideLabel
-                    cols={1}
-                    onApply={(applied) => {
-                      let temp = [...applied];
-                      temp = temp.map((item) => {
-                        if (!item.property) {
-                          return item;
-                        }
-                        return {
-                          filterDescription: item.property.description,
-                          filterID: item.property.id,
-                          filterLabel: item.property.label,
-                          filterValueDescription: item.value.description,
-                          filterValueID: item.value.id,
-                          filterValueLabel: item.value.label,
-                        };
-                      });
-                      setState((s) => ({
-                        ...s,
-                        update: true,
-                        globalData: { ...s.globalData, filters: temp },
-                      }));
-                    }}
-                    renderTagText={(opt) =>
-                      cut(
-                        `${
-                          opt.property ? opt.property.label : opt.filterLabel
-                        }: ${
-                          opt.value ? opt.value.label : opt.filterValueLabel
-                        }`,
-                        43
-                      )
-                    }
-                    onDelete={(idx) => {
-                      let temp = [...state.globalData.filters];
-                      temp.splice(idx, 1);
-                      setState((s) => ({
-                        ...s,
-                        update: true,
-                        globalData: { ...s.globalData, filters: temp },
-                      }));
-                    }}
-                    onClear={() =>
-                      setState((s) => ({
-                        ...s,
-                        update: true,
-                        globalData: { ...s.globalData, filters: [] },
-                      }))
-                    }
-                  />
-                </Paper>
-              </Grid>
+                  </React.Fragment>
+                ) : (
+                  <Loading />
+                )}
+              </Paper>
             </Grid>
-          ) : (
-            <Loading />
-          )}
+          </Grid>
         </div>
         <div>
           <SimpleTabs

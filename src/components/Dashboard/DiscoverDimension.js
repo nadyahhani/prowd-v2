@@ -144,8 +144,11 @@ export default function DiscoverDimension(props) {
               ))
             ) : (
               <TableRow>
-                <TableCell colSpan={3}>
-                  <Loading />
+                <TableCell colSpan={2}>
+                  <Loading variant="text" />
+                </TableCell>
+                <TableCell>
+                  <Loading variant="circle" width={30} height={30} />
                 </TableCell>
               </TableRow>
             )}

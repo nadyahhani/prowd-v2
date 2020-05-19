@@ -160,8 +160,17 @@ export default function DimensionTable(props) {
               ))
             ) : (
               <TableRow>
-                <TableCell colSpan={4}>
-                  <Loading />
+                <TableCell>
+                  <Loading variant="text" />
+                </TableCell>
+                <TableCell>
+                  <Loading variant="text" />
+                </TableCell>
+                <TableCell>
+                  <Loading variant="text" />
+                </TableCell>
+                <TableCell>
+                  <Loading variant="circle" width={30} height={30} />
                 </TableCell>
               </TableRow>
             )}

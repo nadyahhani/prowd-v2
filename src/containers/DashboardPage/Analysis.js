@@ -538,7 +538,7 @@ export default function Analysis(props) {
                 </Paper>
               </div>
             </Grid>
-            <Grid item xs classes={{ root: classes.outerGrid }}>
+            <Grid item xs={5} classes={{ root: classes.outerGrid }}>
               <div
                 style={{
                   width: "100%",
