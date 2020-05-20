@@ -9,22 +9,18 @@ import {
   Select,
   MenuItem,
   ThemeProvider,
-  Button,
-  ListItemIcon,
 } from "@material-ui/core";
-import GiniChart from "../../components/Dashboard/GiniChart";
 import HorizontalBarChart from "../../components/Dashboard/HorizontalBarChart";
 import theme from "../../theme";
-import { KeyboardArrowRight } from "@material-ui/icons";
 import Loading from "../../components/Misc/Loading";
-import Status from "../../components/Misc/Status";
 import Help from "../../components/Misc/Help";
-import { editCompare, editDiscover } from "../../services/dashboard";
+import { editDiscover } from "../../services/dashboard";
 import LineChart from "../../components/Dashboard/LineChart";
 import DiscoverDimension from "../../components/Dashboard/DiscoverDimension";
 import AllPropertiesModal from "../../components/Dashboard/AllPropertiesModal";
 import { DiscoverIllustration } from "../../images/export";
 import DistributionCustomize from "../../components/Dashboard/DistributionCustomize";
+import { selectDistribution } from "../../global";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -104,27 +100,52 @@ const useStyles = makeStyles((theme) => ({
 export default function Analysis(props) {
   const classes = useStyles();
   const { state, setState } = props;
-
+  const effectNeeds = {
+    load: props.data.loaded.discover,
+    fetchData: props.fetchData,
+    updateData: props.updateData,
+  };
   React.useEffect(() => {
-    if (!props.data.loaded.discover) {
-      props.fetchData("discover");
-      props.updateData((s) => ({
+    if (!effectNeeds.load) {
+      effectNeeds.fetchData("discover");
+      effectNeeds.updateData((s) => ({
         ...s,
         loaded: { ...s.loaded, discover: true },
       }));
     }
-  }, [state, props.data.loaded.discover, props.fetchData, props.updateData]);
+  }, [state, effectNeeds]);
 
-  const applyFilter = (data) => {
+  const applyFilter = (config) => {
+    const data = config.data;
     let temp = [];
-    console.log(data);
 
     data.forEach((item) => {
       temp.push(item.id);
     });
+    console.log(config);
+
+    if (!config.pull) {
+      setState((s) => ({ ...s, loading: { ...s.loading, gini: true } }));
+    }
     editDiscover(props.hash, temp, (r) => {
       if (r.success) {
-        props.fetchData("discover");
+        if (config.pull) {
+          props.fetchData("discover");
+        } else {
+          setState((s) => {
+            const filtered = [...s.gini].filter(
+              (item) =>
+                item.amount >= config.limit[0] && item.amount <= config.limit[1]
+            );
+            return {
+              ...s,
+              shown: filtered,
+              distributions: selectDistribution(filtered),
+              limit: config.limit,
+              loading: { ...s.loading, gini: false },
+            };
+          });
+        }
         props.updateData((s) => ({
           ...s,
           notif: {
@@ -135,6 +156,9 @@ export default function Analysis(props) {
           },
         }));
       } else {
+        if (!config.pull) {
+          setState((s) => ({ ...s, loading: { ...s.loading, gini: false } }));
+        }
         props.updateData((s) => ({
           ...s,
           notif: {
@@ -151,11 +175,19 @@ export default function Analysis(props) {
     if (!state.loading.gini) {
       let labels = [];
       let values = [];
-      const sorted = [...state.gini].sort((b, a) => {
-        if (a.amount > b.amount) {
-          return 1;
+      const sorted = [...state.shown].sort((b, a) => {
+        if (state.sortCount === 0) {
+          if (a.amount > b.amount) {
+            return 1;
+          } else {
+            return -1;
+          }
         } else {
-          return -1;
+          if (b.amount > a.amount) {
+            return 1;
+          } else {
+            return -1;
+          }
         }
       });
       sorted.forEach((item) => {
@@ -201,7 +233,7 @@ export default function Analysis(props) {
               Item Count{" "}
               <Help
                 text={
-                  <Typography>{`Number of items of each possible value.`}</Typography>
+                  <Typography>{`Number of items of each subclass.`}</Typography>
                 }
               />
             </Box>
@@ -222,9 +254,9 @@ export default function Analysis(props) {
                   className={classes.formControl}
                 >
                   <Select
-                    value={0}
-                    onChange={() => {
-                      //TODO
+                    value={state.sortCount}
+                    onChange={(e, child) => {
+                      setState((s) => ({ ...s, sortCount: child.props.value }));
                     }}
                   >
                     <MenuItem value={0}>Descending</MenuItem>
@@ -235,21 +267,23 @@ export default function Analysis(props) {
             </Typography>
           </Typography>
           <HorizontalBarChart
-            key={"item-0"}
+            key={`item-${state.sortCount}`}
             data={dataTemp}
             classes={{
               root: classes.horizontalbar,
               ChartWrapper: classes.horizontalbarchart,
             }}
-            // max={10}
+            max={state.maxAmount}
           />
           <AllPropertiesModal
             key="modal-desc"
             data={{
               labels: labels,
               values: values,
-              // max: 10,
+              max: state.maxAmount,
             }}
+            title="Number of items of All Subclasses"
+            label="Number of items with this value"
           />
         </React.Fragment>
       );
@@ -261,11 +295,19 @@ export default function Analysis(props) {
     if (!state.loading.gini) {
       let labels = [];
       let values = [];
-      const sorted = [...state.gini].sort((b, a) => {
-        if (a.gini > b.gini) {
-          return 1;
+      const sorted = [...state.shown].sort((b, a) => {
+        if (state.sortGini === 0) {
+          if (a.gini > b.gini) {
+            return 1;
+          } else {
+            return -1;
+          }
         } else {
-          return -1;
+          if (b.gini > a.gini) {
+            return 1;
+          } else {
+            return -1;
+          }
         }
       });
       sorted.forEach((item) => {
@@ -311,7 +353,7 @@ export default function Analysis(props) {
               Imbalance Score{" "}
               <Help
                 text={
-                  <Typography>{`Gini coefficient for each possible value. Higher scores indicates a less imbalanced subclass.`}</Typography>
+                  <Typography>{`Gini coefficient for each subclass. Higher scores indicates a less imbalanced subclass.`}</Typography>
                 }
               />
             </Box>
@@ -332,9 +374,9 @@ export default function Analysis(props) {
                   className={classes.formControl}
                 >
                   <Select
-                    value={0}
-                    onChange={() => {
-                      //TODO
+                    value={state.sortGini}
+                    onChange={(e, child) => {
+                      setState((s) => ({ ...s, sortGini: child.props.value }));
                     }}
                   >
                     <MenuItem value={0}>Descending</MenuItem>
@@ -345,7 +387,7 @@ export default function Analysis(props) {
             </Typography>
           </Typography>
           <HorizontalBarChart
-            key={"gini-0"}
+            key={`gini-${state.sortGini}`}
             data={dataTemp}
             classes={{
               root: classes.horizontalbar,
@@ -360,6 +402,8 @@ export default function Analysis(props) {
               values: values,
               max: 1,
             }}
+            title="Imbalance Score of All Subclasses"
+            label="Imbalance Score (Gini Coefficient) for this value"
           />
         </React.Fragment>
       );
@@ -373,14 +417,25 @@ export default function Analysis(props) {
       let labels = [];
       let values = [];
 
-      const sorted = [...state.gini].sort((b, a) => {
-        if (
-          a.statistics.average_distinct_properties >
-          b.statistics.average_distinct_properties
-        ) {
-          return 1;
+      const sorted = [...state.shown].sort((b, a) => {
+        if (state.sortProps === 0) {
+          if (
+            a.statistics.average_distinct_properties >
+            b.statistics.average_distinct_properties
+          ) {
+            return 1;
+          } else {
+            return -1;
+          }
         } else {
-          return -1;
+          if (
+            b.statistics.average_distinct_properties >
+            a.statistics.average_distinct_properties
+          ) {
+            return 1;
+          } else {
+            return -1;
+          }
         }
       });
       sorted.forEach((item) => {
@@ -447,9 +502,9 @@ export default function Analysis(props) {
                   className={classes.formControl}
                 >
                   <Select
-                    value={0}
-                    onChange={() => {
-                      //TODO
+                    value={state.sortProps}
+                    onChange={(e, child) => {
+                      setState((s) => ({ ...s, sortProps: child.props.value }));
                     }}
                   >
                     <MenuItem value={0}>Descending</MenuItem>
@@ -460,19 +515,24 @@ export default function Analysis(props) {
             </Typography>
           </Typography>
           <HorizontalBarChart
-            key={"gini-0"}
+            key={`props-${state.sortProps}`}
             data={dataTemp}
             classes={{
               root: classes.horizontalbar,
               ChartWrapper: classes.horizontalbarchart,
             }}
+            max={state.sortProps === 0 ? values[0] : values[values.length - 1]}
           />
           <AllPropertiesModal
             key="modal-desc"
             data={{
               labels: labels,
               values: values,
+              max:
+                state.sortProps === 0 ? values[0] : values[values.length - 1],
             }}
+            title="Average Number of Properties of Items from All Subclasses"
+            label="Average number of properties for items of this value"
           />
         </React.Fragment>
       );
@@ -498,14 +558,18 @@ export default function Analysis(props) {
           <Paper className={classes.tablePaper}>
             <DiscoverDimension
               classes={{ root: classes.dimensionTable }}
-              appliedDimensions={state.dimensions}
+              appliedDimensions={{
+                data: state.dimensions,
+                limit: state.limit,
+                maxLimit: state.maxAmount,
+              }}
               onApply={applyFilter}
               loading={state.loading.dimensions}
             />
           </Paper>
         </Grid>
-        {!props.data.entity ||
-        state.loading.dimensions ||
+        {props.data.entity &&
+        !state.loading.dimensions &&
         state.dimensions.length > 0 ? (
           <React.Fragment>
             <Grid item xs={4} classes={{ root: classes.outerGrid }}>
@@ -571,7 +635,7 @@ export default function Analysis(props) {
                           Number of Property Distribution{" "}
                           <Help
                             text={
-                              <Typography>{`The percentage of items of that subclass which has a certain number of property. `}</Typography>
+                              <Typography>{`The distribution shape of several subclasses. You can customize and select the classes shown in this chart.`}</Typography>
                             }
                           />
                         </Box>
@@ -604,7 +668,7 @@ export default function Analysis(props) {
                       />
                       <DistributionCustomize
                         data={state.distributions}
-                        allData={state.gini}
+                        allData={state.shown}
                       />
                     </React.Fragment>
                   ) : (
@@ -630,20 +694,31 @@ export default function Analysis(props) {
               Discover facts about all subclasses of the Profile
             </Typography>
             <DiscoverIllustration />
-            <Typography
-              style={{
-                width: theme.spacing(65),
-                marginTop: `-${theme.spacing(4)}px`,
-                textAlign: "justify",
-              }}
-            >
-              <b>The above example is to discover facts about humans.</b> This
-              example will uncover every possible value of the occupation and
-              country of citizenships properties. Select properties which
-              corresponds to {props.data.entity.entityLabel}{" "}
-              {props.data.entity.entityID} which you can see in the Property
-              Frequency section of the Profile tab .
-            </Typography>
+            {props.data.entity && props.data.entity.entityID !== "Q5" ? (
+              <Typography
+                style={{
+                  width: theme.spacing(65),
+                  marginTop: `-${theme.spacing(4)}px`,
+                  textAlign: "justify",
+                }}
+              >
+                <b>The above example is to discover facts about humans.</b>{" "}
+                Select properties which corresponds to{" "}
+                {props.data.entity.entityLabel} ({props.data.entity.entityID})
+                which you can see in the Property Frequency section of the
+                Profile tab.
+              </Typography>
+            ) : (
+              <Typography
+                style={{
+                  width: theme.spacing(65),
+                  marginTop: `-${theme.spacing(4)}px`,
+                  textAlign: "justify",
+                }}
+              >
+                <Loading variant="text" />
+              </Typography>
+            )}
           </Grid>
         )}
       </Grid>

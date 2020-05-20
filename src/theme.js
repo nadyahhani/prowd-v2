@@ -11,7 +11,10 @@ const theme = createMuiTheme({
     itemB: { main: "rgba(219,127,103,.5)", opaque: "rgba(219,127,103,1)" },
     itemA: { main: "rgba(95,158,189,.5)", opaque: "rgba(95,158,189,1)" },
     giniArea: { main: "rgba(51,153,103,.2)", opaque: "rgba(51,153,103,1)" },
-    itemMerge: { main: "#AD7F89" },
+    itemMerge: {
+      main: "rgba(173, 127, 137,.5)",
+      opaque: "rgba(173, 127, 137,1)",
+    },
     success: { main: green[500], transparent: "rgba(80,174,85,.2)" },
     warning: { main: amber[600], transparent: "rgba(254,192,47,.2)" },
     error: { main: red[500], transparent: "rgba(209,49,53,.2)" },

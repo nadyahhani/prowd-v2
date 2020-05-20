@@ -53,29 +53,39 @@ export default function DiscoverDimension(props) {
     inputProperty: "",
     loading: false,
     update: false,
+    pull: false,
   });
   const [value, setValue] = React.useState([2, 110]);
 
   const handleSliderChange = (event, newValue) => {
     setValue(newValue);
+    setState((s) => ({
+      ...s,
+      update: true,
+    }));
   };
 
   const handleInputChange = (event, num) => {
     let temp = [...value];
     temp[num] = event.target.value === "" ? "" : Number(event.target.value);
     setValue(temp);
+    setState((s) => ({
+      ...s,
+      update: true,
+    }));
   };
 
   const handleBlur = () => {
     if (value < 0) {
       setValue(0);
-    } else if (value > 100) {
-      setValue(100);
+    } else if (value > props.appliedDimensions.maxLimit) {
+      setValue(props.appliedDimensions.maxLimit);
     }
   };
 
   React.useEffect(() => {
-    setState((s) => ({ ...s, data: props.appliedDimensions }));
+    setState((s) => ({ ...s, data: props.appliedDimensions.data }));
+    setValue(props.appliedDimensions.limit);
   }, [props.appliedDimensions]);
 
   const eraseInput = () => {
@@ -176,6 +186,7 @@ export default function DiscoverDimension(props) {
                                 ...s,
                                 data: temp,
                                 update: true,
+                                pull: true,
                               }));
                             }}
                           >
@@ -249,7 +260,12 @@ export default function DiscoverDimension(props) {
                                   let t = [...s.data];
                                   t.push(s.selectedTemp);
                                   console.log(t);
-                                  return { ...s, data: t, update: true };
+                                  return {
+                                    ...s,
+                                    data: t,
+                                    update: true,
+                                    pull: true,
+                                  };
                                 });
                                 eraseInput();
                               }
@@ -306,43 +322,46 @@ export default function DiscoverDimension(props) {
           >
             <Typography gutterBottom>Number of Items</Typography>
             <Grid container spacing={1} alignItems="center">
-              <Grid item>
+              <Grid item xs={2}>
                 <Input
+                  disabled={props.loading || !props.appliedDimensions.maxLimit}
                   className={classes.input}
                   value={value[0]}
                   margin="dense"
                   onChange={(e) => handleInputChange(e, 0)}
                   onBlur={handleBlur}
                   inputProps={{
-                    step: 10,
+                    step: 1,
                     min: 0,
-                    max: 100,
+                    max: props.appliedDimensions.maxLimit,
                     type: "number",
                     "aria-labelledby": "input-slider",
                   }}
                 />
               </Grid>
-              <Grid item xs>
+              <Grid item xs={8}>
                 <Slider
+                  disabled={props.loading || !props.appliedDimensions.maxLimit}
                   value={value}
                   onChange={handleSliderChange}
                   aria-labelledby="input-slider"
                   step={1}
                   min={0}
-                  max={110}
+                  max={props.appliedDimensions.maxLimit}
                 />
               </Grid>
-              <Grid item>
+              <Grid item xs={2}>
                 <Input
+                  disabled={props.loading || !props.appliedDimensions.maxLimit}
                   className={classes.input}
                   value={value[1]}
                   margin="dense"
                   onChange={(e) => handleInputChange(e, 1)}
                   onBlur={handleBlur}
                   inputProps={{
-                    step: 10,
+                    step: 1,
                     min: 0,
-                    max: 100,
+                    max: props.appliedDimensions.maxLimit,
                     type: "number",
                     "aria-labelledby": "input-slider",
                   }}
@@ -365,9 +384,14 @@ export default function DiscoverDimension(props) {
             disableElevation
             disabled={!state.update}
             onClick={() => {
-              props.onApply(state.data);
+              props.onApply({
+                data: state.data,
+                limit: value,
+                pull: state.pull,
+              });
               setState((s) => ({
                 ...s,
+                pull: false,
                 update: false,
               }));
               eraseInput();

@@ -1,12 +1,20 @@
 import React from "react";
-import { Tooltip, IconButton } from "@material-ui/core";
+import { Tooltip, IconButton, Typography } from "@material-ui/core";
 import HelpIcon from "@material-ui/icons/Help";
 
 export default function Help(props) {
   return (
-    <Tooltip title={props.text}>
+    <Tooltip
+      title={
+        typeof props.text === "string" ? (
+          <Typography>{props.text}</Typography>
+        ) : (
+          props.text
+        )
+      }
+    >
       <IconButton size="small">
-        <HelpIcon color="primary"/>
+        <HelpIcon color="primary" />
       </IconButton>
     </Tooltip>
   );

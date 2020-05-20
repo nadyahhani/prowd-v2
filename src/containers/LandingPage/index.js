@@ -9,23 +9,13 @@ import {
   Paper,
   Grid,
   Button,
-  Card,
-  ButtonBase,
-  GridList,
-  GridListTile,
-  InputLabel,
-  Popper,
-  Fade,
-  Tooltip,
-  Dialog,
-  TextField,
   Chip,
 } from "@material-ui/core";
 import tempData from "./tempData";
 import Navbar from "../../components/Navigation/Navbar";
 import VirtualAutocomp from "../../components/Inputs/VirtualAutocomp";
 import FilterBox from "../../components/Inputs/FilterBox";
-import { getClasses, getEntityInfo } from "../../services/general";
+import { getClasses } from "../../services/general";
 import { createDashboard } from "../../services/dashboard";
 import { cut, getUnique } from "../../global";
 import {
@@ -47,6 +37,7 @@ const useStyles = makeStyles(() => ({
     alignItems: "center",
   },
   mainLanding: {
+    marginTop: "8vh",
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
@@ -193,7 +184,7 @@ function Landing(props) {
         <div
           style={{
             width: "85%",
-            // maxWidth: theme.spacing(150),
+            maxWidth: theme.spacing(162),
             display: "flex",
             flexDirection: "column",
             zIndex: 1,
@@ -214,9 +205,10 @@ function Landing(props) {
                 className={classes.subText}
                 component="div"
               >
-                See how well certain topics are covered in{" "}
+                See how well certain topics are represented in{" "}
                 <a
                   rel="noopener noreferrer"
+                  target="_blank"
                   href="https://www.wikidata.org/wiki/Wikidata:Main_Page"
                   style={{ textDecoration: "none" }}
                 >
@@ -231,7 +223,7 @@ function Landing(props) {
                 endIcon={<NavigateNext />}
                 onClick={() =>
                   history.push(
-                    "/dashboards/cffdb9749649/profile/onboarding-example"
+                    "/dashboards/8ce49fd3001b/profile/onboarding-example"
                   )
                 }
               >
@@ -379,8 +371,8 @@ function Landing(props) {
                         <Typography component="div">
                           Click on the examples above to get a hint.{" "}
                           <Box fontWeight="bold">
-                            Use 'Search for Wikidata Item' to find the class and
-                            filters of a specific object.
+                            Use 'Search for Wikidata Item' on the navbar to find
+                            the class and filters of a specific object.
                           </Box>
                         </Typography>
                       }
@@ -443,7 +435,7 @@ function Landing(props) {
                             );
                           }}
                         >
-                          VIEW
+                          CREATE DASHBOARD
                         </Button>
                       </div>
                     </div>
@@ -511,7 +503,7 @@ function Landing(props) {
                     <a
                       target="_blank"
                       rel="noopener noreferrer"
-                      href="https://www.wikimedia.org/"
+                      href="https://wikimediafoundation.org/"
                       style={{ textDecoration: "none" }}
                     >
                       Wikimedia Foundation
@@ -534,15 +526,6 @@ function Landing(props) {
                   you form insights
                 </Box>
               </Typography>
-              <Button
-                style={{
-                  marginBottom: theme.spacing(2),
-                }}
-                color="primary"
-                endIcon={<NavigateNext />}
-              >
-                read how
-              </Button>
             </div>
             <div className={classes.mainDiv}>
               <FoldersIcon />
@@ -556,6 +539,7 @@ function Landing(props) {
           display: "flex",
           flexDirection: "column",
           justifyContent: "space-evenly",
+          alignItems: "center",
           // width: "100vw",
           backgroundColor: theme.palette.common.white,
         }}
@@ -564,10 +548,12 @@ function Landing(props) {
           style={{
             height: "fit-content",
             display: "flex",
-            padding: `${theme.spacing(2)}px ${theme.spacing(15)}px`,
+            padding: `${theme.spacing(2)}px 0`,
             flexDirection: "row",
             justifyContent: "space-between",
-            marginBottom: theme.spacing(1),
+            alignItems: "center",
+            width: "80%",
+            maxWidth: "1225px",
             backgroundColor: theme.palette.common.white,
           }}
         >

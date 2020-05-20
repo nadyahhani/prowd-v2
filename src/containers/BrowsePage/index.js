@@ -5,11 +5,7 @@ import {
   Button,
   TextField,
   MenuItem,
-  Popper,
-  Collapse,
   Typography,
-  Fade,
-  Slider,
   Box,
   InputAdornment,
   Popover,
@@ -31,15 +27,17 @@ import { useHistory } from "react-router-dom";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import FilterBox from "../../components/Inputs/FilterBox";
 import { getUnique, cut } from "../../global";
+import Link from "../../components/Misc/Link";
 
 const useStyles = makeStyles({
   table: {
-    height: theme.spacing(77),
+    height: "88%",
     overflowY: "scroll",
   },
   content: {
-    marginTop: "0vh",
-    padding: theme.spacing(2),
+    marginTop: "7vh",
+    height: "93vh",
+    padding: `0 ${theme.spacing(2)}px`,
   },
   bg: {
     backgroundColor: theme.palette.background.main,
@@ -302,118 +300,149 @@ export default function BrowsePage(props) {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {!state.loading ? (
-                  state.dashboards
-                    .filter((item) => {
-                      const name = `${
-                        item.name === ""
-                          ? "untitled dashboard"
-                          : item.name.toLowerCase()
-                      } ${
-                        item.author === ""
-                          ? "anonymous"
-                          : item.author.toLowerCase()
-                      }`;
-                      return (
-                        (state.classFilterValue
-                          ? item.entityInfo.entityID ===
-                            state.classFilterValue.id
-                          : true) &&
-                        name.includes(
-                          props.match.params.search
-                            .slice(7)
-                            .replace(/\+/g, " ")
-                            .toLowerCase()
-                        )
-                      );
-                    })
-                    .sort((b, a) => {
-                      switch (state.sortby) {
-                        case 1:
-                          return a.timestamp < b.timestamp ? 1 : -1;
-                        case 2:
-                          if (a.name === "") {
-                            return "untitled dashboard" < b.name ? 1 : -1;
-                          }
-                          return a.name < b.name ? 1 : -1;
-                        case 3:
-                          if (a.name === "") {
-                            return "untitled dashboard" > b.name ? 1 : -1;
-                          }
-                          return a.name > b.name ? 1 : -1;
-                        case 4:
-                          if (a.name === "") {
-                            return "anonymous" > b.author ? 1 : -1;
-                          }
-                          return a.author < b.author ? 1 : -1;
-                        case 5:
-                          if (a.name === "") {
-                            return "anonymous" > b.author ? 1 : -1;
-                          }
-                          return a.author > b.author ? 1 : -1;
-                        default:
-                          return a.timestamp > b.timestamp ? 1 : -1;
-                      }
-                    })
-                    .map((row, index) => (
-                      <TableRow key={index}>
-                        <TableCell component="th" scope="row">
-                          {row.name === "" ? "Untitled Dashboard" : row.name}
-                        </TableCell>
-                        <TableCell>
-                          {row.author === "" ? "Anonymous" : row.author}
-                        </TableCell>
-                        <TableCell align="right">
-                          {`${row.entityInfo.entityLabel} (${row.entityInfo.entityID})`}
-                        </TableCell>
-                        <TableCell align="right">
-                          <Grid container direction="column" spacing={1}>
-                            {row.filtersInfo.length > 0
-                              ? row.filtersInfo.map((item, idx) => (
-                                  <Grid item>
-                                    <Chip
-                                      key={`${index}-${idx}`}
-                                      variant="outlined"
-                                      size="small"
-                                      label={`${item.filterLabel}: ${item.filterValueLabel}`}
-                                    />
-                                  </Grid>
-                                ))
-                              : "-"}
-                          </Grid>
-                        </TableCell>
-                        <TableCell align="right">
-                          {(() => {
-                            let d = new Date(0); // The 0 there is the key, which sets the date to the epoch
-                            d.setUTCSeconds(row.timestamp);
-                            return `${d.getDate()}/${d.getMonth()}/${d.getFullYear()} ${
-                              d.getHours() < 10 ? 0 : ""
-                            }${d.getHours()}:${
-                              d.getMinutes() < 10 ? 0 : ""
-                            }${d.getMinutes()}`;
-                          })()}
-                        </TableCell>
-                        <TableCell>
-                          <Button
-                            variant="contained"
-                            size="small"
-                            color="primary"
-                            onClick={() =>
-                              history.push(
-                                `/dashboards/${row.hashCode}/profile`
-                              )
+                {!state.loading
+                  ? state.dashboards
+                      .filter((item) => {
+                        const name = `${
+                          item.name === ""
+                            ? "untitled dashboard"
+                            : item.name.toLowerCase()
+                        } ${
+                          item.author === ""
+                            ? "anonymous"
+                            : item.author.toLowerCase()
+                        } ${item.entityInfo.entityLabel} ${item.filtersInfo.map(
+                          (filter) =>
+                            `${filter.filterLabel} ${filter.filterValueLabel}`
+                        )}`;
+                        return (
+                          (state.classFilterValue
+                            ? item.entityInfo.entityID ===
+                              state.classFilterValue.id
+                            : true) &&
+                          name.includes(
+                            props.match.params.search
+                              .slice(7)
+                              .replace(/\+/g, " ")
+                              .toLowerCase()
+                          )
+                        );
+                      })
+                      .sort((b, a) => {
+                        switch (state.sortby) {
+                          case 1:
+                            return a.timestamp < b.timestamp ? 1 : -1;
+                          case 2:
+                            if (a.name === "") {
+                              return "untitled dashboard" < b.name ? 1 : -1;
                             }
-                            endIcon={<NavigateNext />}
-                          >
-                            Open
-                          </Button>
+                            return a.name < b.name ? 1 : -1;
+                          case 3:
+                            if (a.name === "") {
+                              return "untitled dashboard" > b.name ? 1 : -1;
+                            }
+                            return a.name > b.name ? 1 : -1;
+                          case 4:
+                            if (a.name === "") {
+                              return "anonymous" > b.author ? 1 : -1;
+                            }
+                            return a.author < b.author ? 1 : -1;
+                          case 5:
+                            if (a.name === "") {
+                              return "anonymous" > b.author ? 1 : -1;
+                            }
+                            return a.author > b.author ? 1 : -1;
+                          default:
+                            return a.timestamp > b.timestamp ? 1 : -1;
+                        }
+                      })
+                      .map((row, index) => (
+                        <TableRow key={index}>
+                          <TableCell component="th" scope="row">
+                            {row.name === "" ? "Untitled Dashboard" : row.name}
+                          </TableCell>
+                          <TableCell>
+                            {row.author === "" ? "Anonymous" : row.author}
+                          </TableCell>
+                          <TableCell align="right">
+                            {`${row.entityInfo.entityLabel} (${row.entityInfo.entityID})`}
+                          </TableCell>
+                          <TableCell align="right">
+                            <Grid container direction="column" spacing={1}>
+                              {row.filtersInfo.length > 0
+                                ? row.filtersInfo.map((item, idx) => (
+                                    <Grid item>
+                                      <Chip
+                                        key={`${index}-${idx}`}
+                                        variant="outlined"
+                                        size="small"
+                                        label={`${item.filterLabel}: ${item.filterValueLabel}`}
+                                      />
+                                    </Grid>
+                                  ))
+                                : "-"}
+                            </Grid>
+                          </TableCell>
+                          <TableCell align="right">
+                            {(() => {
+                              let d = new Date(0); // The 0 there is the key, which sets the date to the epoch
+                              d.setUTCSeconds(row.timestamp);
+                              return `${d.getDate()}/${d.getMonth()}/${d.getFullYear()} ${
+                                d.getHours() < 10 ? 0 : ""
+                              }${d.getHours()}:${
+                                d.getMinutes() < 10 ? 0 : ""
+                              }${d.getMinutes()}`;
+                            })()}
+                          </TableCell>
+                          <TableCell>
+                            <Link to={`/dashboards/${row.hashCode}/profile`}>
+                              <Button
+                                variant="contained"
+                                size="small"
+                                color="primary"
+                                endIcon={<NavigateNext />}
+                              >
+                                Open
+                              </Button>
+                            </Link>
+                          </TableCell>
+                        </TableRow>
+                      ))
+                  : [0, 1, 2, 3, 4].map((item) => (
+                      <TableRow key={`loading-${item}`}>
+                        <TableCell component="th" scope="row">
+                          <Loading variant="text" />
+                        </TableCell>
+                        <TableCell>
+                          <Loading variant="text" />
+                        </TableCell>
+                        <TableCell align="right">
+                          <Loading variant="text" />
+                        </TableCell>
+                        <TableCell align="right">
+                          <Loading variant="text" />
+                        </TableCell>
+                        <TableCell align="right">
+                          <Loading variant="text" />
+                        </TableCell>
+                        <TableCell>
+                          <Loading variant="text" />
                         </TableCell>
                       </TableRow>
-                    ))
-                ) : (
-                  <TableRow key="loading">
-                    <TableCell colSpan={7}>
-                      <Loading />
+                    ))}
+                {state.loading ? null : (
+                  <TableRow key={`none`}>
+                    <TableCell component="th" scope="row" colSpan={6}>
+                      <Typography
+                        variant="h2"
+                        component="div"
+                        style={{ textAlign: "center" }}
+                      >
+                        {state.dashboards.length < 1
+                          ? "There are no dashboards!"
+                          : "Can't find anything interesting?"}{" "}
+                        <Link to="/">Create your own</Link>.
+                      </Typography>
                     </TableCell>
                   </TableRow>
                 )}

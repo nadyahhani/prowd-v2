@@ -5,12 +5,22 @@ import DialogActions from "@material-ui/core/DialogActions";
 import DialogContent from "@material-ui/core/DialogContent";
 import DialogContentText from "@material-ui/core/DialogContentText";
 import DialogTitle from "@material-ui/core/DialogTitle";
-import { makeStyles, Box, Typography, Grid } from "@material-ui/core";
+import {
+  makeStyles,
+  Box,
+  Typography as TypographyMui,
+  Grid,
+} from "@material-ui/core";
 import Help from "./Help";
 import theme from "../../theme";
 import { NavigateNext } from "@material-ui/icons";
 import { useHistory } from "react-router-dom";
+import Link from "./Link";
+import { DouglasAdamsStructure } from "../../images/export";
 
+function Typography(props) {
+  return <TypographyMui style={{ textAlign: "justify" }} {...props} />;
+}
 export default function Onboarding(props) {
   const history = useHistory();
   const [state, setState] = React.useState({
@@ -52,15 +62,30 @@ export default function Onboarding(props) {
               <Box fontWeight="bold">
                 Each and every item in Wikidata is linked to information in the
                 form of{" "}
-                <a style={{ textDecoration: "none" }} href="#">
+                <a
+                  style={{ textDecoration: "none" }}
+                  href="https://www.wikidata.org/wiki/Special:MyLanguage/Help:Statements"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
                   Statements
                 </a>
                 , a Statement consists of a{" "}
-                <a style={{ textDecoration: "none" }} href="#">
+                <a
+                  style={{ textDecoration: "none" }}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  href="https://www.wikidata.org/wiki/Special:MyLanguage/Help:Properties"
+                >
                   Property
                 </a>{" "}
                 and a{" "}
-                <a style={{ textDecoration: "none" }} href="#">
+                <a
+                  style={{ textDecoration: "none" }}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  href="https://www.wikidata.org/wiki/Special:MyLanguage/Help:Statements#Values"
+                >
                   Value
                 </a>
                 .
@@ -70,25 +95,54 @@ export default function Onboarding(props) {
               component="div"
               style={{ marginBottom: theme.spacing(1) }}
             >
-              In the illustration on the right,{" "}
-              <a href="#">San Fransisco (Q62)</a> has a statement about its{" "}
-              <a href="#">mayor</a> with <a href="#">Gavin Newsom</a> as the
-              value.
+              In the illustration on the right, the item{" "}
+              <a
+                style={{ textDecoration: "none" }}
+                target="_blank"
+                rel="noopener noreferrer"
+                href="https://www.wikidata.org/wiki/Q62"
+              >
+                Douglas Adams (Q62)
+              </a>{" "}
+              has a statement about its{" "}
+              <a
+                style={{ textDecoration: "none" }}
+                target="_blank"
+                rel="noopener noreferrer"
+                href="https://www.wikidata.org/wiki/Property:P6"
+              >
+                educated at (P69)
+              </a>{" "}
+              property with{" "}
+              <a
+                style={{ textDecoration: "none" }}
+                target="_blank"
+                rel="noopener noreferrer"
+                href="https://www.wikidata.org/wiki/Q461391"
+              >
+                St. John's College (Q691283)
+              </a>{" "}
+              as the value.
             </Typography>
             <Typography style={{ marginBottom: theme.spacing(1) }}>
               The amount of information the items of a particular topic has can
               show just how well that topic is represented. Which you can
               explore in this dashboard.
             </Typography>
-            <Button color="primary" endIcon={<NavigateNext />}>
+            <Button
+              color="primary"
+              endIcon={<NavigateNext />}
+              target="_blank"
+              href={"https://www.wikidata.org/wiki/Wikidata:Introduction"}
+            >
               Read more about Wikidata
             </Button>
           </div>
-          <div style={{ width: "45%" }}>
+          <div style={{ width: "50%" }}>
             <img
               style={{ width: "100%" }}
-              src={`https://upload.wikimedia.org/wikipedia/commons/thumb/6/60/Linked_Data_-_San_Francisco.svg/2560px-Linked_Data_-_San_Francisco.svg.png`}
-              alt="rdf illustration"
+              src={`https://upload.wikimedia.org/wikipedia/commons/thumb/a/ae/Datamodel_in_Wikidata.svg/1200px-Datamodel_in_Wikidata.svg.png`}
+              alt="wikidata item illustration"
             />
           </div>
         </div>
@@ -131,11 +185,11 @@ export default function Onboarding(props) {
       text: (
         <Typography component="div">
           These information can give you insights on the filtered {state.class}{" "}
-          class condition.{" "}
-          <Box fontWeight="bold">
+          class condition.
+          <b>
             Hover over <Help text="Hello!" /> to learn about each piece of
             information
-          </Box>
+          </b>
         </Typography>
       ),
       action1: "Next",
@@ -151,8 +205,8 @@ export default function Onboarding(props) {
   const steps = {
     example: [
       {
-        title: "Welcome to ProWD!",
-        text: "Are you familiar with Wikidata?",
+        title: "Are you familiar with Wikidata?",
+        text: "",
         action1: "Not really",
         action2: "Yes",
         func: {
@@ -170,9 +224,187 @@ export default function Onboarding(props) {
         style: {},
       },
       repeatingSteps.wikidata,
-      repeatingSteps.tableIntro,
+      {
+        title: "How ProWD Visualize Knowledge",
+        text: "",
+        action1: "Next",
+        action2: "Stop",
+        enableBackground: true,
+        style: { maxWidth: "fit-content" },
+        customChild: (
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "row",
+              justifyContent: "space-between",
+              alignItems: "center",
+              width: theme.spacing(100),
+              padding: theme.spacing(2),
+            }}
+          >
+            <div
+              style={{
+                width: "45%",
+              }}
+            >
+              <Typography component="div" gutterBottom>
+                On the right, you can see that Douglas Adams is an instance of
+                Human (Q5), which means that{" "}
+                <a href="https://www.wikidata.org/wiki/Q42">
+                  Douglas Adams (Q42)
+                </a>{" "}
+                is a member of the{" "}
+                <a href="https://www.wikidata.org/wiki/Q5">Human (Q5)</a> class.
+                You can also see that Douglas Adams has two statements about his{" "}
+                <a href="https://www.wikidata.org/wiki/P106">occupation</a>{" "}
+                property, he is a{" "}
+                <a href="https://www.wikidata.org/wiki/Q36180">writer</a> and
+                also, a{" "}
+                <a href="https://www.wikidata.org/wiki/Q245068">comedian</a>.
+              </Typography>
+              <Typography style={{ marginBottom: theme.spacing(1) }}>
+                <b>
+                  There are many other Human writer-comedians out there, now how
+                  can we see how well each and everyone of them is represented
+                  in Wikidata?
+                </b>
+              </Typography>
+            </div>
+            <div
+              style={{ width: "50%", display: "flex", alignItems: "center" }}
+            >
+              <DouglasAdamsStructure style={{ width: "100%" }} />
+            </div>
+          </div>
+        ),
+      },
+      {
+        title: "This dashboard will show you that information",
+        text: (
+          <Typography>
+            This dashboard is configured with{" "}
+            <a href="https://www.wikidata.org/wiki/Q5">Human (Q5)</a> as its
+            class, and filters applied to specify the humans to those who has
+            occupations as a writer and also a comedian
+          </Typography>
+        ),
+        action1: "Next",
+        action2: "Stop",
+        enableBackground: false,
+        style: {},
+      },
+      {
+        title: "",
+        text: (
+          <Typography component="div">
+            {`These items are those writer-comedian humans. There's Douglas Adams right over there!`}
+          </Typography>
+        ),
+        action1: "Next",
+        action2: "Stop",
+        enableBackground: false,
+        style: {
+          left: theme.spacing(-20),
+          top: theme.spacing(10),
+          width: theme.spacing(40),
+        },
+      },
       repeatingSteps.searchWiki,
-      repeatingSteps.infoIntro,
+      {
+        title: "",
+        text: (
+          <Typography component="div">
+            These information can give you insights on the writer-comedian
+            humans.
+            <b>
+              Hover over <Help text="Hello!" /> to learn about each piece of
+              information
+            </b>
+          </Typography>
+        ),
+        action1: "Next",
+        action2: "Stop",
+        func: {
+          action1: () => {
+            history.push("/dashboards/8ce49fd3001b/compare/onboarding-example");
+            setState((s) => ({ ...s, currentStep: s.currentStep + 1 }));
+            props.onChange({ reason: "continue", state });
+          },
+          action2: () => {
+            handleClose();
+          },
+        },
+        enableBackground: false,
+        style: {
+          top: theme.spacing(8),
+          left: theme.spacing(30),
+          width: theme.spacing(50),
+        },
+      },
+      {
+        title: "",
+        text: (
+          <Typography component="div">
+            <b>Compare two subclasses of the writer-comedian human profile.</b>{" "}
+            Right here, you can see the difference between writer-comedians from
+            Germany and from the United States of America
+          </Typography>
+        ),
+        action1: "Next",
+        action2: "Stop",
+        func: {
+          action1: () => {
+            history.push(
+              "/dashboards/8ce49fd3001b/analysis/onboarding-example"
+            );
+            setState((s) => ({ ...s, currentStep: s.currentStep + 1 }));
+            props.onChange({ reason: "continue", state });
+          },
+          action2: () => {
+            handleClose();
+          },
+        },
+        enableBackground: false,
+        style: {
+          left: theme.spacing(-20),
+          top: theme.spacing(10),
+          width: theme.spacing(60),
+        },
+      },
+      {
+        title: "",
+        text: (
+          <React.Fragment>
+            <Typography component="div" gutterBottom>
+              <b>Want to discover more about writer-comedians?</b> This example
+              shows you all the values of educated at for the writer-comedian
+              human items.
+            </Typography>
+            <Typography>
+              From the information here, you can see where most of them were
+              educated at and many more.
+            </Typography>
+          </React.Fragment>
+        ),
+        action1: "Next",
+        action2: "Stop",
+        func: {
+          action1: () => {
+            history.push("/dashboards/8ce49fd3001b/profile/onboarding-example");
+            setState((s) => ({ ...s, currentStep: s.currentStep + 1 }));
+            props.onChange({ reason: "continue", state });
+          },
+          action2: () => {
+            handleClose();
+          },
+        },
+        enableBackground: false,
+        style: {
+          left: theme.spacing(-20),
+          top: theme.spacing(10),
+          width: theme.spacing(60),
+        },
+      },
       {
         title: "Now it's time to create your own Dashboard!",
         text: (
@@ -204,7 +436,7 @@ export default function Onboarding(props) {
         hideAction1: true,
         hideAction2: true,
         enableBackground: true,
-        style: { maxWidth: "fit-content" },
+        style: {},
       },
     ],
     profile: [
@@ -237,19 +469,6 @@ export default function Onboarding(props) {
       repeatingSteps.wikidata,
       repeatingSteps.tableIntro,
       repeatingSteps.searchWiki,
-      {
-        title: "",
-        text:
-          "Give your dashboard a name and author so you can easily find it later. You can always change the class and filters to your needs later.",
-        action1: "Next",
-        action2: "Stop",
-        enableBackground: false,
-        style: {
-          left: theme.spacing(-20),
-          top: theme.spacing(-20),
-          width: theme.spacing(36),
-        },
-      },
       repeatingSteps.infoIntro,
       {
         title: "Now have fun exploring!",
@@ -269,6 +488,7 @@ export default function Onboarding(props) {
   const useStyles = makeStyles(() => ({
     dialogRoot: {
       ...steps[state.currentPage][state.currentStep].style,
+      padding: theme.spacing(2),
     },
   }));
   const classes = useStyles();
@@ -300,6 +520,7 @@ export default function Onboarding(props) {
   return (
     <div>
       <Dialog
+        disableBackdropClick
         open={state.running}
         onClose={handleClose}
         aria-labelledby="alert-dialog-title"
@@ -309,9 +530,11 @@ export default function Onboarding(props) {
         }
         classes={{ paper: classes.dialogRoot }}
       >
-        <DialogTitle id="alert-dialog-title">
-          {steps[state.currentPage][state.currentStep].title}
-        </DialogTitle>
+        {steps[state.currentPage][state.currentStep].title === "" ? null : (
+          <DialogTitle id="alert-dialog-title">
+            {steps[state.currentPage][state.currentStep].title}
+          </DialogTitle>
+        )}
         <DialogContent
           style={
             steps[state.currentPage][state.currentStep].customChild
@@ -327,7 +550,7 @@ export default function Onboarding(props) {
             </Typography>
           )}
         </DialogContent>
-        <DialogActions>
+        <DialogActions style={{ justifyContent: "flex-start" }}>
           {steps[state.currentPage][state.currentStep].hideAction1 ? null : (
             <Button
               onClick={() => {
@@ -344,6 +567,8 @@ export default function Onboarding(props) {
               }}
               color="primary"
               variant="contained"
+              size="small"
+              autoFocus
             >
               {steps[state.currentPage][state.currentStep].action1}
             </Button>
@@ -358,7 +583,7 @@ export default function Onboarding(props) {
                 }
               }}
               color="primary"
-              autoFocus
+              size="small"
             >
               {steps[state.currentPage][state.currentStep].action2}
             </Button>

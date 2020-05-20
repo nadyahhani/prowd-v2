@@ -3,7 +3,6 @@ import AppBar from "@material-ui/core/AppBar";
 import Toolbar from "@material-ui/core/Toolbar";
 import Typography from "@material-ui/core/Typography";
 import { fade, makeStyles } from "@material-ui/core/styles";
-import SearchIcon from "@material-ui/icons/Search";
 import {
   TextField,
   InputAdornment,
@@ -14,19 +13,11 @@ import {
   Paper,
   Dialog,
   CircularProgress,
-  Checkbox,
-  FormControl,
-  Input,
-  Select,
-  ListItemText,
-  MenuItem,
   Box,
 } from "@material-ui/core";
 import theme from "../../theme";
 import { useHistory } from "react-router-dom";
 import { ProwdLogo } from "../../images/export";
-import CheckBoxOutlineBlankIcon from "@material-ui/icons/CheckBoxOutlineBlank";
-import CheckBoxIcon from "@material-ui/icons/CheckBox";
 import { getEntityInfo, getClasses } from "../../services/general";
 import { getUnique, cut } from "../../global";
 import Autocomplete from "@material-ui/lab/Autocomplete";
@@ -35,7 +26,9 @@ import Loading from "../Misc/Loading";
 const useStyles = makeStyles(() => ({
   root: {
     // flexGrow: 1,
-    position: "relative",
+    minWidth: "1225px",
+    width: "100vw",
+    position: "absolute",
     height: theme.spacing(6),
   },
   menuButton: {

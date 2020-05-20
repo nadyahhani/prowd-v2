@@ -1,3 +1,5 @@
+import theme from "./theme";
+
 // API URL
 export const url = "http://prowd.id:5000";
 // export const url = "http://localhost:5000";
@@ -123,7 +125,9 @@ export const sortProperties = (props, compare = false) => {
 // function to filter table
 export const filterEntities = (data, param, sort = 0) => {
   let result = data.filter((item) =>
-    item.label.toLowerCase().includes(param.toLowerCase())
+    `${item.label} ${item.propertyCount} ${item.percentile}`
+      .toLowerCase()
+      .includes(param.toLowerCase())
   );
   result.sort((b, a) => {
     // property check
@@ -189,5 +193,54 @@ export const compareDistinctProps = (properties) => {
       result.countAB += 1;
     }
   });
+  return result;
+};
+
+export const selectDistribution = (filtered) => {
+  const colors = [
+    theme.palette.itemA.opaque,
+    theme.palette.itemB.opaque,
+    theme.palette.itemMerge.main,
+  ];
+  let result = [];
+  const sortedbyGini = [...filtered].sort((b, a) => {
+    if (a.gini > b.gini) {
+      return 1;
+    } else {
+      return -1;
+    }
+  });
+  const getName = (info) =>
+    `${info.item_1_label ? info.item_1_label : ""}${
+      info.item_2_label ? `-${info.item_2_label}` : ""
+    }${info.item_3_label ? `-${info.item_3_label}` : ""}`;
+  if (sortedbyGini.length > 2) {
+    let tempIndex = [0, 0, 0];
+    tempIndex[2] = sortedbyGini.includes((item) => item.gini === 0)
+      ? sortedbyGini.findIndex((item) => item.gini === 0)
+      : sortedbyGini.length - 1;
+    tempIndex[1] = Math.ceil(tempIndex[2] / 2);
+    tempIndex.forEach((idx, index) => {
+      result.push({
+        ...sortedbyGini[idx],
+        data: sortedbyGini[idx].histogram_data
+          ? sortedbyGini[idx].histogram_data.map(
+              (num) => (num * 100) / sortedbyGini[idx].amount
+            )
+          : [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        name: getName(sortedbyGini[idx].analysis_info),
+        color: colors[index],
+      });
+    });
+  } else {
+    result = sortedbyGini.map((item, idx) => ({
+      ...item,
+      data: item.histogram_data
+        ? item.histogram_data.map((num) => (num * 100) / item.amount)
+        : [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      name: getName(item.analysis_info),
+      color: colors[idx],
+    }));
+  }
   return result;
 };

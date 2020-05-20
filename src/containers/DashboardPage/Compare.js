@@ -9,13 +9,11 @@ import {
   Select,
   MenuItem,
   ThemeProvider,
-  Button,
   ListItemIcon,
 } from "@material-ui/core";
 import GiniChart from "../../components/Dashboard/GiniChart";
 import HorizontalBarChart from "../../components/Dashboard/HorizontalBarChart";
 import theme from "../../theme";
-import { KeyboardArrowRight } from "@material-ui/icons";
 import {
   AllIcon,
   AllAIcon,
@@ -35,7 +33,7 @@ import VennProperties from "../../components/Dashboard/VennProperties";
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    height: "fit-content",
+    height: "66.3vh",
     // padding: theme.spacing(0),
   },
   gridItem: {
@@ -45,8 +43,10 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   tablePaper: {
-    overflow: "hidden",
-    height: "63.1vh",
+    overflowY: "scroll",
+    overflowX: "hidden",
+    // height: "63.1vh",
+    flex: "1 1 auto",
     padding: theme.spacing(1),
   },
   distPaper: { height: "32vh" },
@@ -80,8 +80,8 @@ const useStyles = makeStyles((theme) => ({
   horizontalbar: { width: "100%", height: "72%" },
   horizontalbarchart: { width: "100%", height: "100%" },
   card: {
-    height: "14vh",
-    // width: "100%",
+    // height: "14vh",
+    flex: "1 1 auto",
     padding: theme.spacing(2),
     display: "flex",
     flexDirection: "column",
@@ -92,26 +92,33 @@ const useStyles = makeStyles((theme) => ({
     width: "100%",
     height: "97%",
   },
-
   venn: {
     height: "fit-content",
     width: "fit-content",
+  },
+  outerGrid: {
+    height: "100%",
   },
 }));
 
 export default function Compare(props) {
   const classes = useStyles();
   const { state, setState } = props;
+  const effectNeeds = {
+    load: props.data.loaded.compare,
+    fetchData: props.fetchData,
+    updateData: props.updateData,
+  };
 
   React.useEffect(() => {
-    if (!props.data.loaded.compare) {
-      props.fetchData("compare");
-      props.updateData((s) => ({
+    if (!effectNeeds.load) {
+      effectNeeds.fetchData("compare");
+      effectNeeds.updateData((s) => ({
         ...s,
         loaded: { ...s.loaded, compare: true },
       }));
     }
-  }, [state, props.data.loaded.compare, props.fetchData, props.updateData]);
+  }, [state, effectNeeds]);
 
   const applyFilter = (data) => {
     let temp = [];
@@ -158,7 +165,12 @@ export default function Compare(props) {
         direction="row"
         classes={{ root: classes.root }}
       >
-        <Grid item xs={4}>
+        <Grid
+          item
+          xs={4}
+          classes={{ root: classes.outerGrid }}
+          style={{ display: "flex" }}
+        >
           <Paper className={classes.tablePaper}>
             <Grid
               container
@@ -173,7 +185,7 @@ export default function Compare(props) {
                     <Help
                       text={
                         <Typography>{`Compare A and B by selecting the property you want to base the comparison on, then determine the value of that property for both A and B. 
-                    Click 'Apply' to set your changes.`}</Typography>
+                    Click 'Apply' to set your changes. You can search an item of the profile using the search bar on top of this page to view possible property and values of the profile.`}</Typography>
                       }
                     />
                   </Box>
@@ -194,373 +206,412 @@ export default function Compare(props) {
         state.loading.compareFilters ||
         state.compareFilters.length > 0 ? (
           <React.Fragment>
-            <Grid item xs={4}>
-              <Grid container spacing={1}>
-                <Grid item xs={12}>
-                  <Grid container spacing={1}>
-                    <Grid item xs={6}>
-                      <Paper classes={{ root: classes.card }}>
-                        {!state.loading.giniA && !state.loading.giniB ? (
-                          <div style={{ width: "100%", height: "100%" }}>
-                            <Typography
-                              component="div"
-                              style={{
-                                display: "flex",
-                                flexDirection: "row",
-                                justifyContent: "space-between",
-                                alignItems: "center",
-                              }}
-                            >
-                              <Box fontWeight="bold">Item Count</Box>
-                            </Typography>
-                            <HorizontalBarChart
-                              key={3}
-                              simple
-                              data={{
-                                labels: [
-                                  `A: ${state.giniA.amount}`,
-                                  `B: ${state.giniB.amount}`,
-                                ],
-                                datasets: [
-                                  {
-                                    label: "Number of Items",
-                                    backgroundColor: [
-                                      theme.palette.itemA.main,
-                                      theme.palette.itemB.main,
-                                    ],
-                                    data: [
-                                      state.giniA.amount,
-                                      state.giniB.amount,
-                                    ],
-                                  },
-                                ],
-                              }}
-                              classes={{
-                                root: classes.horizontalbar,
-                                ChartWrapper: classes.horizontalbarchart,
-                              }}
-                            />
-                            {/* <Button
+            <Grid item xs={4} classes={{ root: classes.outerGrid }}>
+              <div
+                style={{
+                  width: "100%",
+                  height: "100%",
+                  display: "flex",
+                  flexDirection: "column",
+                }}
+              >
+                <Grid
+                  container
+                  spacing={1}
+                  style={{
+                    // width: "100%",
+                    height: "30%",
+                    marginBottom: theme.spacing(1),
+                  }}
+                >
+                  <Grid item xs={6} style={{ display: "flex" }}>
+                    <Paper classes={{ root: classes.card }}>
+                      {!state.loading.giniA && !state.loading.giniB ? (
+                        <div style={{ width: "100%", height: "100%" }}>
+                          <Typography
+                            component="div"
+                            style={{
+                              display: "flex",
+                              flexDirection: "row",
+                              justifyContent: "space-between",
+                              alignItems: "center",
+                            }}
+                          >
+                            <Box fontWeight="bold">
+                              Item Count{" "}
+                              <Help text="The number of items of subclass A and subclass B" />
+                            </Box>
+                          </Typography>
+                          <HorizontalBarChart
+                            key={3}
+                            simple
+                            data={{
+                              labels: [
+                                `A: ${state.giniA.amount}`,
+                                `B: ${state.giniB.amount}`,
+                              ],
+                              datasets: [
+                                {
+                                  label: "Number of Items",
+                                  backgroundColor: [
+                                    theme.palette.itemA.main,
+                                    theme.palette.itemB.main,
+                                  ],
+                                  data: [
+                                    state.giniA.amount,
+                                    state.giniB.amount,
+                                  ],
+                                },
+                              ],
+                            }}
+                            classes={{
+                              root: classes.horizontalbar,
+                              ChartWrapper: classes.horizontalbarchart,
+                            }}
+                          />
+                          {/* <Button
                               color="primary"
                               endIcon={<KeyboardArrowRight />}
                               size="small"
                             >
                               read more
                             </Button> */}
-                          </div>
-                        ) : (
-                          <Loading />
-                        )}
-                      </Paper>
-                    </Grid>
-                    <Grid item xs={6}>
-                      <Paper classes={{ root: classes.card }}>
-                        {!state.loading.properties ? (
-                          <div style={{ width: "100%", height: "100%" }}>
-                            <Typography
-                              component="div"
-                              style={{
-                                display: "flex",
-                                flexDirection: "row",
-                                justifyContent: "space-between",
-                                alignItems: "center",
-                              }}
-                            >
-                              <Box fontWeight="bold">Distinct Properties</Box>
-                            </Typography>
-                            <HorizontalBarChart
-                              key={3}
-                              simple
-                              data={{
-                                labels: [
-                                  `A: ${state.distinctProps.countA}`,
-                                  `B: ${state.distinctProps.countB}`,
-                                  `Shared: ${state.distinctProps.countAB}`,
-                                ],
-                                datasets: [
-                                  {
-                                    label: "# of Distinct Properties",
-                                    backgroundColor: [
-                                      theme.palette.itemA.main,
-                                      theme.palette.itemB.main,
-                                      theme.palette.itemMerge.main,
-                                    ],
-                                    data: [
-                                      state.distinctProps.countA,
-                                      state.distinctProps.countB,
-                                      state.distinctProps.countAB,
-                                    ],
-                                  },
-                                ],
-                              }}
-                              classes={{
-                                root: classes.horizontalbar,
-                                ChartWrapper: classes.horizontalbarchart,
-                              }}
-                            />
-                            {/* <Button
+                        </div>
+                      ) : (
+                        <Loading />
+                      )}
+                    </Paper>
+                  </Grid>
+                  <Grid item xs={6} style={{ display: "flex" }}>
+                    <Paper classes={{ root: classes.card }}>
+                      {!state.loading.properties ? (
+                        <div style={{ width: "100%", height: "100%" }}>
+                          <Typography
+                            component="div"
+                            style={{
+                              display: "flex",
+                              flexDirection: "row",
+                              justifyContent: "space-between",
+                              alignItems: "center",
+                            }}
+                          >
+                            <Box fontWeight="bold">
+                              Distinct Properties{" "}
+                              <Help text="The number of distinct properties of subclass A and subclass B, and the number of properties which are present in both of them" />
+                            </Box>
+                          </Typography>
+                          <HorizontalBarChart
+                            key={3}
+                            simple
+                            data={{
+                              labels: [
+                                `A: ${state.distinctProps.countA}`,
+                                `B: ${state.distinctProps.countB}`,
+                                `A and B: ${state.distinctProps.countAB}`,
+                              ],
+                              datasets: [
+                                {
+                                  label: "# of Distinct Properties",
+                                  backgroundColor: [
+                                    theme.palette.itemA.main,
+                                    theme.palette.itemB.main,
+                                    theme.palette.itemMerge.main,
+                                  ],
+                                  data: [
+                                    state.distinctProps.countA,
+                                    state.distinctProps.countB,
+                                    state.distinctProps.countAB,
+                                  ],
+                                },
+                              ],
+                            }}
+                            classes={{
+                              root: classes.horizontalbar,
+                              ChartWrapper: classes.horizontalbarchart,
+                            }}
+                          />
+                          {/* <Button
                               color="primary"
                               endIcon={<KeyboardArrowRight />}
                               size="small"
                             >
                               read more
                             </Button> */}
-                          </div>
-                        ) : (
-                          <Loading />
-                        )}
-                      </Paper>
-                    </Grid>
+                        </div>
+                      ) : (
+                        <Loading />
+                      )}
+                    </Paper>
                   </Grid>
                 </Grid>
-                <Grid item xs={12} classes={{ root: classes.gridItem }}>
-                  <Paper classes={{ root: classes.giniPaper }}>
-                    <div
+
+                <Paper
+                  style={{
+                    padding: theme.spacing(1),
+                    flex: "1 1 auto",
+                    height: "50%",
+                  }}
+                >
+                  <div
+                    style={{
+                      display: "flex",
+                      flexDirection: "row",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                      width: "100%",
+                    }}
+                  >
+                    <Typography
+                      component="div"
                       style={{
                         display: "flex",
                         flexDirection: "row",
                         justifyContent: "space-between",
                         alignItems: "center",
-                        width: "100%",
                       }}
                     >
+                      <Box fontWeight="bold">Subclass Imbalance</Box>
+                      <Help
+                        text={
+                          <Typography>{`Comparing imbalances can show you which subclass is more even in terms
+                     of the amount of information each items of the subclass possess.`}</Typography>
+                        }
+                      />
+                    </Typography>
+                  </div>
+                  <Grid
+                    container
+                    direction="row"
+                    spacing={1}
+                    style={{ height: "100%", width: "100%" }}
+                  >
+                    <Grid item xs={6}>
+                      <Typography style={{ marginBottom: theme.spacing(1) }}>
+                        A:{" "}
+                        {state.compareFilters.length > 0 ||
+                        !state.loading.compareFilters
+                          ? state.compareFilters
+                              .map((item) => `${item.valueA.label}`)
+                              .join("-")
+                          : "-"}
+                      </Typography>
+                      {!state.loading.giniA ? (
+                        <Paper
+                          variant="outlined"
+                          elevation={0}
+                          className={classes.giniSubPaper}
+                        >
+                          <Status value={state.giniA.gini}>Imbalanced</Status>
+
+                          <GiniChart
+                            simple
+                            item="A"
+                            labels={state.giniA.percentileData}
+                            data={state.giniA.data}
+                            gini={state.giniA.gini}
+                            insight={state.giniA.insight}
+                            classes={{
+                              root: classes.giniChart,
+                              ChartWrapper: classes.giniChart,
+                            }}
+                          />
+                        </Paper>
+                      ) : (
+                        <Loading
+                          style={{ width: "100%", height: theme.spacing(30) }}
+                        />
+                      )}
+                    </Grid>
+                    <Grid item xs={6}>
+                      <Typography style={{ marginBottom: theme.spacing(1) }}>
+                        B:{" "}
+                        {state.compareFilters.length > 0 ||
+                        !state.loading.compareFilters
+                          ? state.compareFilters
+                              .map((item) => `${item.valueB.label}`)
+                              .join("-")
+                          : "-"}
+                      </Typography>
+                      {!state.loading.giniB ? (
+                        <Paper
+                          variant="outlined"
+                          elevation={0}
+                          className={classes.giniSubPaper}
+                        >
+                          <Status value={state.giniB.gini}>Imbalanced</Status>
+                          <GiniChart
+                            simple
+                            item="B"
+                            labels={state.giniB.percentileData}
+                            data={state.giniB.data}
+                            gini={state.giniB.gini}
+                            insight={state.giniB.insight}
+                            classes={{
+                              root: classes.giniChart,
+                              ChartWrapper: classes.giniChart,
+                            }}
+                          />
+                        </Paper>
+                      ) : (
+                        <Loading
+                          style={{ width: "100%", height: theme.spacing(30) }}
+                        />
+                      )}
+                    </Grid>
+                  </Grid>
+                </Paper>
+              </div>
+            </Grid>
+            <Grid item xs={4} classes={{ root: classes.outerGrid }}>
+              <div
+                style={{
+                  width: "100%",
+                  height: "100%",
+                  display: "flex",
+                  flexDirection: "column",
+                }}
+              >
+                <Paper
+                  style={{
+                    // width: "100%",
+                    height: "40%",
+                    marginBottom: theme.spacing(1),
+                    padding: theme.spacing(1),
+                  }}
+                >
+                  {state.loading.properties ||
+                  state.loading.giniA ||
+                  state.loading.giniB ? (
+                    <Loading />
+                  ) : (
+                    <React.Fragment>
                       <Typography
                         component="div"
                         style={{
                           display: "flex",
                           flexDirection: "row",
                           justifyContent: "space-between",
-                          alignItems: "center",
                         }}
                       >
-                        <Box fontWeight="bold">Subclass Imbalance</Box>
-                        <Help
-                          text={
-                            <Typography>{`Comparing imbalances can show you which subclass is more even in terms
-                     of the amount of information each items of the subclass possess.`}</Typography>
-                          }
-                        />
-                      </Typography>
-                    </div>
-                    <Grid
-                      container
-                      direction="row"
-                      spacing={1}
-                      style={{ height: "100%", width: "100%" }}
-                    >
-                      <Grid item xs={6}>
-                        <Typography style={{ marginBottom: theme.spacing(1) }}>
-                          A:{" "}
-                          {state.compareFilters.length > 0 ||
-                          !state.loading.compareFilters
-                            ? state.compareFilters
-                                .map((item) => `${item.valueA.label}`)
-                                .join("-")
-                            : "-"}
-                        </Typography>
-                        {!state.loading.giniA ? (
-                          <Paper
-                            variant="outlined"
-                            elevation={0}
-                            className={classes.giniSubPaper}
-                          >
-                            <Status value={state.giniA.gini}>Imbalanced</Status>
-
-                            <GiniChart
-                              simple
-                              item="A"
-                              labels={state.giniA.percentileData}
-                              data={state.giniA.data}
-                              gini={state.giniA.gini}
-                              insight={state.giniA.insight}
-                              classes={{
-                                root: classes.giniChart,
-                                ChartWrapper: classes.giniChart,
-                              }}
-                            />
-                          </Paper>
-                        ) : (
-                          <Loading
-                            style={{ width: "100%", height: theme.spacing(30) }}
+                        <Box fontWeight="bold">
+                          Property Frequency{" "}
+                          <Help
+                            text={
+                              <Typography>{`This shows whether the amount of information present in both A and B. You can switch the set operation on the right to see the properties present only in A or only in B and more.`}</Typography>
+                            }
                           />
-                        )}
-                      </Grid>
-                      <Grid item xs={6}>
-                        <Typography style={{ marginBottom: theme.spacing(1) }}>
-                          B:{" "}
-                          {state.compareFilters.length > 0 ||
-                          !state.loading.compareFilters
-                            ? state.compareFilters
-                                .map((item) => `${item.valueB.label}`)
-                                .join("-")
-                            : "-"}
-                        </Typography>
-                        {!state.loading.giniB ? (
-                          <Paper
-                            variant="outlined"
-                            elevation={0}
-                            className={classes.giniSubPaper}
-                          >
-                            <Status value={state.giniB.gini}>Imbalanced</Status>
-                            <GiniChart
-                              simple
-                              item="B"
-                              labels={state.giniB.percentileData}
-                              data={state.giniB.data}
-                              gini={state.giniB.gini}
-                              insight={state.giniB.insight}
-                              classes={{
-                                root: classes.giniChart,
-                                ChartWrapper: classes.giniChart,
-                              }}
-                            />
-                          </Paper>
-                        ) : (
-                          <Loading
-                            style={{ width: "100%", height: theme.spacing(30) }}
-                          />
-                        )}
-                      </Grid>
-                    </Grid>
-                  </Paper>
-                </Grid>
-              </Grid>
-            </Grid>
-            <Grid item xs={4}>
-              <Grid container spacing={1}>
-                <Grid item xs={12} classes={{ root: classes.gridItem }}>
-                  <Paper classes={{ root: classes.propertiesPaper }}>
-                    {state.loading.properties ||
-                    state.loading.giniA ||
-                    state.loading.giniB ? (
-                      <Loading />
-                    ) : (
-                      <React.Fragment>
-                        <Typography
-                          component="div"
-                          style={{
-                            display: "flex",
-                            flexDirection: "row",
-                            justifyContent: "space-between",
-                          }}
+                        </Box>
+                        <FormControl
+                          variant="outlined"
+                          size="small"
+                          className={classes.formControl}
                         >
-                          <Box fontWeight="bold">
-                            Property Frequency{" "}
-                            <Help
-                              text={
-                                <Typography>{`This shows whether a particular information about the items are only present in a subclass. You can switch whether you want to see all 
-                            properties or only those presented in A or B by selecting the set operation on the right.`}</Typography>
-                              }
-                            />
-                          </Box>
-                          <FormControl
-                            variant="outlined"
-                            size="small"
-                            className={classes.formControl}
+                          <Select
+                            value={state.propertySort}
+                            onChange={(e, child) => {
+                              setState((s) => ({
+                                ...s,
+                                propertySort: child.props.value,
+                              }));
+                            }}
                           >
-                            <Select
-                              value={state.propertySort}
-                              onChange={(e, child) => {
-                                setState((s) => ({
-                                  ...s,
-                                  propertySort: child.props.value,
-                                }));
-                              }}
-                            >
-                              {[
-                                { label: "All", icon: <AllIcon /> },
-                                {
-                                  label: "Exclusive A",
-                                  icon: <ExclusiveAIcon />,
-                                },
-                                {
-                                  label: "Exclusive B",
-                                  icon: <ExclusiveBIcon />,
-                                },
-                                { label: "All A", icon: <AllAIcon /> },
-                                { label: "All B", icon: <AllBIcon /> },
-                                {
-                                  label: "Intersection",
-                                  icon: <IntersectionIcon />,
-                                },
-                              ].map((item, index) => (
-                                <MenuItem key={index} value={index} dense>
-                                  <ListItemIcon className={classes.venn}>
-                                    {item.icon}
-                                  </ListItemIcon>
-                                  {item.label}
-                                </MenuItem>
-                              ))}
-                            </Select>
-                          </FormControl>
-                        </Typography>
-                        <VennProperties
-                          properties={state.properties}
-                          entityCount={{
-                            entityA: state.giniA.amount,
-                            entityB: state.giniB.amount,
-                          }}
-                          selected={state.propertySort}
-                        />
-                      </React.Fragment>
-                    )}
-                  </Paper>
-                </Grid>
-                <Grid item xs={12} classes={{ root: classes.gridItem }}>
-                  <Paper classes={{ root: classes.distPaper }}>
-                    {!state.loading.giniA && !state.loading.giniB ? (
-                      <React.Fragment>
-                        <Typography component="div">
-                          <Box fontWeight="bold">
-                            Property Distribution{" "}
-                            <Help
-                              text={
-                                <Typography>
-                                  {`Comparing distributions can show you whether
-                              items of a subclass have an uneven amount of
-                              information compared to the other subclass.`}
-                                </Typography>
-                              }
-                            />
-                          </Box>
-                        </Typography>
-                        <LineChart
-                          percentage
-                          data={{
-                            labels: state.giniA.percentileData,
-                            datasets: [
+                            {[
+                              { label: "All", icon: <AllIcon /> },
                               {
-                                data: state.giniA.histogramData
-                                  ? state.giniA.histogramData.map(
-                                      (num) => (num * 100) / state.giniA.amount
-                                    )
-                                  : [],
-                                borderColor: theme.palette.itemA.main,
-                                backgroundColor: theme.palette.itemA.main,
-                                fill: true,
+                                label: "Exclusive A",
+                                icon: <ExclusiveAIcon />,
                               },
                               {
-                                data: state.giniB.histogramData
-                                  ? state.giniB.histogramData.map(
-                                      (num) => (num * 100) / state.giniB.amount
-                                    )
-                                  : [],
-                                borderColor: theme.palette.itemB.main,
-                                backgroundColor: theme.palette.itemB.main,
-                                fill: true,
+                                label: "Exclusive B",
+                                icon: <ExclusiveBIcon />,
                               },
-                            ],
-                          }}
-                          // maxValue={100}
-                          classes={{ ChartWrapper: classes.histogramChart }}
-                        />
-                      </React.Fragment>
-                    ) : (
-                      <Loading />
-                    )}
-                  </Paper>
-                </Grid>
-              </Grid>
+                              { label: "All A", icon: <AllAIcon /> },
+                              { label: "All B", icon: <AllBIcon /> },
+                              {
+                                label: "Intersection",
+                                icon: <IntersectionIcon />,
+                              },
+                            ].map((item, index) => (
+                              <MenuItem key={index} value={index} dense>
+                                <ListItemIcon className={classes.venn}>
+                                  {item.icon}
+                                </ListItemIcon>
+                                {item.label}
+                              </MenuItem>
+                            ))}
+                          </Select>
+                        </FormControl>
+                      </Typography>
+                      <VennProperties
+                        properties={state.properties}
+                        entityCount={{
+                          entityA: state.giniA.amount,
+                          entityB: state.giniB.amount,
+                        }}
+                        selected={state.propertySort}
+                      />
+                    </React.Fragment>
+                  )}
+                </Paper>
+
+                <Paper
+                  style={{
+                    padding: theme.spacing(1),
+                    flex: "1 1 auto",
+                    height: "70%",
+                  }}
+                >
+                  {!state.loading.giniA && !state.loading.giniB ? (
+                    <React.Fragment>
+                      <Typography component="div">
+                        <Box fontWeight="bold">
+                          Property Distribution{" "}
+                          <Help
+                            text={
+                              <Typography>
+                                {`A peak on the left indicates that most items of that subclass has a low number of information (properties),
+                                 while a peak on the right indicates a high number of information which is ideal.`}
+                              </Typography>
+                            }
+                          />
+                        </Box>
+                      </Typography>
+                      <LineChart
+                        percentage
+                        data={{
+                          labels: state.giniA.percentileData,
+                          datasets: [
+                            {
+                              data: state.giniA.histogramData
+                                ? state.giniA.histogramData.map(
+                                    (num) => (num * 100) / state.giniA.amount
+                                  )
+                                : [],
+                              borderColor: theme.palette.itemA.main,
+                              backgroundColor: theme.palette.itemA.main,
+                              fill: true,
+                            },
+                            {
+                              data: state.giniB.histogramData
+                                ? state.giniB.histogramData.map(
+                                    (num) => (num * 100) / state.giniB.amount
+                                  )
+                                : [],
+                              borderColor: theme.palette.itemB.main,
+                              backgroundColor: theme.palette.itemB.main,
+                              fill: true,
+                            },
+                          ],
+                        }}
+                        // maxValue={100}
+                        classes={{ ChartWrapper: classes.histogramChart }}
+                      />
+                    </React.Fragment>
+                  ) : (
+                    <Loading />
+                  )}
+                </Paper>
+              </div>
             </Grid>
           </React.Fragment>
         ) : (
@@ -579,19 +630,31 @@ export default function Compare(props) {
               Compare two subclasses of the Profile
             </Typography>
             <CompareIllustrationIcon />
-            <Typography
-              style={{
-                width: theme.spacing(65),
-                marginTop: `-${theme.spacing(3)}px`,
-                textAlign: "justify",
-              }}
-            >
-              <b>The above example is to compare humans.</b> This example
-              compares writers and artists. Select properties and values which
-              corresponds to {props.data.entity.entityLabel} (
-              {props.data.entity.entityID}) which you can see in the Property
-              Frequency section of the Profile tab .
-            </Typography>
+            {props.data.entity && props.data.entity.entityID !== "Q5" ? (
+              <Typography
+                style={{
+                  width: theme.spacing(65),
+                  marginTop: `-${theme.spacing(3)}px`,
+                  textAlign: "justify",
+                }}
+              >
+                <b>The above example is to compare humans.</b> This example
+                compares writers and artists. Select properties and values which
+                corresponds to {props.data.entity.entityLabel} (
+                {props.data.entity.entityID}) which you can see in the Property
+                Frequency section of the Profile tab .
+              </Typography>
+            ) : (
+              <Typography
+                style={{
+                  width: theme.spacing(65),
+                  marginTop: `-${theme.spacing(4)}px`,
+                  textAlign: "justify",
+                }}
+              >
+                <Loading variant="text" />
+              </Typography>
+            )}
           </Grid>
         )}
       </Grid>

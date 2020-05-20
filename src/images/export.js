@@ -14,6 +14,7 @@ import logo from "./logo.svg";
 import logoMpii from "./logo-mpii.png";
 import unibz from "./unibz.png";
 import ui from "./ui.png";
+import douglasAdams from "./DouglasAdams.png";
 import All from "./All.svg";
 import theme from "../theme";
 
@@ -106,6 +107,9 @@ function UnibzLogo(props) {
 function MpiiLogo(props) {
   return <img {...props} src={logoMpii} alt="logo_mpii" />;
 }
+function DouglasAdamsStructure(props) {
+  return <img {...props} src={douglasAdams} alt="logo_mpii" />;
+}
 export {
   AllIcon,
   AllAIcon,
@@ -123,4 +127,5 @@ export {
   UILogo,
   UnibzLogo,
   MpiiLogo,
+  DouglasAdamsStructure
 };

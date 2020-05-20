@@ -111,9 +111,13 @@ function GiniChart(props) {
       yPadding: 20,
       callbacks: {
         label: function (tooltipItem, data) {
-          let label =
+          let label = `${
             data.datasets[tooltipItem.datasetIndex].actual[tooltipItem.index] ||
-            "";
+            ""
+          } items possess ${
+            data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index] *
+            100
+          }% of the total number of properties.`;
 
           return label;
         },
@@ -136,8 +140,7 @@ function GiniChart(props) {
             display: !props.simple,
           },
           scaleLabel: {
-            display: true,
-            labelString: "Accumulative Percentage of Properties",
+            labelString: "Cumulative Share of Properties Owned (1.0 is 100%)",
             lineHeight: 1,
             padding: 0,
             display: !props.simple,
@@ -150,8 +153,8 @@ function GiniChart(props) {
             display: !props.simple,
           },
           scaleLabel: {
-            display: true,
-            labelString: "Accumulative Percentage of Items",
+            labelString:
+              "Cumulative Share of People from Lowest to Highest Number of Property",
             lineHeight: 1,
             padding: 0,
             display: !props.simple,

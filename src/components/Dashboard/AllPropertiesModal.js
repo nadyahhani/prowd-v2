@@ -67,7 +67,7 @@ export default function AllPropertiesModal(props) {
               <Grid container justify="space-between" alignItems="center">
                 <Grid item>
                   <Typography component="div">
-                    <Box fontWeight="bold">All Properties</Box>
+                    <Box fontWeight="bold">{props.title}</Box>
                   </Typography>
                 </Grid>
                 <Grid item>
@@ -110,7 +110,7 @@ export default function AllPropertiesModal(props) {
                           labels: props.data.labels,
                           datasets: [
                             {
-                              label: "# of Items with this property",
+                              label: props.label,
                               backgroundColor: theme.palette.chart.main,
                               data: props.data.values,
                             },
@@ -174,4 +174,6 @@ export default function AllPropertiesModal(props) {
 AllPropertiesModal.propTypes = {
   data: PropTypes.object,
   stacked: false,
+  title: "All Properties",
+  label: "Number of Items with this property",
 };

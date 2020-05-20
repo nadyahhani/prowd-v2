@@ -4,15 +4,12 @@ import {
   ThemeProvider,
   makeStyles,
   Input,
-  CircularProgress,
   Box,
   IconButton,
   Button,
   Grid,
   Paper,
-  Popover,
   Dialog,
-  DialogTitle,
   DialogContent,
   DialogActions,
 } from "@material-ui/core";
@@ -29,10 +26,10 @@ import {
 } from "../../services/dashboard";
 import { getGiniEntity, getAllProperties } from "../../services/dashboard";
 import {
-  countProperties,
   sortProperties,
   cut,
   compareDistinctProps,
+  selectDistribution,
 } from "../../global";
 import FileCopyOutlinedIcon from "@material-ui/icons/FileCopyOutlined";
 import Loading from "../../components/Misc/Loading";
@@ -44,10 +41,9 @@ import EditClass from "../../components/Inputs/EditClass";
 
 const useStyles = makeStyles(() => ({
   content: {
-    padding: "1vh 1vw",
-    paddingTop: "1vh",
+    padding: "8vh 1vw 0 1vw",
     width: "98vw",
-    height: "91vh",
+    height: "92vh",
     // maxHeight: "800px",
     // minHeight: "722px",
     backgroundColor: theme.palette.background.main,
@@ -140,6 +136,11 @@ export default function DashboardPage(props) {
     dimensions: [],
     gini: [],
     distributions: [],
+    maxAmount: null,
+    limit: [2, 2],
+    sortCount: 0,
+    sortGini: 0,
+    sortProps: 0,
     // loading states
     loading: {
       dimensions: true,
@@ -288,7 +289,6 @@ export default function DashboardPage(props) {
         });
         getGiniEntity(props.match.params.id, null, (r) => {
           if (r.success) {
-            
             setProfileState((s) => ({
               ...s,
               entities: [...r.entities].reverse(),
@@ -300,6 +300,7 @@ export default function DashboardPage(props) {
                 amount: r.amount ? r.amount : null,
                 insight: r.insight,
                 exceedLimit: r.exceedLimit,
+                query_link: r.query_link,
               },
               loading: { ...s.loading, gini: false },
             }));
@@ -430,6 +431,8 @@ export default function DashboardPage(props) {
           }
         });
       }
+
+      // discover
       if (scope === "" || scope === "discover") {
         console.log("discover pull");
         setDiscoverState((s) => ({
@@ -438,89 +441,16 @@ export default function DashboardPage(props) {
         }));
         getDiscoverGini(props.match.params.id, (r) => {
           if (r.success) {
+            const filtered = [...r.data].filter(
+              (item) => item.amount >= 2 && item.amount <= r.max_number
+            );
             setDiscoverState((s) => ({
               ...s,
               gini: r.data,
-              distributions: (() => {
-                let result = [];
-                const sortedbyGini = [...r.data].sort((b, a) => {
-                  if (a.gini > b.gini) {
-                    return 1;
-                  } else {
-                    return -1;
-                  }
-                });
-                const getName = (info) =>
-                  `${info.item_1_label ? info.item_1_label : ""}${
-                    info.item_2_label ? `-${info.item_2_label}` : ""
-                  }${info.item_3_label ? `-${info.item_3_label}` : ""}`;
-                if (sortedbyGini.length > 2) {
-                  console.log(sortedbyGini[sortedbyGini.length - 1]);
-
-                  result.push({
-                    ...sortedbyGini[0],
-                    data: sortedbyGini[0].histogram_data
-                      ? sortedbyGini[0].histogram_data.map(
-                          (num) => (num * 100) / sortedbyGini[0].amount
-                        )
-                      : [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                    name: getName(sortedbyGini[0].analysis_info),
-                    color: theme.palette.itemA.opaque,
-                  });
-                  result.push({
-                    ...sortedbyGini[Math.ceil(sortedbyGini.length / 2)],
-                    data: sortedbyGini[Math.ceil(sortedbyGini.length / 2)]
-                      .histogram_data
-                      ? sortedbyGini[
-                          Math.ceil(sortedbyGini.length / 2)
-                        ].histogram_data.map(
-                          (num) =>
-                            (num * 100) /
-                            sortedbyGini[Math.ceil(sortedbyGini.length / 2)]
-                              .amount
-                        )
-                      : [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                    name: getName(
-                      sortedbyGini[Math.ceil(sortedbyGini.length / 2)]
-                        .analysis_info
-                    ),
-                    color: theme.palette.itemB.opaque,
-                  });
-                  result.push({
-                    ...sortedbyGini[sortedbyGini.length - 1],
-                    data: sortedbyGini[sortedbyGini.length - 1].histogram_data
-                      ? sortedbyGini[
-                          sortedbyGini.length - 1
-                        ].histogram_data.map(
-                          (num) =>
-                            (num * 100) /
-                            sortedbyGini[sortedbyGini.length - 1].amount
-                        )
-                      : [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                    name: getName(
-                      sortedbyGini[sortedbyGini.length - 1].analysis_info
-                    ),
-                    color: theme.palette.itemMerge.main,
-                  });
-                } else {
-                  const colors = [
-                    theme.palette.itemA.opaque,
-                    theme.palette.itemB.opaque,
-                    theme.palette.itemMerge.main,
-                  ];
-                  result = sortedbyGini.map((item, idx) => ({
-                    ...item,
-                    data: item.histogram_data
-                      ? item.histogram_data.map(
-                          (num) => (num * 100) / item.amount
-                        )
-                      : [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                    name: getName(item.analysis_info),
-                    color: colors[idx],
-                  }));
-                }
-                return result;
-              })(),
+              shown: filtered,
+              maxAmount: r.max_number,
+              limit: [2, r.max_number],
+              distributions: selectDistribution(filtered),
               loading: { ...s.loading, gini: false },
             }));
           } else {
@@ -641,14 +571,15 @@ export default function DashboardPage(props) {
               display: "flex",
               flexDirection: "row",
               alignItems: "center",
-              width: "fit-content",
+              width: "50%",
             }}
           >
-            {!state.loading ? (
+            {state.globalData.name ? (
               <React.Fragment>
                 <Input
                   classes={{ input: `${classes.titleInput} ${classes.bold}` }}
                   value={state.globalData.name}
+                  fullWidth
                   onChange={(e) => {
                     let val = e.target.value;
                     setState((s) => ({
@@ -685,8 +616,12 @@ export default function DashboardPage(props) {
                   "& > *": { marginLeft: theme.spacing(1) },
                 }}
               >
-                <Box fontWeight="bold">Loading...</Box>
-                <CircularProgress size={10} />
+                <Loading variant="text" style={{ width: theme.spacing(80) }} />
+                <Typography
+                  style={{ padding: "0 .4vw" }}
+                  variant="h2"
+                >{` by `}</Typography>
+                <Loading variant="text" style={{ width: theme.spacing(15) }} />
               </Typography>
             )}
           </div>

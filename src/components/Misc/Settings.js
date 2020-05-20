@@ -10,6 +10,8 @@ import CloseIcon from "@material-ui/icons/Close";
 import SettingsIcon from "@material-ui/icons/Settings";
 
 import Typography from "@material-ui/core/Typography";
+import { List, ListItem, ListItemText } from "@material-ui/core";
+import theme from "../../theme";
 
 const styles = (theme) => ({
   root: {
@@ -79,23 +81,30 @@ export default function Settings(props) {
           Settings
         </DialogTitle>
         <DialogContent dividers>
-          <Button
-            variant="contained"
-            color="primary"
-            size="small"
-            onClick={() => {
-              props.onChange({ reason: "restart_onboarding" });
-              handleClose();
-            }}
-          >
-            Restart Onboarding
-          </Button>
+          <List>
+            <ListItem
+              button
+              onClick={() => {
+                props.onChange({ reason: "restart_onboarding" });
+                handleClose();
+              }}
+            >
+              <ListItemText color="primary" primary={`Restart Onboarding`} />
+            </ListItem>
+            <ListItem
+              button
+              onClick={() => {
+                props.onChange({ reason: "dashboard_deletion" });
+                handleClose();
+              }}
+            >
+              <ListItemText
+                style={{ color: theme.palette.error.main }}
+                primary={`Delete Dashboard`}
+              />
+            </ListItem>
+          </List>
         </DialogContent>
-        <DialogActions>
-          <Button autoFocus onClick={handleClose} color="primary">
-            Save changes
-          </Button>
-        </DialogActions>
       </Dialog>
     </React.Fragment>
   );

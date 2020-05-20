@@ -92,15 +92,6 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-const renderGroup = (params) => {
-  return [
-    <ListSubheader key={params.key} component="div">
-      {params.group}
-    </ListSubheader>,
-    params.children,
-  ];
-};
-
 export default function VirtualAutocomp(props) {
   const classes = useStyles();
 
@@ -110,10 +101,7 @@ export default function VirtualAutocomp(props) {
       <Autocomplete
         size="small"
         loading={props.loading}
-        // disableListWrap
         classes={{ listbox: classes.listbox, option: classes.option }}
-        // ListboxComponent={ListboxComponent}
-        // renderGroup={renderGroup}
         value={props.value}
         onChange={props.onChange}
         options={props.options}
