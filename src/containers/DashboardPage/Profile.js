@@ -20,15 +20,15 @@ import theme from "../../theme";
 import {
   WarningOutlined as WarningOutlinedIcon,
   SaveAlt as SaveAltIcon,
-  Fullscreen as FullscreenIcon,
   Search,
+  OpenInNew,
 } from "@material-ui/icons";
 import Loading from "../../components/Misc/Loading";
 import Status from "../../components/Misc/Status";
 import Help from "../../components/Misc/Help";
 import LineChart from "../../components/Dashboard/LineChart";
 import { getGiniEntity } from "../../services/dashboard";
-import { filterEntities } from "../../global";
+import { filterEntities, countProperties } from "../../global";
 import PercentageSwitch from "../../components/Inputs/PercentageSwitch";
 import ProfileProperties from "../../components/Dashboard/ProfileProperties";
 import TableSort from "../../components/Misc/TableSort";
@@ -231,8 +231,8 @@ export default function Profile(props) {
                         </IconButton>
                       </Grid>
                       <Grid item>
-                        <IconButton size="small" edge="end">
-                          <FullscreenIcon color="primary" />
+                        <IconButton size="small" edge="end" color="primary">
+                          <OpenInNew />
                         </IconButton>
                       </Grid>
                     </Grid>
@@ -480,29 +480,29 @@ export default function Profile(props) {
                       </Box>
                     </Typography>
                     <LineChart
-                      data={{
-                        labels: state.distribution.labels.map(
-                          (item) =>
-                            `${(
-                              (item * 100) /
-                              state.distribution.maxLabel
-                            ).toFixed(1)}%`
-                        ),
-                        datasets: [
-                          {
-                            data: state.distribution.values.map(
-                              (item) => (item * 100) / state.giniData.amount
-                            ),
-                            actualLabels: state.distribution.labels,
-                            actualValues: state.distribution.values,
-                            entityCount: state.giniData.amount,
-                            // label: "Africa",
-                            borderColor: theme.palette.chart.main,
-                            backgroundColor: theme.palette.chart.main,
-                            fill: true,
-                          },
-                        ],
-                      }}
+                      data={(function () {
+                        const temp = countProperties(state.entities);
+                        return {
+                          labels: temp.labels.map(
+                            (item) =>
+                              `${((item * 100) / temp.maxLabel).toFixed(1)}%`
+                          ),
+                          datasets: [
+                            {
+                              data: temp.values.map(
+                                (item) => (item * 100) / state.giniData.amount
+                              ),
+                              actualLabels: temp.labels,
+                              actualValues: temp.values,
+                              entityCount: state.giniData.amount,
+                              // label: "Africa",
+                              borderColor: theme.palette.chart.main,
+                              backgroundColor: theme.palette.chart.main,
+                              fill: true,
+                            },
+                          ],
+                        };
+                      })()}
                       // maxValue={}
                       classes={{ ChartWrapper: classes.histogramChart }}
                     />

@@ -81,7 +81,7 @@ function LineChart(props) {
             },
             scaleLabel: {
               display: true,
-              labelString: "Percentage of Entities",
+              labelString: "Percentage of Items",
             },
           },
         ],
@@ -136,7 +136,7 @@ function LineChart(props) {
             },
             scaleLabel: {
               display: true,
-              labelString: "Percentage of Entities",
+              labelString: "Percentage of Items",
             },
           },
         ],

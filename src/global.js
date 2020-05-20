@@ -41,33 +41,22 @@ export const getUnique = (arr, comp) => {
 };
 
 // custom function to count properties
-export const countProperties = (entities) => {
-  const tempProps = {};
+export const countProperties = (entities, max_props = null) => {
+  const maxPropertyNum = max_props
+    ? max_props + 1
+    : Math.max.apply(
+        Math,
+        entities.map((item) => item.propertyCount)
+      );
+  let propertyNums = new Array(maxPropertyNum + 1).fill(0);
   entities.forEach((item) => {
-    if (!tempProps[item.propertyCount]) {
-      tempProps[item.propertyCount] = 0;
-    }
-    tempProps[item.propertyCount] += 1;
-  });
-  let temp = [];
-  Object.keys(tempProps).forEach((item) => {
-    temp.push({
-      propNumber: parseInt(item),
-      entities: parseInt(tempProps[item]),
-    });
-  });
-  // temp.sort((b, a) => (a.entities > b.entities ? 1 : -1));
-  let labels = [];
-  let values = [];
-  temp.forEach((item) => {
-    labels.push(item.propNumber);
-    values.push(item.entities);
+    propertyNums[item.propertyCount] += 1;
   });
   return {
-    labels: labels,
-    values: values,
-    maxLabel: Math.max.apply(Math, labels),
-    maxValue: Math.max.apply(Math, values),
+    labels: Object.keys(propertyNums),
+    values: Object.values(propertyNums),
+    maxLabel: max_props ? max_props : maxPropertyNum,
+    maxValue: Math.max.apply(Math, Object.values(propertyNums)),
   };
 };
 

@@ -185,18 +185,17 @@ export default function Onboarding(props) {
                 history.push("/#home");
               }}
             >
-              Go back to the main page
+              Back to main page
             </Button>{" "}
             or{" "}
             <Button
-              variant="contained"
               color="primary"
               size="small"
               onClick={() => {
                 history.push("/browse/search=");
               }}
             >
-              Browse through created Dashboards
+              Browse created Dashboards
             </Button>
           </Typography>
         ),
@@ -344,6 +343,7 @@ export default function Onboarding(props) {
                 }
               }}
               color="primary"
+              variant="contained"
             >
               {steps[state.currentPage][state.currentStep].action1}
             </Button>

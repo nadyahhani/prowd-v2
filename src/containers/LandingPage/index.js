@@ -33,6 +33,9 @@ import {
   FoldersIcon,
   AnalysisIcon,
   MindMapIcon,
+  UnibzLogo,
+  MpiiLogo,
+  UILogo,
 } from "../../images/export";
 import { NavigateNext, ExpandMore } from "@material-ui/icons";
 import Help from "../../components/Misc/Help";
@@ -148,6 +151,9 @@ const useStyles = makeStyles(() => ({
     justifyContent: "center",
     alignItems: "center",
   },
+  footerLogo: {
+    width: theme.spacing(20),
+  },
 }));
 
 function Landing(props) {
@@ -224,7 +230,9 @@ function Landing(props) {
                 color="primary"
                 endIcon={<NavigateNext />}
                 onClick={() =>
-                  history.push("/dashboards/cffdb9749649/profile/onboarding-example")
+                  history.push(
+                    "/dashboards/cffdb9749649/profile/onboarding-example"
+                  )
                 }
               >
                 Show me
@@ -459,6 +467,10 @@ function Landing(props) {
                 fullWidth
                 endIcon={<ExpandMore />}
                 id="about"
+                onClick={() => {
+                  history.push("/");
+                  window.location.hash = "about";
+                }}
               >
                 Learn More
               </Button>
@@ -537,7 +549,63 @@ function Landing(props) {
             </div>
           </div>
         </div>
-        <div style={{ height: theme.spacing(30) }}></div>
+      </div>
+      <div
+        style={{
+          height: "fit-content",
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "space-evenly",
+          // width: "100vw",
+          backgroundColor: theme.palette.common.white,
+        }}
+      >
+        <div
+          style={{
+            height: "fit-content",
+            display: "flex",
+            padding: `${theme.spacing(2)}px ${theme.spacing(15)}px`,
+            flexDirection: "row",
+            justifyContent: "space-between",
+            marginBottom: theme.spacing(1),
+            backgroundColor: theme.palette.common.white,
+          }}
+        >
+          <Grid
+            container
+            spacing={1}
+            justify="center"
+            alignItems="center"
+            direction="row"
+            style={{ width: "50%" }}
+          >
+            <Grid item xs={6}>
+              <UILogo className={classes.footerLogo} />
+            </Grid>
+            <Grid item xs={6}>
+              <UnibzLogo className={classes.footerLogo} />
+            </Grid>
+            <Grid item xs={6}>
+              <MpiiLogo className={classes.footerLogo} />
+            </Grid>
+            <Grid item xs={6}>
+              <img
+                src="https://upload.wikimedia.org/wikipedia/commons/6/66/Wikidata-logo-en.svg"
+                alt="wikidata-logo"
+                className={classes.footerLogo}
+              />
+            </Grid>
+          </Grid>
+          <Grid container>
+            <Grid item>
+              <Button size="small">Dashboard example</Button>
+            </Grid>
+          </Grid>
+        </div>
+        <Typography style={{ width: "100%", textAlign: "center" }}>
+          2020 - Free University of Bozen-Bolzano, Universitas Indonesia and
+          Max-Planck Institute for Informatics.
+        </Typography>
       </div>
     </ThemeProvider>
   );

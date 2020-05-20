@@ -11,6 +11,9 @@ import compare_illustration from "./CompareIllustration.svg";
 import discover_illustration from "./discover_illustration.svg";
 import mindmap from "./mindmap.svg";
 import logo from "./logo.svg";
+import logoMpii from "./logo-mpii.png";
+import unibz from "./unibz.png";
+import ui from "./ui.png";
 import All from "./All.svg";
 import theme from "../theme";
 
@@ -94,6 +97,15 @@ function ProwdLogo(props) {
 function DiscoverIllustration(props) {
   return <img {...props} src={discover_illustration} alt="logo" />;
 }
+function UILogo(props) {
+  return <img {...props} src={ui} alt="logo_ui" />;
+}
+function UnibzLogo(props) {
+  return <img {...props} src={unibz} alt="logo_unibz" />;
+}
+function MpiiLogo(props) {
+  return <img {...props} src={logoMpii} alt="logo_mpii" />;
+}
 export {
   AllIcon,
   AllAIcon,
@@ -108,4 +120,7 @@ export {
   MindMapIcon,
   ProwdLogo,
   DiscoverIllustration,
+  UILogo,
+  UnibzLogo,
+  MpiiLogo,
 };

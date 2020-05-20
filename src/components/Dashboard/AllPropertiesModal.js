@@ -110,7 +110,7 @@ export default function AllPropertiesModal(props) {
                           labels: props.data.labels,
                           datasets: [
                             {
-                              label: "# of Entities with this property",
+                              label: "# of Items with this property",
                               backgroundColor: theme.palette.chart.main,
                               data: props.data.values,
                             },
@@ -144,7 +144,7 @@ export default function AllPropertiesModal(props) {
                           labels: [...props.data.labels].reverse(),
                           datasets: [
                             {
-                              label: "# of Entities with this property",
+                              label: "# of Items with this property",
                               backgroundColor: theme.palette.chart.main,
                               data: [...props.data.values].reverse(),
                             },

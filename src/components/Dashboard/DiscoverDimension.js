@@ -13,12 +13,16 @@ import {
   IconButton,
   Grid,
   Button,
+  Box,
+  Slider,
+  Input,
 } from "@material-ui/core";
 import { getClasses, searchProperties } from "../../services/general";
 import { AddCircle, RemoveCircle } from "@material-ui/icons";
 import { getUnique } from "../../global";
 import theme from "../../theme";
 import Loading from "../Misc/Loading";
+import Help from "../Misc/Help";
 
 const useStyles = makeStyles({
   table: {
@@ -50,6 +54,25 @@ export default function DiscoverDimension(props) {
     loading: false,
     update: false,
   });
+  const [value, setValue] = React.useState([2, 110]);
+
+  const handleSliderChange = (event, newValue) => {
+    setValue(newValue);
+  };
+
+  const handleInputChange = (event, num) => {
+    let temp = [...value];
+    temp[num] = event.target.value === "" ? "" : Number(event.target.value);
+    setValue(temp);
+  };
+
+  const handleBlur = () => {
+    if (value < 0) {
+      setValue(0);
+    } else if (value > 100) {
+      setValue(100);
+    }
+  };
 
   React.useEffect(() => {
     setState((s) => ({ ...s, data: props.appliedDimensions }));
@@ -98,131 +121,237 @@ export default function DiscoverDimension(props) {
 
   return (
     <React.Fragment>
-      <Paper
-        // component={outlinedPaper}
-        variant="outlined"
-        elevation={0}
+      <Grid
+        container
+        spacing={1}
+        direction="column"
         classes={{ root: props.classes.root }}
       >
-        <Table
-          className={`${classes.table} `}
-          aria-label="simple table"
-          size="small"
-          padding="none"
-        >
-          <TableHead>
-            <TableRow>
-              <TableCell key={1} colSpan={3}>
-                Property
-              </TableCell>
-              <TableCell />
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {!props.loading ? (
-              state.data.map((row, idx) => (
-                <TableRow key={idx}>
-                  <TableCell colSpan={2}>{row.label}</TableCell>
-                  <TableCell>
-                    <IconButton
-                      size="small"
-                      edge="end"
-                      onClick={() => {
-                        let temp = [...state.data];
-                        temp.splice(idx, 1);
-                        setState((s) => ({
-                          ...s,
-                          data: temp,
-                          update: true,
-                        }));
-                      }}
-                    >
-                      <RemoveCircle color="primary" />
-                    </IconButton>
+        <Grid item>
+          <Typography>
+            <Box fontWeight="bold">
+              DIMENSIONS{" "}
+              <Help
+                text={
+                  <Typography>{`Select the piece of information (property) you would want to know more about.`}</Typography>
+                }
+              />
+            </Box>
+          </Typography>
+        </Grid>
+        <Grid item>
+          <Paper
+            // component={outlinedPaper}
+            variant="outlined"
+            elevation={0}
+          >
+            <Table
+              className={`${classes.table} `}
+              aria-label="simple table"
+              size="small"
+              padding="none"
+            >
+              <TableHead>
+                <TableRow>
+                  <TableCell key={1} colSpan={3}>
+                    Property
                   </TableCell>
+                  <TableCell />
                 </TableRow>
-              ))
-            ) : (
-              <TableRow>
-                <TableCell colSpan={2}>
-                  <Loading variant="text" />
-                </TableCell>
-                <TableCell>
-                  <Loading variant="circle" width={30} height={30} />
-                </TableCell>
-              </TableRow>
-            )}
-            <TableRow key="input">
-              <TableCell
-                component="th"
-                scope="row"
-                colSpan={2}
-                className={classes.inputCell}
-              >
-                <Autocomplete
-                  renderTags={(value) => <Typography>{value.label}</Typography>}
-                  value={state.selectedTemp}
-                  getOptionLabel={(option) => {
-                    return `${option.label} (${option.id})${
-                      option.aliases
-                        ? ` also known as ${option.aliases.join(", ")}`
-                        : ""
-                    }`;
+              </TableHead>
+              <TableBody>
+                {!props.loading ? (
+                  <React.Fragment>
+                    {state.data.map((row, idx) => (
+                      <TableRow key={idx} style={{ height: 52 }}>
+                        <TableCell colSpan={2}>{row.label}</TableCell>
+                        <TableCell>
+                          <IconButton
+                            size="small"
+                            edge="end"
+                            onClick={() => {
+                              let temp = [...state.data];
+                              temp.splice(idx, 1);
+                              setState((s) => ({
+                                ...s,
+                                data: temp,
+                                update: true,
+                              }));
+                            }}
+                          >
+                            <RemoveCircle color="primary" />
+                          </IconButton>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                    {state.data.length < 3 ? (
+                      <TableRow key="input">
+                        <TableCell
+                          component="th"
+                          scope="row"
+                          colSpan={2}
+                          className={classes.inputCell}
+                        >
+                          <Autocomplete
+                            renderTags={(value) => (
+                              <Typography>{value.label}</Typography>
+                            )}
+                            value={state.selectedTemp}
+                            getOptionLabel={(option) => {
+                              return `${option.label} (${option.id})${
+                                option.aliases
+                                  ? ` also known as ${option.aliases.join(
+                                      ", "
+                                    )}`
+                                  : ""
+                              }`;
+                            }}
+                            inputValue={state.temp}
+                            renderOption={(option) => (
+                              <div>
+                                <Typography>{`${option.label} (${option.id})`}</Typography>
+                                <Typography variant="caption">
+                                  {option.description}
+                                </Typography>
+                              </div>
+                            )}
+                            noOptionsText={
+                              state.properties.length === 0
+                                ? "Type to search for a property"
+                                : "There are no properties with that name"
+                            }
+                            onChange={(e, value, reason) => {
+                              if (reason === "select-option") {
+                                setState((s) => ({
+                                  ...s,
+                                  selectedTemp: value,
+                                  temp: `${value.label} (${value.id})`,
+                                }));
+                              }
+                            }}
+                            onInputChange={(e, val, reason) =>
+                              onInputChange(e, val, reason, "property")
+                            }
+                            options={state.properties}
+                            loading={false}
+                            renderInput={(params) =>
+                              renderInput(params, "property")
+                            }
+                          />
+                        </TableCell>
+                        <TableCell>
+                          <IconButton
+                            size="small"
+                            edge="end"
+                            onClick={() => {
+                              if (state.selectedTemp) {
+                                setState((s) => {
+                                  let t = [...s.data];
+                                  t.push(s.selectedTemp);
+                                  console.log(t);
+                                  return { ...s, data: t, update: true };
+                                });
+                                eraseInput();
+                              }
+                            }}
+                          >
+                            <AddCircle color="primary" />
+                          </IconButton>
+                        </TableCell>
+                      </TableRow>
+                    ) : null}
+                  </React.Fragment>
+                ) : (
+                  [0, 0, 0].map((item) => (
+                    <TableRow style={{ height: 52 }}>
+                      <TableCell colSpan={2}>
+                        <Loading variant="text" />
+                      </TableCell>
+                      <TableCell>
+                        <Loading variant="circle" width={30} height={30} />
+                      </TableCell>
+                    </TableRow>
+                  ))
+                )}
+                {!props.loading && state.data.length < 3
+                  ? (function () {
+                      const temp = new Array(3 - state.data.length - 1).fill(0);
+                      return temp.map((item) => (
+                        <TableRow style={{ height: 52 }}>
+                          <TableCell colSpan={3} />
+                        </TableRow>
+                      ));
+                    })()
+                  : null}
+              </TableBody>
+            </Table>
+          </Paper>
+        </Grid>
+        <Grid item>
+          <Typography>
+            <Box fontWeight="bold">
+              FILTERS{" "}
+              {/* <Help
+                text={<Typography>{`Only show data as selected`}</Typography>}
+              /> */}
+            </Box>
+          </Typography>
+        </Grid>
+        <Grid item>
+          <Paper
+            // component={outlinedPaper}
+            variant="outlined"
+            elevation={0}
+            style={{ padding: theme.spacing(1) }}
+          >
+            <Typography gutterBottom>Number of Items</Typography>
+            <Grid container spacing={1} alignItems="center">
+              <Grid item>
+                <Input
+                  className={classes.input}
+                  value={value[0]}
+                  margin="dense"
+                  onChange={(e) => handleInputChange(e, 0)}
+                  onBlur={handleBlur}
+                  inputProps={{
+                    step: 10,
+                    min: 0,
+                    max: 100,
+                    type: "number",
+                    "aria-labelledby": "input-slider",
                   }}
-                  inputValue={state.temp}
-                  renderOption={(option) => (
-                    <div>
-                      <Typography>{`${option.label} (${option.id})`}</Typography>
-                      <Typography variant="caption">
-                        {option.description}
-                      </Typography>
-                    </div>
-                  )}
-                  noOptionsText={
-                    state.properties.length === 0
-                      ? "Type to search for a property"
-                      : "There are no properties with that name"
-                  }
-                  onChange={(e, value, reason) => {
-                    if (reason === "select-option") {
-                      setState((s) => ({
-                        ...s,
-                        selectedTemp: value,
-                        temp: `${value.label} (${value.id})`,
-                      }));
-                    }
-                  }}
-                  onInputChange={(e, val, reason) =>
-                    onInputChange(e, val, reason, "property")
-                  }
-                  options={state.properties}
-                  loading={false}
-                  renderInput={(params) => renderInput(params, "property")}
                 />
-              </TableCell>
-              <TableCell>
-                <IconButton
-                  size="small"
-                  edge="end"
-                  onClick={() => {
-                    if (state.selectedTemp) {
-                      setState((s) => {
-                        let t = [...s.data];
-                        t.push(s.selectedTemp);
-                        console.log(t);
-                        return { ...s, data: t, update: true };
-                      });
-                      eraseInput();
-                    }
+              </Grid>
+              <Grid item xs>
+                <Slider
+                  value={value}
+                  onChange={handleSliderChange}
+                  aria-labelledby="input-slider"
+                  step={1}
+                  min={0}
+                  max={110}
+                />
+              </Grid>
+              <Grid item>
+                <Input
+                  className={classes.input}
+                  value={value[1]}
+                  margin="dense"
+                  onChange={(e) => handleInputChange(e, 1)}
+                  onBlur={handleBlur}
+                  inputProps={{
+                    step: 10,
+                    min: 0,
+                    max: 100,
+                    type: "number",
+                    "aria-labelledby": "input-slider",
                   }}
-                >
-                  <AddCircle color="primary" />
-                </IconButton>
-              </TableCell>
-            </TableRow>
-          </TableBody>
-        </Table>
-      </Paper>
+                />
+              </Grid>
+            </Grid>
+          </Paper>
+        </Grid>
+      </Grid>
       <Grid
         container
         spacing={1}

@@ -145,7 +145,7 @@ export default function VennProperties(props) {
     let tempValuesB = [...state[getType(props.selected)].valuesB];
     tempLabels = tempLabels.map(
       (item, idx) =>
-        `${tempLabels[idx]}: ${tempValuesA[idx] + tempValuesB[idx]}`
+        `${tempLabels[idx]} (A: ${tempValuesA[idx]}, B: ${tempValuesB[idx]})`
     );
     if (tempLabels.length > 0) {
       return (

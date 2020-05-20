@@ -40,7 +40,8 @@ const useStyles = makeStyles((theme) => ({
   tablePaper: {
     overflowY: "scroll",
     overflowX: "hidden",
-    height: "63.1vh",
+    // height: "63.1vh",
+    flex: "1 1 auto",
     padding: theme.spacing(1),
   },
   distPaper: { height: "32vh" },
@@ -84,7 +85,7 @@ const useStyles = makeStyles((theme) => ({
   },
   dimensionTable: {
     width: "100%",
-    height: "97%",
+    height: "92%",
   },
 
   // =====
@@ -179,7 +180,7 @@ export default function Analysis(props) {
         labels: [...labels].splice(0, 5),
         datasets: [
           {
-            label: "Number of Entities",
+            label: "Number of Items",
             data: [...values].splice(0, 5),
             backgroundColor: theme.palette.chart.main,
           },
@@ -196,7 +197,14 @@ export default function Analysis(props) {
               width: "100%",
             }}
           >
-            <Box fontWeight="bold">Item Count </Box>
+            <Box fontWeight="bold">
+              Item Count{" "}
+              <Help
+                text={
+                  <Typography>{`Number of items of each possible value.`}</Typography>
+                }
+              />
+            </Box>
             <Typography
               component="div"
               style={{
@@ -299,7 +307,14 @@ export default function Analysis(props) {
               width: "100%",
             }}
           >
-            <Box fontWeight="bold">Imbalance Score</Box>
+            <Box fontWeight="bold">
+              Imbalance Score{" "}
+              <Help
+                text={
+                  <Typography>{`Gini coefficient for each possible value. Higher scores indicates a less imbalanced subclass.`}</Typography>
+                }
+              />
+            </Box>
             <Typography
               component="div"
               style={{
@@ -408,13 +423,12 @@ export default function Analysis(props) {
             }}
           >
             <Box fontWeight="bold">
-              Property Frequency{" "}
-              {/* <Help
-                        text={
-                          <Typography>{`For every distinct property, the number of items which possess that property is summed up. 
-                      You can see which properties are the most common ones, and which are not as common.`}</Typography>
-                        }
-                      /> */}
+              Average Number of Properties{" "}
+              <Help
+                text={
+                  <Typography>{`The number of pieces of information (property) the items of the subclasses have.`}</Typography>
+                }
+              />
             </Box>
             <Typography
               component="div"
@@ -475,40 +489,26 @@ export default function Analysis(props) {
         direction="row"
         classes={{ root: classes.root }}
       >
-        <Grid item xs={3} classes={{ root: classes.outerGrid }}>
+        <Grid
+          item
+          xs={3}
+          classes={{ root: classes.outerGrid }}
+          style={{ display: "flex" }}
+        >
           <Paper className={classes.tablePaper}>
-            <Grid
-              container
-              spacing={1}
-              direction="column"
-              style={{ height: "100%" }}
-            >
-              <Grid item>
-                <Typography>
-                  <Box fontWeight="bold">
-                    DIMENSIONS{" "}
-                    <Help
-                      text={
-                        <Typography>{`Select the piece of information (property) you would want to know more about.`}</Typography>
-                      }
-                    />
-                  </Box>
-                </Typography>
-              </Grid>
-              <Grid item style={{ height: "87%" }}>
-                <DiscoverDimension
-                  classes={{ root: classes.dimensionTable }}
-                  appliedDimensions={state.dimensions}
-                  onApply={applyFilter}
-                  loading={state.loading.dimensions}
-                />
-              </Grid>
-            </Grid>
+            <DiscoverDimension
+              classes={{ root: classes.dimensionTable }}
+              appliedDimensions={state.dimensions}
+              onApply={applyFilter}
+              loading={state.loading.dimensions}
+            />
           </Paper>
         </Grid>
-        {state.loading.dimensions || state.dimensions.length > 0 ? (
+        {!props.data.entity ||
+        state.loading.dimensions ||
+        state.dimensions.length > 0 ? (
           <React.Fragment>
-            <Grid item xs classes={{ root: classes.outerGrid }}>
+            <Grid item xs={4} classes={{ root: classes.outerGrid }}>
               <div
                 style={{
                   width: "100%",
@@ -567,12 +567,20 @@ export default function Analysis(props) {
                   {!state.loading.gini ? (
                     <React.Fragment>
                       <Typography component="div">
-                        <Box fontWeight="bold">Property Distribution</Box>
+                        <Box fontWeight="bold">
+                          Number of Property Distribution{" "}
+                          <Help
+                            text={
+                              <Typography>{`The percentage of items of that subclass which has a certain number of property. `}</Typography>
+                            }
+                          />
+                        </Box>
                       </Typography>
                       <LineChart
                         percentage
                         data={{
                           labels: [
+                            "0",
                             "10",
                             "20",
                             "30",
@@ -622,6 +630,20 @@ export default function Analysis(props) {
               Discover facts about all subclasses of the Profile
             </Typography>
             <DiscoverIllustration />
+            <Typography
+              style={{
+                width: theme.spacing(65),
+                marginTop: `-${theme.spacing(4)}px`,
+                textAlign: "justify",
+              }}
+            >
+              <b>The above example is to discover facts about humans.</b> This
+              example will uncover every possible value of the occupation and
+              country of citizenships properties. Select properties which
+              corresponds to {props.data.entity.entityLabel}{" "}
+              {props.data.entity.entityID} which you can see in the Property
+              Frequency section of the Profile tab .
+            </Typography>
           </Grid>
         )}
       </Grid>

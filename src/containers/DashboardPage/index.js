@@ -288,7 +288,7 @@ export default function DashboardPage(props) {
         });
         getGiniEntity(props.match.params.id, null, (r) => {
           if (r.success) {
-            const distTemp = countProperties(r.entities);
+            
             setProfileState((s) => ({
               ...s,
               entities: [...r.entities].reverse(),
@@ -300,9 +300,6 @@ export default function DashboardPage(props) {
                 amount: r.amount ? r.amount : null,
                 insight: r.insight,
                 exceedLimit: r.exceedLimit,
-              },
-              distribution: {
-                ...distTemp,
               },
               loading: { ...s.loading, gini: false },
             }));

@@ -12,7 +12,7 @@ function Histogram(props) {
       datasets: [
         {
           barPercentage: 1.3,
-          label: "# of Entities",
+          label: "# of Items",
           data: props.values,
           backgroundColor: theme.palette.chart.main,
         },
@@ -52,7 +52,7 @@ function Histogram(props) {
             },
             scaleLabel: {
               display: true,
-              labelString: "Number of Entities",
+              labelString: "Number of Items",
             },
           },
         ],

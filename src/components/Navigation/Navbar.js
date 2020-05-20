@@ -36,7 +36,7 @@ const useStyles = makeStyles(() => ({
   root: {
     // flexGrow: 1,
     position: "relative",
-    height: "7vh",
+    height: theme.spacing(6),
   },
   menuButton: {
     marginRight: theme.spacing(2),
@@ -117,7 +117,6 @@ export default function Navbar() {
     propertiesOptions: [],
     classOfSearch: [],
     filtersOfSearch: [],
-    showFilter: null,
     showFilterOptions: [],
     filterInput: "",
     searchisloading: false,
@@ -152,7 +151,11 @@ export default function Navbar() {
         ),
         startAdornment: (
           <InputAdornment position="start">
-            <SearchIcon className={classes.searchIcon} />
+            <img
+              src="https://upload.wikimedia.org/wikipedia/commons/f/ff/Wikidata-logo.svg"
+              alt="wikidata-logo"
+              style={{ width: theme.spacing(4) }}
+            />
             {params.InputProps.startAdornment}
           </InputAdornment>
         ),
@@ -171,7 +174,6 @@ export default function Navbar() {
             ...s,
             popper: { ...s.popper, open: false },
             searchInput: "",
-            showFilter: null,
             filterInput: "",
           }));
         }}
@@ -341,40 +343,18 @@ export default function Navbar() {
               component="div"
               style={{ display: "flex", flexDirection: "row" }}
             >
-              Statements linked to{" "}
+              Statements about{" "}
               {state.selectedSearch ? state.selectedSearch.label : ""} (
               <Box fontWeight="bold">Filters</Box>)
             </Typography>
             <Autocomplete
-              getOptionLabel={(option) => {
-                return `${option.label} (${option.id})`;
-              }}
-              renderOption={(option) => (
-                <Typography>{`${option.label} (${option.id})`}</Typography>
-              )}
-              onChange={(e, value, reason) => {
-                if (reason === "select-option") {
-                  setState((s) => ({
-                    ...s,
-                    showFilter: value,
-                    filterInput: `${value.label} (${value.id})`,
-                  }));
-                } else if (reason === "clear") {
-                  setState((s) => ({
-                    ...s,
-                    showFilter: null,
-                    filterInput: "",
-                  }));
-                }
-              }}
-              onInputChange={(e, val, reason) => {
-                setState((s) => ({ ...s, filterInput: val }));
-              }}
-              value={state.showFilter}
-              inputValue={state.filterInput}
-              options={[...state.showFilterOptions].sort((a, b) =>
-                a.label.toLowerCase() > b.label.toLowerCase() ? 1 : -1
-              )}
+              freeSolo
+              disableClearable
+              options={[...state.showFilterOptions]
+                .sort((a, b) =>
+                  a.label.toLowerCase() > b.label.toLowerCase() ? 1 : -1
+                )
+                .map((item) => item.label)}
               renderInput={(params) => (
                 <TextField
                   {...params}
@@ -382,13 +362,29 @@ export default function Navbar() {
                   margin="dense"
                   size="small"
                   variant="outlined"
-                  placeholder="Search for Filter by Statement Property..."
+                  placeholder="Search for Statement..."
                   inputProps={{
                     ...params.inputProps,
                     autoComplete: "new-password",
                   }}
                 />
               )}
+              onInputChange={(e, val, reason) => {
+                setState((s) => ({ ...s, filterInput: val }));
+              }}
+              onChange={(e, value, reason) => {
+                if (reason === "select-option") {
+                  setState((s) => ({
+                    ...s,
+                    filterInput: `${value}`,
+                  }));
+                } else if (reason === "clear") {
+                  setState((s) => ({
+                    ...s,
+                    filterInput: "",
+                  }));
+                }
+              }}
             />
             <Paper
               variant="outlined"
@@ -406,15 +402,15 @@ export default function Navbar() {
                 <Grid container spacing={1}>
                   {state.filtersOfSearch
                     .filter((obj) => {
-                      return state.showFilter
-                        ? state.showFilter.id === obj.property.id
-                        : true;
+                      return `${obj.property.label} (${obj.property.id}): ${obj.value.label} (${obj.value.id})`
+                        .toLowerCase()
+                        .includes(state.filterInput.toLowerCase());
                     })
                     .map((item) => (
                       <Grid item>
                         <Chip
                           size="small"
-                          label={`${item.property.label}: ${item.value.label} (${item.value.id})`}
+                          label={`${item.property.label} (${item.property.id}): ${item.value.label} (${item.value.id})`}
                           variant="outlined"
                         />
                       </Grid>
@@ -469,14 +465,19 @@ export default function Navbar() {
             style={{ padding: `0 ${theme.spacing(2)}px` }}
           >
             <Grid item xs={3}>
-              <ButtonBase onClick={() => history.push("/")}>
+              <ButtonBase
+                onClick={() => {
+                  history.push("/");
+                  window.location.hash = "home";
+                }}
+              >
                 <Typography
                   className={classes.title}
                   variant="h2"
                   noWrap
                   component="div"
                 >
-                  <ProwdLogo style={{ height: "12px" }} />
+                  <ProwdLogo style={{ height: theme.spacing(2) }} />
                 </Typography>
               </ButtonBase>
             </Grid>
@@ -514,6 +515,7 @@ export default function Navbar() {
                   {/* <a href="/#about" style={{ textDecoration: "none" }}> */}
                   <Button
                     onClick={() => {
+                      history.push("/");
                       window.location.hash = "about";
                     }}
                   >
@@ -568,7 +570,6 @@ export default function Navbar() {
                           ...s,
                           classOfSearch: r.classes,
                           filtersOfSearch: r.filters,
-                          showFilter: null,
                           showFilterOptions: getUnique(
                             r.filters.map((item) => item.property),
                             "id"

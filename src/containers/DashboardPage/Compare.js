@@ -190,7 +190,9 @@ export default function Compare(props) {
             </Grid>
           </Paper>
         </Grid>
-        {state.loading.compareFilters || state.compareFilters.length > 0 ? (
+        {!props.data.entity ||
+        state.loading.compareFilters ||
+        state.compareFilters.length > 0 ? (
           <React.Fragment>
             <Grid item xs={4}>
               <Grid container spacing={1}>
@@ -331,7 +333,7 @@ export default function Compare(props) {
                           alignItems: "center",
                         }}
                       >
-                        <Box fontWeight="bold">Subtopic Imbalance</Box>
+                        <Box fontWeight="bold">Subclass Imbalance</Box>
                         <Help
                           text={
                             <Typography>{`Comparing imbalances can show you which subclass is more even in terms
@@ -577,6 +579,19 @@ export default function Compare(props) {
               Compare two subclasses of the Profile
             </Typography>
             <CompareIllustrationIcon />
+            <Typography
+              style={{
+                width: theme.spacing(65),
+                marginTop: `-${theme.spacing(3)}px`,
+                textAlign: "justify",
+              }}
+            >
+              <b>The above example is to compare humans.</b> This example
+              compares writers and artists. Select properties and values which
+              corresponds to {props.data.entity.entityLabel} (
+              {props.data.entity.entityID}) which you can see in the Property
+              Frequency section of the Profile tab .
+            </Typography>
           </Grid>
         )}
       </Grid>

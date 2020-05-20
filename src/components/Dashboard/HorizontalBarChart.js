@@ -6,7 +6,13 @@ export default function HorizontalBarChart(props) {
   const config = {
     type: "horizontalBar",
     options: {
-      animation: false,
+      animation: {
+        duration: 0, // general animation time
+      },
+      hover: {
+        animationDuration: 0, // duration of animations when hovering an item
+      },
+      responsiveAnimationDuration: 0, // animation duration after a resize
       responsive: true,
       legend: {
         display: false,
@@ -29,8 +35,8 @@ export default function HorizontalBarChart(props) {
             scaleLabel: {
               display: !props.simple,
               labelString: props.percent
-                ? "Percentage of Entities"
-                : "Number of Entities",
+                ? "Percentage of Items"
+                : "Number of Items",
               lineHeight: 1,
               padding: 0,
             },
@@ -72,8 +78,8 @@ export default function HorizontalBarChart(props) {
           scaleLabel: {
             display: !props.simple,
             labelString: props.percent
-              ? "Percentage of Entities"
-              : "Number of Entities",
+              ? "Percentage of Items"
+              : "Number of Items",
             lineHeight: 1,
             padding: 0,
           },
