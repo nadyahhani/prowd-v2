@@ -81,7 +81,6 @@ export default function DashboardPage(props) {
       running: false,
       dashclass: "",
       filters: [],
-
     },
     copyDialogOpen: false,
     loading: true,
@@ -139,9 +138,7 @@ export default function DashboardPage(props) {
     distributions: [],
     maxAmount: null,
     limit: [2, 2],
-    sortCount: 0,
-    sortGini: 0,
-    sortProps: 0,
+    sortTable: 0,
     // loading states
     loading: {
       dimensions: true,
@@ -518,7 +515,11 @@ export default function DashboardPage(props) {
     <ThemeProvider theme={theme}>
       {/* modals */}
       <Notif {...state.notif} />
-      <Onboarding {...state.onboarding} hash={props.match.params.id} onChange={onboardingChangeHandler} />
+      <Onboarding
+        {...state.onboarding}
+        hash={props.match.params.id}
+        onChange={onboardingChangeHandler}
+      />
       <Dialog
         open={state.copyDialogOpen}
         onClose={() => setState((s) => ({ ...s, copyDialogOpen: false }))}
@@ -575,7 +576,7 @@ export default function DashboardPage(props) {
               width: "50%",
             }}
           >
-            {state.globalData.name ? (
+            {!state.loading ? (
               <React.Fragment>
                 <Input
                   classes={{ input: `${classes.titleInput} ${classes.bold}` }}
@@ -649,45 +650,48 @@ export default function DashboardPage(props) {
                     gap: true,
                   },
                 }));
-                editGlobal(
-                  hash,
-                  state.globalData.entity.entityID,
-                  tempFilter,
-                  {
-                    name: state.globalData.name,
-                    author: state.globalData.author,
-                  },
-                  (r) => {
-                    if (r.success) {
-                      setState((s) => ({
-                        ...s,
-                        loaded: {
-                          global: false,
-                          profile: false,
-                          compare: false,
-                          discover: false,
-                        },
-                        notif: {
-                          open: true,
-                          message: "Dashboard Successfully Edited",
-                          severity: "success",
-                          action: () => {},
-                        },
-                      }));
-                      fetchData(props.match.params.page);
-                    } else {
-                      setState((s) => ({
-                        ...s,
-                        notif: {
-                          open: true,
-                          message: "Dashboard Edit Failed",
-                          severity: "error",
-                          action: () => {},
-                        },
-                      }));
+                state.pull &&
+                  editGlobal(
+                    hash,
+                    state.globalData.entity.entityID,
+                    tempFilter,
+                    {
+                      name: state.globalData.name,
+                      author: state.globalData.author,
+                    },
+                    (r) => {
+                      if (r.success) {
+                        setState((s) => ({
+                          ...s,
+                          pull: false,
+                          loaded: {
+                            global: false,
+                            profile: false,
+                            compare: false,
+                            discover: false,
+                          },
+                          notif: {
+                            open: true,
+                            message: "Dashboard Successfully Edited",
+                            severity: "success",
+                            action: () => {},
+                          },
+                        }));
+                        fetchData(props.match.params.page);
+                      } else {
+                        setState((s) => ({
+                          ...s,
+                          pull: false,
+                          notif: {
+                            open: true,
+                            message: "Dashboard Edit Failed",
+                            severity: "error",
+                            action: () => {},
+                          },
+                        }));
+                      }
                     }
-                  }
-                );
+                  );
               }}
             >
               Apply
@@ -743,6 +747,7 @@ export default function DashboardPage(props) {
                             update: true,
                             globalData: {
                               ...s.globalData,
+                              pull: true,
                               entity: {
                                 entityLabel: value.label,
                                 entityID: value.id,
@@ -792,6 +797,7 @@ export default function DashboardPage(props) {
                         setState((s) => ({
                           ...s,
                           update: true,
+                          pull: true,
                           globalData: { ...s.globalData, filters: temp },
                         }));
                       }}
@@ -811,6 +817,7 @@ export default function DashboardPage(props) {
                         setState((s) => ({
                           ...s,
                           update: true,
+                          pull: true,
                           globalData: { ...s.globalData, filters: temp },
                         }));
                       }}
@@ -818,6 +825,7 @@ export default function DashboardPage(props) {
                         setState((s) => ({
                           ...s,
                           update: true,
+                          pull: true,
                           globalData: { ...s.globalData, filters: [] },
                         }))
                       }

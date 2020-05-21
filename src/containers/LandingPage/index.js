@@ -205,7 +205,7 @@ function Landing(props) {
                 className={classes.subText}
                 component="div"
               >
-                See how well certain topics are represented in{" "}
+                See how well your topics of interest are represented in{" "}
                 <a
                   rel="noopener noreferrer"
                   target="_blank"
@@ -227,7 +227,7 @@ function Landing(props) {
                   )
                 }
               >
-                Show me
+                Show me how
               </Button>
             </div>
             <div className={classes.mainDiv}>
@@ -470,13 +470,22 @@ function Landing(props) {
             <div className={classes.mainDivLeft}>
               <Typography variant="h2" component="div">
                 <Box fontSize={40} fontWeight="bold">
-                  Explore
+                  Explore Knowledge
                   <div className={classes.textAccent} />
                 </Box>
 
                 <Box className={classes.subTextDesc}>
-                  Find dominant topics and existing imbalance in general
-                  knowledge on Wikidata with ProWD
+                  Find any dominant topics and existing imbalance on general
+                  knowledge in{" "}
+                  <a
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    href="https://www.wikidata.org/wiki/Wikidata:Main_Page"
+                    style={{ textDecoration: "none" }}
+                  >
+                    Wikidata
+                  </a>
+                  by profiling your topic of interest.
                 </Box>
               </Typography>
             </div>
@@ -492,22 +501,16 @@ function Landing(props) {
               <div style={{ width: "70%" }}>
                 <Typography variant="h2" component="div">
                   <Box fontSize={40} fontWeight="bold">
-                    About Wikidata
+                    Knowledge Gaps
                     <div className={classes.textAccent} />
                   </Box>
                   <Box
                     className={classes.subTextDesc}
                     style={{ width: "100%" }}
                   >
-                    Wikidata is a crowdsourced knowledge base platform under the{" "}
-                    <a
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      href="https://wikimediafoundation.org/"
-                      style={{ textDecoration: "none" }}
-                    >
-                      Wikimedia Foundation
-                    </a>
+                    Knowledge gaps are a very real thing. By identifying any
+                    imbalanced and underrepresented topics, we can already get
+                    closer to knowledge equity.
                   </Box>
                 </Typography>
               </div>
@@ -517,13 +520,12 @@ function Landing(props) {
             <div className={classes.mainDivLeft}>
               <Typography variant="h2" component="div">
                 <Box fontSize={40} fontWeight="bold">
-                  Analytics
+                  What you can do
                   <div className={classes.textAccent} />
                 </Box>
-
                 <Box className={classes.subTextDesc}>
-                  Using SPARQL query, data is processed and calculated to help
-                  you form insights
+                  Interested in a particular topic about science, art, socials,
+                  and more? Start profiling your topic by creating a dashboard!
                 </Box>
               </Typography>
             </div>

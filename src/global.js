@@ -223,41 +223,45 @@ export const selectDistribution = (filtered) => {
     tempIndex.forEach((idx, index) => {
       result.push({
         ...sortedbyGini[idx],
-        actualLabels: sortedbyGini[idx].newHistogramData.actual.map((item) => {
-          if (item.length > 1) {
-            return `${item[0]}-${item[item.length - 1]}`;
-          } else {
-            return item;
-          }
-        }),
-        actualValues: sortedbyGini[idx].newHistogramData.data,
-        show: sortedbyGini[idx].newHistogramData.show,
-        data: sortedbyGini[idx].newHistogramData.data
-          ? sortedbyGini[idx].newHistogramData.data.map(
-              (num) => num / sortedbyGini[idx].amount
-            )
-          : [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        raw: sortedbyGini[idx].newHistogramData.raw_data,
+        data: sortedbyGini[idx].newHistogramData.raw_data.map((num, index) => ({
+          x:
+            (index * 100) /
+            (sortedbyGini[idx].newHistogramData.raw_data.length - 1),
+          y: (num * 100) / sortedbyGini[idx].amount,
+        })),
+        label: getName(sortedbyGini[idx].analysis_info),
         name: getName(sortedbyGini[idx].analysis_info),
         color: colors[index],
+        borderColor: colors[index],
+        borderWidth: 1.5,
+        pointBackgroundColor: colors[index],
+        pointBorderColor: colors[index],
+        pointRadius: 2,
+        pointHoverRadius: 3,
+        fill: false,
+        showLine: true,
       });
     });
   } else {
     result = sortedbyGini.map((item, idx) => ({
       ...item,
-      actualLabels: item.newHistogramData.actual.map((item) => {
-        if (item.length > 1) {
-          return `${item[0]}-${item[item.length - 1]}`;
-        } else {
-          return item;
-        }
-      }),
-      actualValues: item.newHistogramData.data,
-      show: item.newHistogramData.show,
-      data: item.newHistogramData.data
-        ? item.newHistogramData.data.map((num) => num / item.amount)
-        : [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      raw: item.newHistogramData.raw_data,
+      data: item.newHistogramData.raw_data.map((num, index) => ({
+        x: (index * 100) / (item.newHistogramData.raw_data.length - 1),
+        y: (num * 100) / item.amount,
+      })),
+      label: getName(item.analysis_info),
       name: getName(item.analysis_info),
       color: colors[idx],
+      borderColor: colors[idx],
+      borderWidth: 1.5,
+      pointBackgroundColor: colors[idx],
+      pointBorderColor: colors[idx],
+      pointRadius: 2,
+      pointHoverRadius: 3,
+      fill: false,
+      showLine: true,
     }));
   }
   return result;

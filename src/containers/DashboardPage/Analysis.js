@@ -9,6 +9,15 @@ import {
   Select,
   MenuItem,
   ThemeProvider,
+  Table,
+  TableContainer,
+  TableHead,
+  TableCell,
+  TextField,
+  TableBody,
+  IconButton,
+  TableRow,
+  Badge,
 } from "@material-ui/core";
 import HorizontalBarChart from "../../components/Dashboard/HorizontalBarChart";
 import theme from "../../theme";
@@ -21,6 +30,8 @@ import AllPropertiesModal from "../../components/Dashboard/AllPropertiesModal";
 import { DiscoverIllustration } from "../../images/export";
 import DistributionCustomize from "../../components/Dashboard/DistributionCustomize";
 import { selectDistribution } from "../../global";
+import ScatterLineChart from "../../components/Dashboard/ScatterLineChart";
+import { MoreHoriz } from "@material-ui/icons";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -40,29 +51,8 @@ const useStyles = makeStyles((theme) => ({
     flex: "1 1 auto",
     padding: theme.spacing(1),
   },
-  distPaper: { height: "32vh" },
-  giniPaper: {
-    height: "44vh",
-    display: "flex",
-    flexDirection: "column",
-    justifyContent: "space-between",
-    alignItems: "center",
-  },
-  propertiesPaper: { height: "28vh" },
-  giniSubPaper: {
-    height: "fit-content",
-    width: "94%",
-    padding: theme.spacing(1),
-  },
+  table: { height: "87%", overflowY: "scroll", overflowX: "hidden" },
   //charts
-  giniChart: {
-    paddingTop: theme.spacing(1),
-    width: "97.5%",
-    // height: "95%",
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-  },
   histogramChart: {
     paddingTop: theme.spacing(1),
     width: "100%",
@@ -70,15 +60,7 @@ const useStyles = makeStyles((theme) => ({
   },
   horizontalbar: { width: "100%", height: "72%" },
   horizontalbarchart: { width: "100%", height: "100%" },
-  card: {
-    height: "14vh",
-    // width: "100%",
-    padding: theme.spacing(2),
-    display: "flex",
-    flexDirection: "column",
-    // alignItems: "center",
-    justifyContent: "flex-start",
-  },
+
   dimensionTable: {
     width: "100%",
     height: "92%",
@@ -171,245 +153,226 @@ export default function Analysis(props) {
       }
     });
   };
-  function itemCountChart() {
+
+  function valueTable() {
+    let sorted = [];
+    let sorting = state.sortTable;
     if (!state.loading.gini) {
-      let labels = [];
-      let values = [];
-      const sorted = [...state.shown].sort((b, a) => {
-        if (state.sortCount === 0) {
-          if (a.amount > b.amount) {
-            return 1;
-          } else {
-            return -1;
-          }
+      sorted = [...state.shown].sort((b, a) => {
+        // sort by prop 1
+        if (sorting === 2) {
+          return a.analysis_info.item_1_label > b.analysis_info.item_1_label
+            ? 1
+            : -1;
+        } else if (sorting === 3) {
+          return a.analysis_info.item_1_label < b.analysis_info.item_1_label
+            ? 1
+            : -1;
+        }
+        // sort by prop 2
+        else if (a.analysis_info.item_2_label && sorting === 4) {
+          return a.analysis_info.item_2_label > b.analysis_info.item_2_label
+            ? 1
+            : -1;
+        } else if (a.analysis_info.item_2_label && sorting === 5) {
+          return a.analysis_info.item_2_label < b.analysis_info.item_2_label
+            ? 1
+            : -1;
+        }
+        // sort by gini
+        else if (sorting === 6) {
+          return a.gini > b.gini ? 1 : -1;
+        } else if (sorting === 7) {
+          return a.gini < b.gini ? 1 : -1;
+        }
+
+        // sort by properties
+        else if (sorting === 8) {
+          return a.statistics.average_distinct_properties >
+            b.statistics.average_distinct_properties
+            ? 1
+            : -1;
+        } else if (sorting === 9) {
+          return a.statistics.average_distinct_properties <
+            b.statistics.average_distinct_properties
+            ? 1
+            : -1;
+        }
+
+        // sort by count
+        else if (sorting === 1) {
+          return a.amount < b.amount ? 1 : -1;
         } else {
-          if (b.amount > a.amount) {
-            return 1;
-          } else {
-            return -1;
-          }
+          return a.amount > b.amount ? 1 : -1;
         }
       });
-      sorted.forEach((item) => {
-        labels.push(
-          `${
-            item.analysis_info.item_1_label
-              ? item.analysis_info.item_1_label
-              : ""
-          }${
-            item.analysis_info.item_2_label
-              ? `-${item.analysis_info.item_2_label}`
-              : ""
-          }${
-            item.analysis_info.item_3_label
-              ? `-${item.analysis_info.item_3_label}`
-              : ""
-          }: ${item.amount}`
-        );
-        values.push(item.amount);
-      });
-      const dataTemp = {
-        labels: [...labels].splice(0, 5),
-        datasets: [
-          {
-            label: "Number of Items",
-            data: [...values].splice(0, 5),
-            backgroundColor: theme.palette.chart.main,
-          },
-        ],
-      };
-      return (
-        <React.Fragment>
-          <Typography
-            component="div"
-            style={{
-              display: "flex",
-              flexDirection: "row",
-              justifyContent: "space-between",
-              width: "100%",
-            }}
-          >
-            <Box fontWeight="bold">
-              Item Count{" "}
-              <Help
-                text={
-                  <Typography>{`Number of items of each subclass.`}</Typography>
-                }
-              />
-            </Box>
-            <Typography
-              component="div"
-              style={{
-                display: "flex",
-                flexDirection: "row",
-                justifyContent: "space-between",
-                alignItems: "center",
-                width: "fit-content",
-              }}
-            >
-              <Box>
-                <FormControl
-                  variant="outlined"
-                  size="small"
-                  className={classes.formControl}
-                >
-                  <Select
-                    value={state.sortCount}
-                    onChange={(e, child) => {
-                      setState((s) => ({ ...s, sortCount: child.props.value }));
-                    }}
-                  >
-                    <MenuItem value={0}>Descending</MenuItem>
-                    <MenuItem value={1}>Ascending</MenuItem>
-                  </Select>
-                </FormControl>
-              </Box>
-            </Typography>
-          </Typography>
-          <HorizontalBarChart
-            key={`item-${state.sortCount}`}
-            data={dataTemp}
-            classes={{
-              root: classes.horizontalbar,
-              ChartWrapper: classes.horizontalbarchart,
-            }}
-            max={state.maxAmount}
-          />
-          <AllPropertiesModal
-            key="modal-desc"
-            data={{
-              labels: labels,
-              values: values,
-              max: state.maxAmount,
-            }}
-            title="Number of items of All Subclasses"
-            label="Number of items with this value"
-          />
-        </React.Fragment>
-      );
     } else {
-      return <Loading />;
     }
-  }
-  function giniChart() {
-    if (!state.loading.gini) {
-      let labels = [];
-      let values = [];
-      const sorted = [...state.shown].sort((b, a) => {
-        if (state.sortGini === 0) {
-          if (a.gini > b.gini) {
-            return 1;
-          } else {
-            return -1;
-          }
-        } else {
-          if (b.gini > a.gini) {
-            return 1;
-          } else {
-            return -1;
-          }
-        }
-      });
-      sorted.forEach((item) => {
-        labels.push(
-          `${
-            item.analysis_info.item_1_label
-              ? item.analysis_info.item_1_label
-              : ""
-          }${
-            item.analysis_info.item_2_label
-              ? `-${item.analysis_info.item_2_label}`
-              : ""
-          }${
-            item.analysis_info.item_3_label
-              ? `-${item.analysis_info.item_3_label}`
-              : ""
-          }: ${item.gini}`
-        );
-        values.push(item.gini);
-      });
-      const dataTemp = {
-        labels: [...labels].splice(0, 5),
-        datasets: [
-          {
-            label: "Gini Coefficient",
-            data: [...values].splice(0, 5),
-            backgroundColor: theme.palette.chart.main,
-          },
-        ],
-      };
-      return (
-        <React.Fragment>
-          <Typography
-            component="div"
-            style={{
-              display: "flex",
-              flexDirection: "row",
-              justifyContent: "space-between",
-              width: "100%",
-            }}
-          >
-            <Box fontWeight="bold">
-              Imbalance Score{" "}
-              <Help
-                text={
-                  <Typography>{`Gini coefficient for each subclass. Higher scores indicates a less imbalanced subclass.`}</Typography>
-                }
-              />
-            </Box>
-            <Typography
-              component="div"
-              style={{
-                display: "flex",
-                flexDirection: "row",
-                justifyContent: "space-between",
-                alignItems: "center",
-                width: "fit-content",
-              }}
-            >
-              <Box>
-                <FormControl
-                  variant="outlined"
-                  size="small"
-                  className={classes.formControl}
-                >
-                  <Select
-                    value={state.sortGini}
-                    onChange={(e, child) => {
-                      setState((s) => ({ ...s, sortGini: child.props.value }));
-                    }}
-                  >
-                    <MenuItem value={0}>Descending</MenuItem>
-                    <MenuItem value={1}>Ascending</MenuItem>
-                  </Select>
-                </FormControl>
-              </Box>
-            </Typography>
-          </Typography>
-          <HorizontalBarChart
-            key={`gini-${state.sortGini}`}
-            data={dataTemp}
-            classes={{
-              root: classes.horizontalbar,
-              ChartWrapper: classes.horizontalbarchart,
-            }}
-            max={1}
-          />
-          <AllPropertiesModal
-            key="modal-desc"
-            data={{
-              labels: labels,
-              values: values,
-              max: 1,
-            }}
-            title="Imbalance Score of All Subclasses"
-            label="Imbalance Score (Gini Coefficient) for this value"
-          />
-        </React.Fragment>
-      );
-    } else {
-      return <Loading />;
-    }
+    return (
+      <React.Fragment>
+        <Typography
+          component="div"
+          style={{
+            display: "flex",
+            flexDirection: "row",
+            justifyContent: "space-between",
+            width: "100%",
+            margin: `0 ${theme.spacing(1)}px`,
+          }}
+        >
+          <Box fontWeight="bold">
+            Subclasses{" "}
+            <Help
+              text={
+                <Typography>{`All possible values for the property dimensions.`}</Typography>
+              }
+            />
+          </Box>
+        </Typography>
+        <Paper
+          variant="outlined"
+          elevation={0}
+          style={{ flex: "1 1 auto", height: "45%", margin: theme.spacing(1) }}
+        >
+          <TableContainer component="div">
+            <Table stickyHeader size="small">
+              <TableHead>
+                <TableRow>
+                  <TableCell colSpan={state.dimensions.length + 6}>
+                    <Grid container direction="row" spacing={1}>
+                      <Grid item xs={7}>
+                        <TextField
+                          variant="outlined"
+                          size="small"
+                          margin="dense"
+                          fullWidth
+                          placeholder="Search..."
+                        />
+                      </Grid>
+                      <Grid item xs={3}>
+                        <TextField
+                          select
+                          fullWidth
+                          value={state.sortTable}
+                          onChange={(e, child) =>
+                            setState((s) => ({
+                              ...s,
+                              sortTable: child.props.value,
+                            }))
+                          }
+                          variant="outlined"
+                          style={{
+                            width: theme.spacing(20),
+                            marginLeft: theme.spacing(1),
+                          }}
+                          size="small"
+                          margin="dense"
+                          label="Sort by"
+                        >
+                          <MenuItem value={0}>Item Count (Highest)</MenuItem>
+                          <MenuItem value={1}>Item Count (Lowest)</MenuItem>
+                          <MenuItem value={6}>
+                            Imbalance Score (Highest)
+                          </MenuItem>
+                          <MenuItem value={7}>
+                            Imbalance Score (Lowest)
+                          </MenuItem>
+                          <MenuItem value={8}>
+                            Average Properties (Highest)
+                          </MenuItem>
+                          <MenuItem value={9}>
+                            Average Properties (Lowest)
+                          </MenuItem>
+                          <MenuItem value={3}>
+                            {state.dimensions[0].label} (A-Z)
+                          </MenuItem>
+                          <MenuItem value={2}>
+                            {state.dimensions[0].label} (Z-A)
+                          </MenuItem>
+                          {state.dimensions.length === 2 ? (
+                            <MenuItem value={5}>
+                              {state.dimensions[1].label} (A-Z)
+                            </MenuItem>
+                          ) : null}
+                          {state.dimensions.length === 2 ? (
+                            <MenuItem value={4}>
+                              {state.dimensions[1].label} (Z-A)
+                            </MenuItem>
+                          ) : null}
+                        </TextField>
+                      </Grid>
+                    </Grid>
+                  </TableCell>
+                </TableRow>
+              </TableHead>
+            </Table>
+          </TableContainer>
+          <TableContainer component="div" className={classes.table}>
+            <Table stickyHeader size="small">
+              <TableHead>
+                <TableRow>
+                  <TableCell>{state.dimensions[0].label}</TableCell>
+                  {state.dimensions.length === 2 ? (
+                    <TableCell>{state.dimensions[1].label}</TableCell>
+                  ) : null}
+                  <TableCell>Item Count</TableCell>
+                  <TableCell>Imbalance Score</TableCell>
+                  <TableCell>Average Properties</TableCell>
+                  <TableCell />
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {sorted.map((row, idx) => {
+                  return (
+                    <TableRow>
+                      <TableCell>{row.analysis_info.item_1_label}</TableCell>
+                      {state.dimensions.length === 2 ? (
+                        <TableCell>{row.analysis_info.item_2_label}</TableCell>
+                      ) : null}
+                      <TableCell align="right">{row.amount}</TableCell>
+                      <TableCell align="right">
+                        <Typography
+                          component="div"
+                          style={{
+                            display: "flex",
+                            flexDirection: "row",
+                            alignItems: "center",
+                            justifyContent: "space-between",
+                          }}
+                        >
+                          <div
+                            style={{
+                              width: theme.spacing(1),
+                              height: theme.spacing(1),
+                              borderRadius: "50%",
+                              backgroundColor:
+                                row.gini < 0.2
+                                  ? theme.palette.success.main
+                                  : row.gini >= 0.4
+                                  ? theme.palette.error.main
+                                  : theme.palette.warning.main,
+                            }}
+                          />{" "}
+                          {row.gini}
+                        </Typography>
+                      </TableCell>
+                      <TableCell align="right">
+                        {Math.ceil(row.statistics.average_distinct_properties)}
+                      </TableCell>
+                      <TableCell>
+                        <IconButton size="small" edge="end">
+                          <MoreHoriz />
+                        </IconButton>
+                      </TableCell>
+                    </TableRow>
+                  );
+                })}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        </Paper>
+      </React.Fragment>
+    );
   }
 
   function propertyChart() {
@@ -572,7 +535,7 @@ export default function Analysis(props) {
         !state.loading.dimensions &&
         state.dimensions.length > 0 ? (
           <React.Fragment>
-            <Grid item xs={4} classes={{ root: classes.outerGrid }}>
+            <Grid item xs={5} classes={{ root: classes.outerGrid }}>
               <div
                 style={{
                   width: "100%",
@@ -583,26 +546,17 @@ export default function Analysis(props) {
               >
                 <Paper
                   style={{
-                    // width: "100%",
-                    height: "45%",
-                    marginBottom: theme.spacing(1),
-                    padding: theme.spacing(1),
-                  }}
-                >
-                  {itemCountChart()}
-                </Paper>
-                <Paper
-                  style={{
-                    padding: theme.spacing(1),
                     flex: "1 1 auto",
-                    height: "45%",
+                    height: "100%",
+                    display: "flex",
+                    flexDirection: "column",
                   }}
                 >
-                  {giniChart()}
+                  {valueTable()}
                 </Paper>
               </div>
             </Grid>
-            <Grid item xs={5} classes={{ root: classes.outerGrid }}>
+            <Grid item xs={4} classes={{ root: classes.outerGrid }}>
               <div
                 style={{
                   width: "100%",
@@ -640,22 +594,9 @@ export default function Analysis(props) {
                           />
                         </Box>
                       </Typography>
-                      <LineChart
-                      multiple
+                      <ScatterLineChart
+                        hideLegend
                         data={{
-                          labels: [
-                            "0",
-                            "10",
-                            "20",
-                            "30",
-                            "40",
-                            "50",
-                            "60",
-                            "70",
-                            "80",
-                            "90",
-                            "100",
-                          ],
                           datasets: state.distributions.map((item) => ({
                             ...item,
                             // label: "Africa",
