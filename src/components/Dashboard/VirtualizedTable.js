@@ -4,7 +4,7 @@ import clsx from "clsx";
 import { withStyles } from "@material-ui/core/styles";
 import TableCell from "@material-ui/core/TableCell";
 import { AutoSizer, Column, Table } from "react-virtualized";
-import { TextField, Typography } from "@material-ui/core";
+import { TextField, Typography, Tooltip } from "@material-ui/core";
 import { Check, Close, Remove } from "@material-ui/icons";
 import theme from "../../theme";
 import Autocomplete from "@material-ui/lab/Autocomplete";
@@ -171,17 +171,23 @@ class MuiVirtualizedTable extends React.PureComponent {
               }}
               options={this.props.options ? this.props.options : []}
               renderInput={(params) => (
-                <TextField
-                  {...params}
-                  fullWidth
-                  margin="dense"
-                  size="small"
-                  placeholder="Property Check"
-                  inputProps={{
-                    ...params.inputProps,
-                    autoComplete: "new-password",
-                  }}
-                />
+                <Tooltip
+                  title={
+                    <Typography>Check the presence of a property</Typography>
+                  }
+                >
+                  <TextField
+                    {...params}
+                    fullWidth
+                    margin="dense"
+                    size="small"
+                    placeholder="Property Check"
+                    inputProps={{
+                      ...params.inputProps,
+                      autoComplete: "new-password",
+                    }}
+                  />
+                </Tooltip>
               )}
             />
           </div>

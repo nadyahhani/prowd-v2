@@ -86,6 +86,7 @@ function GiniChart(props) {
             )
           : null,
         pointRadius: 0,
+        hoverRadius: 0,
         actual: [],
         fill: true,
         borderColor: getGiniAreaColor("transparent"),
@@ -112,12 +113,11 @@ function GiniChart(props) {
       callbacks: {
         label: function (tooltipItem, data) {
           let label = `${
-            data.datasets[tooltipItem.datasetIndex].actual[tooltipItem.index] ||
-            ""
-          } items possess ${
+            data.datasets[tooltipItem.datasetIndex].actual[tooltipItem.index]
+          } items possess ${(
             data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index] *
             100
-          }% of the total number of properties.`;
+          ).toFixed(1)}% of the total number of properties.`;
 
           return label;
         },
@@ -154,7 +154,7 @@ function GiniChart(props) {
           },
           scaleLabel: {
             labelString:
-              "Cumulative Share of People from Lowest to Highest Number of Property",
+              "Cumulative Share of Items (Lowest to Highest # of Properties)",
             lineHeight: 1,
             padding: 0,
             display: !props.simple,

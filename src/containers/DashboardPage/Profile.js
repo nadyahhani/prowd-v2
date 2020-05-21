@@ -431,8 +431,8 @@ export default function Profile(props) {
                               } else {
                                 return "yellow";
                               }
-                            })()} section of the chart. A balanced class' score would be closer to 0 as the area gets smaller as well. 
-                            The imbalance score is based on the Gini Coefficient.`}
+                            })()} section of the chart. A balanced topic's score would be closer to 0 as the area gets smaller as well. 
+                           A balanced topic indicates that items of the topic has similar amount of information. The imbalance score is based on the Gini Coefficient.`}
                           </Typography>
                         }
                       />
