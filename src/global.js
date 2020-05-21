@@ -200,7 +200,7 @@ export const selectDistribution = (filtered) => {
   const colors = [
     theme.palette.itemA.opaque,
     theme.palette.itemB.opaque,
-    theme.palette.itemMerge.main,
+    theme.palette.itemMerge.opaque,
   ];
   let result = [];
   const sortedbyGini = [...filtered].sort((b, a) => {
@@ -223,9 +223,18 @@ export const selectDistribution = (filtered) => {
     tempIndex.forEach((idx, index) => {
       result.push({
         ...sortedbyGini[idx],
-        data: sortedbyGini[idx].histogram_data
-          ? sortedbyGini[idx].histogram_data.map(
-              (num) => (num * 100) / sortedbyGini[idx].amount
+        actualLabels: sortedbyGini[idx].newHistogramData.actual.map((item) => {
+          if (item.length > 1) {
+            return `${item[0]}-${item[item.length - 1]}`;
+          } else {
+            return item;
+          }
+        }),
+        actualValues: sortedbyGini[idx].newHistogramData.data,
+        show: sortedbyGini[idx].newHistogramData.show,
+        data: sortedbyGini[idx].newHistogramData.data
+          ? sortedbyGini[idx].newHistogramData.data.map(
+              (num) => num / sortedbyGini[idx].amount
             )
           : [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
         name: getName(sortedbyGini[idx].analysis_info),
@@ -235,8 +244,17 @@ export const selectDistribution = (filtered) => {
   } else {
     result = sortedbyGini.map((item, idx) => ({
       ...item,
-      data: item.histogram_data
-        ? item.histogram_data.map((num) => (num * 100) / item.amount)
+      actualLabels: item.newHistogramData.actual.map((item) => {
+        if (item.length > 1) {
+          return `${item[0]}-${item[item.length - 1]}`;
+        } else {
+          return item;
+        }
+      }),
+      actualValues: item.newHistogramData.data,
+      show: item.newHistogramData.show,
+      data: item.newHistogramData.data
+        ? item.newHistogramData.data.map((num) => num / item.amount)
         : [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
       name: getName(item.analysis_info),
       color: colors[idx],

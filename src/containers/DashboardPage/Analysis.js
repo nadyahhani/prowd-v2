@@ -641,7 +641,7 @@ export default function Analysis(props) {
                         </Box>
                       </Typography>
                       <LineChart
-                        percentage
+                      multiple
                         data={{
                           labels: [
                             "0",
@@ -657,7 +657,7 @@ export default function Analysis(props) {
                             "100",
                           ],
                           datasets: state.distributions.map((item) => ({
-                            data: item.data,
+                            ...item,
                             // label: "Africa",
                             borderColor: item.color,
                             fill: false,

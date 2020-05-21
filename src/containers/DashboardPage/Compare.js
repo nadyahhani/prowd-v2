@@ -73,9 +73,8 @@ const useStyles = makeStyles((theme) => ({
     alignItems: "center",
   },
   histogramChart: {
-    paddingTop: theme.spacing(1),
     width: "100%",
-    height: "85%",
+    height: "82%",
   },
   horizontalbar: { width: "100%", height: "72%" },
   horizontalbarchart: { width: "100%", height: "100%" },
@@ -561,7 +560,10 @@ export default function Compare(props) {
                     height: "70%",
                   }}
                 >
-                  {!state.loading.giniA && !state.loading.giniB ? (
+                  {!state.loading.giniA &&
+                  !state.loading.giniB &&
+                  state.giniA.newHistogramData &&
+                  state.giniB.newHistogramData ? (
                     <React.Fragment>
                       <Typography component="div">
                         <Box fontWeight="bold">
@@ -577,29 +579,63 @@ export default function Compare(props) {
                         </Box>
                       </Typography>
                       <LineChart
-                        percentage
+                        multiple
                         data={{
-                          labels: state.giniA.percentileData,
+                          labels: state.giniA.newHistogramData.label.map(
+                            (item) => `${item}%`
+                          ),
                           datasets: [
                             {
-                              data: state.giniA.histogramData
-                                ? state.giniA.histogramData.map(
+                              data: state.giniA.newHistogramData.data
+                                ? state.giniA.newHistogramData.data.map(
                                     (num) => (num * 100) / state.giniA.amount
                                   )
                                 : [],
+                              actualLabels: state.giniA.newHistogramData.actual.map(
+                                (item) => {
+                                  if (item.length > 1) {
+                                    return `${item[0]}-${
+                                      item[item.length - 1]
+                                    }`;
+                                  } else {
+                                    return item;
+                                  }
+                                }
+                              ),
+                              actualValues: state.giniA.newHistogramData.data,
                               borderColor: theme.palette.itemA.main,
                               backgroundColor: theme.palette.itemA.main,
                               fill: true,
+                              pointRadius: state.giniA.newHistogramData.show.map(
+                                (item) => item * 3
+                              ),
+                              show: state.giniA.newHistogramData.show,
                             },
                             {
-                              data: state.giniB.histogramData
-                                ? state.giniB.histogramData.map(
+                              data: state.giniB.newHistogramData.data
+                                ? state.giniB.newHistogramData.data.map(
                                     (num) => (num * 100) / state.giniB.amount
                                   )
                                 : [],
+                              actualLabels: state.giniB.newHistogramData.actual.map(
+                                (item) => {
+                                  if (item.length > 1) {
+                                    return `${item[0]}-${
+                                      item[item.length - 1]
+                                    }`;
+                                  } else {
+                                    return item;
+                                  }
+                                }
+                              ),
+                              actualValues: state.giniB.newHistogramData.data,
                               borderColor: theme.palette.itemB.main,
                               backgroundColor: theme.palette.itemB.main,
                               fill: true,
+                              pointRadius: state.giniB.newHistogramData.show.map(
+                                (item) => item * 3
+                              ),
+                              show: state.giniB.newHistogramData.show,
                             },
                           ],
                         }}

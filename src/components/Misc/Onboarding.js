@@ -3,19 +3,16 @@ import Button from "@material-ui/core/Button";
 import Dialog from "@material-ui/core/Dialog";
 import DialogActions from "@material-ui/core/DialogActions";
 import DialogContent from "@material-ui/core/DialogContent";
-import DialogContentText from "@material-ui/core/DialogContentText";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import {
   makeStyles,
   Box,
   Typography as TypographyMui,
-  Grid,
 } from "@material-ui/core";
 import Help from "./Help";
 import theme from "../../theme";
 import { NavigateNext } from "@material-ui/icons";
 import { useHistory } from "react-router-dom";
-import Link from "./Link";
 import { DouglasAdamsStructure } from "../../images/export";
 
 function Typography(props) {
@@ -23,12 +20,14 @@ function Typography(props) {
 }
 export default function Onboarding(props) {
   const history = useHistory();
+  const { step, page, running, dashclass, hash, filters } = props;
   const [state, setState] = React.useState({
     currentPage: "profile",
     currentStep: 0,
     running: false,
+    hash: "",
     class: "",
-    filters: "",
+    filters: [],
   });
 
   const repeatingSteps = {
@@ -148,6 +147,64 @@ export default function Onboarding(props) {
         </div>
       ),
     },
+    prowd: (show = false) => {
+      return {
+        title: "How ProWD Visualize Knowledge",
+        text: "",
+        action1: "Next",
+        action2: "Stop",
+        enableBackground: true,
+        style: { maxWidth: "fit-content" },
+        customChild: (
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "row",
+              justifyContent: "space-between",
+              alignItems: "center",
+              width: theme.spacing(100),
+              padding: theme.spacing(2),
+            }}
+          >
+            <div
+              style={{
+                width: "45%",
+              }}
+            >
+              <Typography component="div" gutterBottom>
+                On the right, you can see that Douglas Adams is an instance of
+                Human (Q5), which means that{" "}
+                <a href="https://www.wikidata.org/wiki/Q42">
+                  Douglas Adams (Q42)
+                </a>{" "}
+                is a member of the{" "}
+                <a href="https://www.wikidata.org/wiki/Q5">Human (Q5)</a> class.
+                You can also see that Douglas Adams has two statements about his{" "}
+                <a href="https://www.wikidata.org/wiki/P106">occupation</a>{" "}
+                property, he is a{" "}
+                <a href="https://www.wikidata.org/wiki/Q36180">writer</a> and
+                also, a{" "}
+                <a href="https://www.wikidata.org/wiki/Q245068">comedian</a>.
+              </Typography>
+              {show ? (
+                <Typography style={{ marginBottom: theme.spacing(1) }}>
+                  <b>
+                    There are many other writer-comedians human items out there,
+                    how can we see how well each and everyone of them is
+                    represented in Wikidata?
+                  </b>
+                </Typography>
+              ) : null}
+            </div>
+            <div
+              style={{ width: "50%", display: "flex", alignItems: "center" }}
+            >
+              <DouglasAdamsStructure style={{ width: "100%" }} />
+            </div>
+          </div>
+        ),
+      };
+    },
     tableIntro: {
       title: "",
       text: (
@@ -224,62 +281,10 @@ export default function Onboarding(props) {
         style: {},
       },
       repeatingSteps.wikidata,
+      repeatingSteps.prowd(true),
       {
-        title: "How ProWD Visualize Knowledge",
-        text: "",
-        action1: "Next",
-        action2: "Stop",
-        enableBackground: true,
-        style: { maxWidth: "fit-content" },
-        customChild: (
-          <div
-            style={{
-              display: "flex",
-              flexDirection: "row",
-              justifyContent: "space-between",
-              alignItems: "center",
-              width: theme.spacing(100),
-              padding: theme.spacing(2),
-            }}
-          >
-            <div
-              style={{
-                width: "45%",
-              }}
-            >
-              <Typography component="div" gutterBottom>
-                On the right, you can see that Douglas Adams is an instance of
-                Human (Q5), which means that{" "}
-                <a href="https://www.wikidata.org/wiki/Q42">
-                  Douglas Adams (Q42)
-                </a>{" "}
-                is a member of the{" "}
-                <a href="https://www.wikidata.org/wiki/Q5">Human (Q5)</a> class.
-                You can also see that Douglas Adams has two statements about his{" "}
-                <a href="https://www.wikidata.org/wiki/P106">occupation</a>{" "}
-                property, he is a{" "}
-                <a href="https://www.wikidata.org/wiki/Q36180">writer</a> and
-                also, a{" "}
-                <a href="https://www.wikidata.org/wiki/Q245068">comedian</a>.
-              </Typography>
-              <Typography style={{ marginBottom: theme.spacing(1) }}>
-                <b>
-                  There are many other Human writer-comedians out there, now how
-                  can we see how well each and everyone of them is represented
-                  in Wikidata?
-                </b>
-              </Typography>
-            </div>
-            <div
-              style={{ width: "50%", display: "flex", alignItems: "center" }}
-            >
-              <DouglasAdamsStructure style={{ width: "100%" }} />
-            </div>
-          </div>
-        ),
-      },
-      {
-        title: "This dashboard will show you that information",
+        title:
+          "Creating a dashboard will show you all about writer-comedian human items",
         text: (
           <Typography>
             This dashboard is configured with{" "}
@@ -315,7 +320,7 @@ export default function Onboarding(props) {
         text: (
           <Typography component="div">
             These information can give you insights on the writer-comedian
-            humans.
+            humans.{" "}
             <b>
               Hover over <Help text="Hello!" /> to learn about each piece of
               information
@@ -326,7 +331,9 @@ export default function Onboarding(props) {
         action2: "Stop",
         func: {
           action1: () => {
-            history.push("/dashboards/8ce49fd3001b/compare/onboarding-example");
+            history.push(
+              `/dashboards/${state.hash}/compare/onboarding-example`
+            );
             setState((s) => ({ ...s, currentStep: s.currentStep + 1 }));
             props.onChange({ reason: "continue", state });
           },
@@ -345,9 +352,9 @@ export default function Onboarding(props) {
         title: "",
         text: (
           <Typography component="div">
-            <b>Compare two subclasses of the writer-comedian human profile.</b>{" "}
-            Right here, you can see the difference between writer-comedians from
-            Germany and from the United States of America
+            <b>Compare two subclasses of the writer-comedian human topic.</b>{" "}
+            Right here, you can see the difference between writer-comedian human
+            items from Germany and from the United States of America
           </Typography>
         ),
         action1: "Next",
@@ -355,7 +362,7 @@ export default function Onboarding(props) {
         func: {
           action1: () => {
             history.push(
-              "/dashboards/8ce49fd3001b/analysis/onboarding-example"
+              `/dashboards/${state.hash}/analysis/onboarding-example`
             );
             setState((s) => ({ ...s, currentStep: s.currentStep + 1 }));
             props.onChange({ reason: "continue", state });
@@ -467,9 +474,81 @@ export default function Onboarding(props) {
         style: {},
       },
       repeatingSteps.wikidata,
+      repeatingSteps.prowd(),
       repeatingSteps.tableIntro,
       repeatingSteps.searchWiki,
       repeatingSteps.infoIntro,
+      {
+        title: "",
+        text: (
+          <Typography component="div">
+            <b>
+              Compare two subclasses of the {state.filters} {state.class} topic.
+            </b>{" "}
+            Right here, you can see the difference between a subclass A and B of{" "}
+            {state.filters} {state.class} items from based on the property and
+            value of subclass A and B, which you can input right here.
+          </Typography>
+        ),
+        action1: "Next",
+        action2: "Stop",
+        func: {
+          action1: () => {
+            history.push(
+              `/dashboards/${state.hash}/analysis/onboarding-profile`
+            );
+            setState((s) => ({ ...s, currentStep: s.currentStep + 1 }));
+            props.onChange({ reason: "continue", state });
+          },
+          action2: () => {
+            handleClose();
+          },
+        },
+        enableBackground: false,
+        style: {
+          left: theme.spacing(-20),
+          top: theme.spacing(10),
+          width: theme.spacing(60),
+        },
+      },
+      {
+        title: "",
+        text: (
+          <React.Fragment>
+            <Typography component="div" gutterBottom>
+              <b>
+                Want to discover more about {state.filters} {state.class} items?
+              </b>{" "}
+              Select properties you want to explore right here, you can select
+              up to 3 properties.
+            </Typography>
+            <Typography>
+              This page will then generate all the possible values of the chosen
+              properties.
+            </Typography>
+          </React.Fragment>
+        ),
+        action1: "Next",
+        action2: "Stop",
+        func: {
+          action1: () => {
+            history.push(
+              `/dashboards/${state.hash}/profile/onboarding-profile`
+            );
+            setState((s) => ({ ...s, currentStep: s.currentStep + 1 }));
+            props.onChange({ reason: "continue", state });
+          },
+          action2: () => {
+            handleClose();
+          },
+        },
+        enableBackground: false,
+        style: {
+          left: theme.spacing(-20),
+          top: theme.spacing(10),
+          width: theme.spacing(60),
+        },
+      },
       {
         title: "Now have fun exploring!",
         text: `Want to compare groups of items? Or discover dominant groups of items of the filtered ${state.class}? Check out these features.`,
@@ -496,13 +575,14 @@ export default function Onboarding(props) {
   React.useEffect(() => {
     setState((s) => ({
       ...s,
-      currentStep: props.step,
-      currentPage: props.page,
-      running: props.running,
-      class: props.class,
-      filters: props.filters,
+      currentStep: step,
+      currentPage: page,
+      running: running,
+      class: dashclass,
+      hash: hash,
+      filters: filters,
     }));
-  }, [props.step, props.page, props.running, props.class, props.filters]);
+  }, [step, page, running, dashclass, filters, hash]);
 
   const handleClose = () => {
     // setState((s) => ({ ...s, running: false }));
@@ -516,7 +596,7 @@ export default function Onboarding(props) {
         return;
     }
   };
-
+  const current = steps[state.currentPage][state.currentStep];
   return (
     <div>
       <Dialog
@@ -525,36 +605,26 @@ export default function Onboarding(props) {
         onClose={handleClose}
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
-        hideBackdrop={
-          !steps[state.currentPage][state.currentStep].enableBackground
-        }
+        hideBackdrop={!current.enableBackground}
         classes={{ paper: classes.dialogRoot }}
       >
-        {steps[state.currentPage][state.currentStep].title === "" ? null : (
-          <DialogTitle id="alert-dialog-title">
-            {steps[state.currentPage][state.currentStep].title}
-          </DialogTitle>
+        {current.title === "" ? null : (
+          <DialogTitle id="alert-dialog-title">{current.title}</DialogTitle>
         )}
         <DialogContent
-          style={
-            steps[state.currentPage][state.currentStep].customChild
-              ? { width: "fit-content" }
-              : null
-          }
+          style={current.customChild ? { width: "fit-content" } : null}
         >
-          {steps[state.currentPage][state.currentStep].customChild ? (
-            steps[state.currentPage][state.currentStep].customChild
+          {current.customChild ? (
+            current.customChild
           ) : (
-            <Typography>
-              {steps[state.currentPage][state.currentStep].text}
-            </Typography>
+            <Typography>{current.text}</Typography>
           )}
         </DialogContent>
         <DialogActions style={{ justifyContent: "flex-start" }}>
-          {steps[state.currentPage][state.currentStep].hideAction1 ? null : (
+          {current.hideAction1 ? null : (
             <Button
               onClick={() => {
-                if (!steps[state.currentPage][state.currentStep].func) {
+                if (!current.func) {
                   if (steps[state.currentPage].length > state.currentStep + 1) {
                     setState((s) => ({ ...s, currentStep: s.currentStep + 1 }));
                     props.onChange({ reason: "continue", state });
@@ -562,7 +632,7 @@ export default function Onboarding(props) {
                     handleClose();
                   }
                 } else {
-                  steps[state.currentPage][state.currentStep].func.action1();
+                  current.func.action1();
                 }
               }}
               color="primary"
@@ -570,22 +640,22 @@ export default function Onboarding(props) {
               size="small"
               autoFocus
             >
-              {steps[state.currentPage][state.currentStep].action1}
+              {current.action1}
             </Button>
           )}
-          {steps[state.currentPage][state.currentStep].hideAction2 ? null : (
+          {current.hideAction2 ? null : (
             <Button
               onClick={() => {
-                if (!steps[state.currentPage][state.currentStep].func) {
+                if (!current.func) {
                   handleClose();
                 } else {
-                  steps[state.currentPage][state.currentStep].func.action2();
+                  current.func.action2();
                 }
               }}
               color="primary"
               size="small"
             >
-              {steps[state.currentPage][state.currentStep].action2}
+              {current.action2}
             </Button>
           )}
         </DialogActions>

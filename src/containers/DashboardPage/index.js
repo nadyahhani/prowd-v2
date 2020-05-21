@@ -79,8 +79,9 @@ export default function DashboardPage(props) {
       page: "profile",
       step: 0,
       running: false,
-      class: "",
-      filters: "",
+      dashclass: "",
+      filters: [],
+
     },
     copyDialogOpen: false,
     loading: true,
@@ -490,8 +491,8 @@ export default function DashboardPage(props) {
               page: "profile",
               step: 0,
               running: true,
-              class: `${state.globalData.entity.entityLabel} (${state.globalData.entity.entityID})`,
-              filters: "",
+              dashclass: `${state.globalData.entity.entityLabel} (${state.globalData.entity.entityID})`,
+              filters: state.globalData.filtersInfo,
             },
           }));
           return;
@@ -502,8 +503,8 @@ export default function DashboardPage(props) {
               page: "example",
               step: 0,
               running: true,
-              class: `${state.globalData.entity.entityLabel} (${state.globalData.entity.entityID})`,
-              filters: "",
+              dashclass: `${state.globalData.entity.entityLabel} (${state.globalData.entity.entityID})`,
+              filters: state.globalData.filtersInfo,
             },
           }));
           return;
@@ -517,7 +518,7 @@ export default function DashboardPage(props) {
     <ThemeProvider theme={theme}>
       {/* modals */}
       <Notif {...state.notif} />
-      <Onboarding {...state.onboarding} onChange={onboardingChangeHandler} />
+      <Onboarding {...state.onboarding} hash={props.match.params.id} onChange={onboardingChangeHandler} />
       <Dialog
         open={state.copyDialogOpen}
         onClose={() => setState((s) => ({ ...s, copyDialogOpen: false }))}
