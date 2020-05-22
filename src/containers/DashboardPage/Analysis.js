@@ -32,10 +32,13 @@ import DistributionCustomize from "../../components/Dashboard/DistributionCustom
 import { selectDistribution } from "../../global";
 import ScatterLineChart from "../../components/Dashboard/ScatterLineChart";
 import { MoreHoriz } from "@material-ui/icons";
+import Onboarding from "../../components/Misc/Onboarding";
+import { useHistory } from "react-router-dom";
 
 const useStyles = makeStyles((theme) => ({
   root: {
     height: "66.3vh",
+    minHeight: "500px",
     // padding: theme.spacing(0),
   },
   gridItem: {
@@ -80,6 +83,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function Analysis(props) {
+  const history = useHistory();
   const classes = useStyles();
   const { state, setState } = props;
   const effectNeeds = {
@@ -506,6 +510,32 @@ export default function Analysis(props) {
 
   return (
     <ThemeProvider theme={theme}>
+      <Onboarding
+        {...props.data.onboarding}
+        hash={props.hash}
+        goToStep={8}
+        getCurrentStep={(curr) => {
+          if (props.data.onboarding.page === "example") {
+            if (curr <= 6) {
+              history.push(
+                `/dashboards/${props.hash}/profile/onboarding-example`
+              );
+              props.updateData((s) => ({
+                ...s,
+                onboarding: { ...s.onboarding, running: false },
+              }));
+            } else if (curr <= 7) {
+              history.push(
+                `/dashboards/${props.hash}/compare/onboarding-example`
+              );
+              props.updateData((s) => ({
+                ...s,
+                onboarding: { ...s.onboarding, running: false },
+              }));
+            }
+          }
+        }}
+      />
       <Grid
         container
         spacing={1}
@@ -624,7 +654,6 @@ export default function Analysis(props) {
             item
             xs
             style={{
-              height: "60vh",
               display: "flex",
               flexDirection: "column",
               alignItems: "center",
@@ -635,7 +664,17 @@ export default function Analysis(props) {
               Discover facts about all subclasses of the Profile
             </Typography>
             <DiscoverIllustration />
-            {props.data.entity && props.data.entity.entityID !== "Q5" ? (
+            {!props.data.entity ? (
+              <Typography
+                style={{
+                  width: theme.spacing(65),
+                  marginTop: `-${theme.spacing(4)}px`,
+                  textAlign: "justify",
+                }}
+              >
+                <Loading variant="text" />
+              </Typography>
+            ) : props.data.entity.entityID !== "Q5" ? (
               <Typography
                 style={{
                   width: theme.spacing(65),
@@ -649,17 +688,7 @@ export default function Analysis(props) {
                 which you can see in the Property Frequency section of the
                 Profile tab.
               </Typography>
-            ) : (
-              <Typography
-                style={{
-                  width: theme.spacing(65),
-                  marginTop: `-${theme.spacing(4)}px`,
-                  textAlign: "justify",
-                }}
-              >
-                <Loading variant="text" />
-              </Typography>
-            )}
+            ) : null}
           </Grid>
         )}
       </Grid>

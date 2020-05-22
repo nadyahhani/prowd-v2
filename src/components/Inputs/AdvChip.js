@@ -94,13 +94,13 @@ export default function AdvChip(props) {
         size="small"
         color="primary"
         label={<Typography>{props.label}</Typography>}
-        onClick={(e) => {
-          setState((s) => ({
-            ...s,
-            popoverOpen: true,
-            anchorEl: e.currentTarget,
-          }));
-        }}
+        // onClick={(e) => {
+        //   setState((s) => ({
+        //     ...s,
+        //     popoverOpen: true,
+        //     anchorEl: e.currentTarget,
+        //   }));
+        // }}
         onDelete={props.onDelete}
         variant="outlined"
         disabled={props.disabled}

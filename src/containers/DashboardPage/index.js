@@ -40,8 +40,16 @@ import { useHistory } from "react-router-dom";
 import EditClass from "../../components/Inputs/EditClass";
 
 const useStyles = makeStyles(() => ({
+  root: {
+    backgroundColor: theme.palette.background.main,
+    minHeight: "100vh",
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "center",
+    alignItems: "center",
+  },
   content: {
-    padding: "8vh 1vw 0 1vw",
+    padding: "0 1vw 0 1vw",
     width: "98vw",
     height: "92vh",
     // maxHeight: "800px",
@@ -192,6 +200,7 @@ export default function DashboardPage(props) {
               ...s,
               loading: false,
               globalData: {
+                public: r.public,
                 entity: r.entityInfo,
                 filters: r.filtersInfo ? r.filtersInfo : [],
                 name: r.name === "" ? "Untitled Dashboard" : r.name,
@@ -513,146 +522,183 @@ export default function DashboardPage(props) {
 
   return (
     <ThemeProvider theme={theme}>
-      {/* modals */}
-      <Notif {...state.notif} />
-      <Onboarding
-        {...state.onboarding}
-        hash={props.match.params.id}
-        onChange={onboardingChangeHandler}
-      />
-      <Dialog
-        open={state.copyDialogOpen}
-        onClose={() => setState((s) => ({ ...s, copyDialogOpen: false }))}
-      >
-        <DialogContent>
-          <Typography variant="h2" component="div">
-            <Box fontWeight="bold">
-              Do you want to create a copy of this Dashboard?
-            </Box>
-          </Typography>
-        </DialogContent>
-        <DialogContent>
-          <Typography>
-            This will create a new dashboard with the same configuration. You
-            can change the configuration of the new dashboard later on.
-          </Typography>
-        </DialogContent>
-        <DialogActions>
-          <Button
-            onClick={() => alert("//todo")}
-            size="small"
-            color="primary"
-            variant="contained"
-          >
-            yes
-          </Button>
-          <Button
-            style={{ color: theme.palette.error.main }}
-            size="small"
-            onClick={() => setState((s) => ({ ...s, copyDialogOpen: false }))}
-          >
-            no
-          </Button>
-        </DialogActions>
-      </Dialog>
-      {/* modals end */}
-      <Navbar />
-      <div className={classes.content}>
-        <div
-          style={{
-            marginBottom: theme.spacing(1),
-            display: "flex",
-            flexDirection: "row",
-            alignItems: "center",
-            justifyContent: "space-between",
-            height: "4vh",
-          }}
+      <div className={classes.root}>
+        {/* modals */}
+        <Notif {...state.notif} />
+        <Dialog
+          open={state.copyDialogOpen}
+          onClose={() => setState((s) => ({ ...s, copyDialogOpen: false }))}
         >
+          <DialogContent>
+            <Typography variant="h2" component="div">
+              <Box fontWeight="bold">
+                Do you want to create a copy of this Dashboard?
+              </Box>
+            </Typography>
+          </DialogContent>
+          <DialogContent>
+            <Typography>
+              This will create a new dashboard with the same configuration. You
+              can change the configuration of the new dashboard later on.
+            </Typography>
+          </DialogContent>
+          <DialogActions>
+            <Button
+              onClick={() => alert("//todo")}
+              size="small"
+              color="primary"
+              variant="contained"
+            >
+              yes
+            </Button>
+            <Button
+              style={{ color: theme.palette.error.main }}
+              size="small"
+              onClick={() => setState((s) => ({ ...s, copyDialogOpen: false }))}
+            >
+              no
+            </Button>
+          </DialogActions>
+        </Dialog>
+        {/* modals end */}
+        <Navbar />
+        <div className={classes.content}>
           <div
             style={{
+              marginBottom: theme.spacing(1),
               display: "flex",
               flexDirection: "row",
               alignItems: "center",
-              width: "50%",
+              justifyContent: "space-between",
+              height: "4vh",
+              minHeight: theme.spacing(4),
             }}
           >
-            {!state.loading ? (
-              <React.Fragment>
-                <Input
-                  classes={{ input: `${classes.titleInput} ${classes.bold}` }}
-                  value={state.globalData.name}
-                  fullWidth
-                  onChange={(e) => {
-                    let val = e.target.value;
-                    setState((s) => ({
-                      ...s,
-                      globalData: { ...s.globalData, name: val },
-                      update: true,
-                    }));
-                  }}
-                />
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "row",
+                alignItems: "center",
+                width: "50%",
+              }}
+            >
+              {state.globalData.entity ? (
+                <React.Fragment>
+                  <Input
+                    classes={{ input: `${classes.titleInput} ${classes.bold}` }}
+                    value={state.globalData.name}
+                    fullWidth
+                    onChange={(e) => {
+                      let val = e.target.value;
+                      setState((s) => ({
+                        ...s,
+                        globalData: { ...s.globalData, name: val },
+                        // update: true,
+                      }));
+                      let tempFilter = [];
+                      state.globalData.filters.forEach((item) => {
+                        let t = {};
+                        t[item.filterID] = item.filterValueID;
+                        tempFilter.push(t);
+                      });
+                      editGlobal(
+                        props.match.params.id,
+                        state.globalData.public,
+                        state.globalData.entity.entityID,
+                        tempFilter,
+                        {
+                          name: val,
+                          author: state.globalData.author,
+                        },
+                        (r) => {}
+                      );
+                    }}
+                  />
+                  <Typography
+                    style={{ padding: "0 .4vw" }}
+                    variant="h2"
+                  >{` by `}</Typography>
+                  <Input
+                    classes={{ input: classes.titleInput }}
+                    value={state.globalData.author}
+                    onChange={(e) => {
+                      let val = e.target.value;
+                      setState((s) => ({
+                        ...s,
+                        globalData: { ...s.globalData, author: val },
+                      }));
+                      let tempFilter = [];
+                      state.globalData.filters.forEach((item) => {
+                        let t = {};
+                        t[item.filterID] = item.filterValueID;
+                        tempFilter.push(t);
+                      });
+                      editGlobal(
+                        props.match.params.id,
+                        state.globalData.public,
+                        state.globalData.entity.entityID,
+                        tempFilter,
+                        {
+                          name: state.globalData.author,
+                          author: val,
+                        },
+                        (r) => {}
+                      );
+                    }}
+                  />
+                </React.Fragment>
+              ) : (
                 <Typography
-                  style={{ padding: "0 .4vw" }}
+                  component="div"
                   variant="h2"
-                >{` by `}</Typography>
-                <Input
-                  classes={{ input: classes.titleInput }}
-                  value={state.globalData.author}
-                  onChange={(e) => {
-                    let val = e.target.value;
-                    setState((s) => ({
-                      ...s,
-                      globalData: { ...s.globalData, author: val },
-                      update: true,
-                    }));
+                  style={{
+                    display: "flex",
+                    flexDirection: "row",
+                    "& > *": { marginLeft: theme.spacing(1) },
                   }}
-                />
-              </React.Fragment>
-            ) : (
-              <Typography
-                component="div"
-                variant="h2"
-                style={{
-                  display: "flex",
-                  flexDirection: "row",
-                  "& > *": { marginLeft: theme.spacing(1) },
-                }}
-              >
-                <Loading variant="text" style={{ width: theme.spacing(80) }} />
-                <Typography
-                  style={{ padding: "0 .4vw" }}
-                  variant="h2"
-                >{` by `}</Typography>
-                <Loading variant="text" style={{ width: theme.spacing(15) }} />
-              </Typography>
-            )}
-          </div>
-          <div>
-            <Button
-              variant="contained"
-              color="primary"
-              disabled={!state.update}
-              style={{ marginRight: theme.spacing(1) }}
-              onClick={() => {
-                const hash = props.match.params.id;
-                let tempFilter = [];
-                state.globalData.filters.forEach((item) => {
-                  let t = {};
-                  t[item.filterID] = item.filterValueID;
-                  tempFilter.push(t);
-                });
-                setState((s) => ({
-                  ...s,
-                  loading: {
-                    gini: true,
-                    properties: true,
-                    propertiesOptions: false,
-                    gap: true,
-                  },
-                }));
-                state.pull &&
+                >
+                  <Loading
+                    variant="text"
+                    style={{ width: theme.spacing(80) }}
+                  />
+                  <Typography
+                    style={{ padding: "0 .4vw" }}
+                    variant="h2"
+                  >{` by `}</Typography>
+                  <Loading
+                    variant="text"
+                    style={{ width: theme.spacing(15) }}
+                  />
+                </Typography>
+              )}
+            </div>
+            <div>
+              <Button
+                variant="contained"
+                color="primary"
+                disabled={!state.update}
+                style={{ marginRight: theme.spacing(1) }}
+                onClick={() => {
+                  const hash = props.match.params.id;
+                  let tempFilter = [];
+                  state.globalData.filters.forEach((item) => {
+                    let t = {};
+                    t[item.filterID] = item.filterValueID;
+                    tempFilter.push(t);
+                  });
+                  setState((s) => ({
+                    ...s,
+                    loading: {
+                      gini: true,
+                      properties: true,
+                      propertiesOptions: false,
+                      gap: true,
+                    },
+                  }));
+
                   editGlobal(
                     hash,
+                    state.globalData.public,
                     state.globalData.entity.entityID,
                     tempFilter,
                     {
@@ -661,6 +707,7 @@ export default function DashboardPage(props) {
                     },
                     (r) => {
                       if (r.success) {
+                        state.pull && fetchData(props.match.params.page);
                         setState((s) => ({
                           ...s,
                           pull: false,
@@ -677,7 +724,6 @@ export default function DashboardPage(props) {
                             action: () => {},
                           },
                         }));
-                        fetchData(props.match.params.page);
                       } else {
                         setState((s) => ({
                           ...s,
@@ -692,171 +738,186 @@ export default function DashboardPage(props) {
                       }
                     }
                   );
-              }}
-            >
-              Apply
-            </Button>
-            <IconButton
-              color="primary"
-              size="small"
-              onClick={() => setState((s) => ({ ...s, copyDialogOpen: true }))}
-            >
-              <FileCopyOutlinedIcon />
-            </IconButton>
-            <Settings
-              onChange={(e) => {
-                if (e.reason === "restart_onboarding") {
-                  history.push(
-                    `/dashboards/${props.match.params.id}/${props.match.params.page}/onboarding-${props.match.params.page}`
-                  );
+                }}
+              >
+                Apply
+              </Button>
+              <IconButton
+                color="primary"
+                size="small"
+                onClick={() =>
+                  setState((s) => ({ ...s, copyDialogOpen: true }))
                 }
-              }}
-            />
+              >
+                <FileCopyOutlinedIcon />
+              </IconButton>
+              <Settings
+                onChange={(e) => {
+                  if (e.reason === "restart_onboarding") {
+                    history.push(
+                      `/dashboards/${props.match.params.id}/${props.match.params.page}/onboarding-${props.match.params.page}`
+                    );
+                  }
+                }}
+              />
+            </div>
           </div>
-        </div>
-        <div
-          style={{
-            marginBottom: theme.spacing(3),
-            height: "10vh",
-          }}
-        >
-          <Grid container spacing={1} style={{ height: "100%" }}>
-            <Grid item style={{ height: "100%" }} xs={5}>
-              <Paper style={{ height: "100%", padding: theme.spacing(1) }}>
-                {state.globalData.entity ? (
-                  <React.Fragment>
-                    <Typography
-                      variant="h2"
-                      component="div"
-                      style={{
-                        marginBottom: theme.spacing(1),
-                        display: "flex",
-                        justifyContent: "space-between",
-                      }}
-                    >
-                      <a
-                        style={{ textDecoration: "none" }}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        href={`https://www.wikidata.org/wiki/${state.globalData.entity.entityID}`}
-                      >{`${state.globalData.entity.entityLabel} (${state.globalData.entity.entityID})`}</a>
-                      <EditClass
-                        onChange={(value) => {
+          <div
+            style={{
+              marginBottom: theme.spacing(3),
+              height: "10vh",
+              minHeight: theme.spacing(12),
+            }}
+          >
+            <Grid
+              container
+              spacing={1}
+              style={{ height: "100%" }}
+              id="global-dashboard-data"
+            >
+              <Grid item style={{ height: "100%" }} xs={5}>
+                <Paper style={{ height: "100%", padding: theme.spacing(1) }}>
+                  {state.globalData.entity ? (
+                    <React.Fragment>
+                      <Typography
+                        variant="h2"
+                        component="div"
+                        style={{
+                          marginBottom: theme.spacing(1),
+                          display: "flex",
+                          justifyContent: "space-between",
+                        }}
+                      >
+                        <a
+                          style={{ textDecoration: "none" }}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          href={`https://www.wikidata.org/wiki/${state.globalData.entity.entityID}`}
+                        >{`${state.globalData.entity.entityLabel} (${state.globalData.entity.entityID})`}</a>
+                        <EditClass
+                          onChange={(value) => {
+                            setState((s) => ({
+                              ...s,
+                              update: true,
+                              globalData: {
+                                ...s.globalData,
+                                pull: true,
+                                entity: {
+                                  entityLabel: value.label,
+                                  entityID: value.id,
+                                  entityDescription: value.description,
+                                },
+                              },
+                            }));
+                          }}
+                        />
+                      </Typography>
+                      <Typography>
+                        {cut(state.globalData.entity.entityDescription, 190)}
+                      </Typography>
+                    </React.Fragment>
+                  ) : (
+                    <Loading />
+                  )}
+                </Paper>
+              </Grid>
+              <Grid item style={{ height: "100%" }} xs={7}>
+                <Paper style={{ height: "100%", padding: theme.spacing(1) }}>
+                  {state.globalData.entity ? (
+                    <React.Fragment>
+                      <Typography>Filters</Typography>
+
+                      <FilterBox
+                        classes={{ root: classes.filters }}
+                        options={state.globalData.filters}
+                        selectedClass={state.globalData.entity}
+                        hideLabel
+                        cols={1}
+                        onApply={(applied) => {
+                          let temp = [...applied];
+                          temp = temp.map((item) => {
+                            if (!item.property) {
+                              return item;
+                            }
+                            return {
+                              filterDescription: item.property.description,
+                              filterID: item.property.id,
+                              filterLabel: item.property.label,
+                              filterValueDescription: item.value.description,
+                              filterValueID: item.value.id,
+                              filterValueLabel: item.value.label,
+                            };
+                          });
                           setState((s) => ({
                             ...s,
                             update: true,
-                            globalData: {
-                              ...s.globalData,
-                              pull: true,
-                              entity: {
-                                entityLabel: value.label,
-                                entityID: value.id,
-                                entityDescription: value.description,
-                              },
-                            },
+                            pull: true,
+                            globalData: { ...s.globalData, filters: temp },
                           }));
                         }}
+                        renderTagText={(opt) =>
+                          cut(
+                            `${
+                              opt.property
+                                ? opt.property.label
+                                : opt.filterLabel
+                            }: ${
+                              opt.value ? opt.value.label : opt.filterValueLabel
+                            }`,
+                            43
+                          )
+                        }
+                        onDelete={(idx) => {
+                          let temp = [...state.globalData.filters];
+                          temp.splice(idx, 1);
+                          setState((s) => ({
+                            ...s,
+                            update: true,
+                            pull: true,
+                            globalData: { ...s.globalData, filters: temp },
+                          }));
+                        }}
+                        onClear={() =>
+                          setState((s) => ({
+                            ...s,
+                            update: true,
+                            pull: true,
+                            globalData: { ...s.globalData, filters: [] },
+                          }))
+                        }
                       />
-                    </Typography>
-                    <Typography>
-                      {cut(state.globalData.entity.entityDescription, 190)}
-                    </Typography>
-                  </React.Fragment>
-                ) : (
-                  <Loading />
-                )}
-              </Paper>
+                    </React.Fragment>
+                  ) : (
+                    <Loading />
+                  )}
+                </Paper>
+              </Grid>
             </Grid>
-            <Grid item style={{ height: "100%" }} xs={7}>
-              <Paper style={{ height: "100%", padding: theme.spacing(1) }}>
-                {state.globalData.entity ? (
-                  <React.Fragment>
-                    <Typography>Filters</Typography>
-
-                    <FilterBox
-                      classes={{ root: classes.filters }}
-                      options={state.globalData.filters}
-                      selectedClass={state.globalData.entity}
-                      hideLabel
-                      cols={1}
-                      onApply={(applied) => {
-                        let temp = [...applied];
-                        temp = temp.map((item) => {
-                          if (!item.property) {
-                            return item;
-                          }
-                          return {
-                            filterDescription: item.property.description,
-                            filterID: item.property.id,
-                            filterLabel: item.property.label,
-                            filterValueDescription: item.value.description,
-                            filterValueID: item.value.id,
-                            filterValueLabel: item.value.label,
-                          };
-                        });
-                        setState((s) => ({
-                          ...s,
-                          update: true,
-                          pull: true,
-                          globalData: { ...s.globalData, filters: temp },
-                        }));
-                      }}
-                      renderTagText={(opt) =>
-                        cut(
-                          `${
-                            opt.property ? opt.property.label : opt.filterLabel
-                          }: ${
-                            opt.value ? opt.value.label : opt.filterValueLabel
-                          }`,
-                          43
-                        )
-                      }
-                      onDelete={(idx) => {
-                        let temp = [...state.globalData.filters];
-                        temp.splice(idx, 1);
-                        setState((s) => ({
-                          ...s,
-                          update: true,
-                          pull: true,
-                          globalData: { ...s.globalData, filters: temp },
-                        }));
-                      }}
-                      onClear={() =>
-                        setState((s) => ({
-                          ...s,
-                          update: true,
-                          pull: true,
-                          globalData: { ...s.globalData, filters: [] },
-                        }))
-                      }
-                    />
-                  </React.Fragment>
-                ) : (
-                  <Loading />
-                )}
-              </Paper>
-            </Grid>
-          </Grid>
-        </div>
-        <div>
-          <SimpleTabs
-            className={classes.tabs}
-            dashId={props.match.params.id}
-            selectedTab={props.match.params.page}
-            data={{ ...state.globalData, loaded: { ...state.loaded } }}
-            updateData={setState}
-            fetchData={fetchData}
-            states={{
-              profile: profileState,
-              compare: compareState,
-              discover: discoverState,
-            }}
-            setStates={{
-              profile: setProfileState,
-              compare: setCompareState,
-              discover: setDiscoverState,
-            }}
-          />
+          </div>
+          <div>
+            <SimpleTabs
+              className={classes.tabs}
+              dashId={props.match.params.id}
+              selectedTab={props.match.params.page}
+              data={{
+                ...state.globalData,
+                loaded: { ...state.loaded },
+                onboarding: { ...state.onboarding },
+              }}
+              updateData={setState}
+              fetchData={fetchData}
+              states={{
+                profile: profileState,
+                compare: compareState,
+                discover: discoverState,
+              }}
+              setStates={{
+                profile: setProfileState,
+                compare: setCompareState,
+                discover: setDiscoverState,
+              }}
+            />
+          </div>
         </div>
       </div>
     </ThemeProvider>

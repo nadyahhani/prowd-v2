@@ -100,18 +100,7 @@ export default function VirtualAutocomp(props) {
       <InputLabel shrink={true}>{props.label}</InputLabel>
       <Autocomplete
         size="small"
-        loading={props.loading}
         classes={{ listbox: classes.listbox, option: classes.option }}
-        value={props.value}
-        onChange={props.onChange}
-        options={props.options}
-        groupBy={props.groupBy}
-        getOptionLabel={props.getOptionLabel}
-        getOptionSelected={props.getOptionSelected}
-        inputValue={props.inputValue}
-        onInputChange={props.onInputChange}
-        noOptionsText={props.noOptionsText}
-        onClose={props.onClose}
         renderInput={(params) => (
           <TextField
             {...params}
@@ -120,6 +109,7 @@ export default function VirtualAutocomp(props) {
             inputProps={{
               ...params.inputProps,
               autoComplete: "new-password",
+              ...props.inputProps,
             }}
             InputProps={{
               ...params.InputProps,
@@ -134,7 +124,7 @@ export default function VirtualAutocomp(props) {
             }}
           />
         )}
-        renderOption={props.renderOption}
+        {...props}
       />
     </React.Fragment>
   );

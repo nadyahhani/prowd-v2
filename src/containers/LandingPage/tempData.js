@@ -1,4 +1,21 @@
 const tempData = {
+  items: [
+    {
+      topic: "Songs performed by Queen",
+      label: "Bohemian Rhapsody",
+      id: "Q187745",
+    },
+    {
+      topic: "Indonesian Dance",
+      label: "Kecak",
+      id: "Q1737691",
+    },
+    {
+      topic: "Paintings by Leonardo Da Vinci",
+      label: "Mona Lisa",
+      id: "Q12418",
+    },
+  ],
   examples: [
     "Actor and Actresses",
     "American Politicians",

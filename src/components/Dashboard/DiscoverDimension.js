@@ -303,73 +303,83 @@ export default function DiscoverDimension(props) {
             </Table>
           </Paper>
         </Grid>
-        <Grid item>
-          <Typography>
-            <Box fontWeight="bold">
-              FILTERS{" "}
-              {/* <Help
+        {!props.loading && props.appliedDimensions.data.length > 0 ? (
+          <React.Fragment>
+            <Grid item>
+              <Typography>
+                <Box fontWeight="bold">
+                  FILTERS{" "}
+                  {/* <Help
                 text={<Typography>{`Only show data as selected`}</Typography>}
               /> */}
-            </Box>
-          </Typography>
-        </Grid>
-        <Grid item>
-          <Paper
-            // component={outlinedPaper}
-            variant="outlined"
-            elevation={0}
-            style={{ padding: theme.spacing(1) }}
-          >
-            <Typography gutterBottom>Number of Items</Typography>
-            <Grid container spacing={1} alignItems="center">
-              <Grid item xs={2}>
-                <Input
-                  disabled={props.loading || !props.appliedDimensions.maxLimit}
-                  className={classes.input}
-                  value={value[0]}
-                  margin="dense"
-                  onChange={(e) => handleInputChange(e, 0)}
-                  onBlur={handleBlur}
-                  inputProps={{
-                    step: 1,
-                    min: 0,
-                    max: props.appliedDimensions.maxLimit,
-                    type: "number",
-                    "aria-labelledby": "input-slider",
-                  }}
-                />
-              </Grid>
-              <Grid item xs={8}>
-                <Slider
-                  disabled={props.loading || !props.appliedDimensions.maxLimit}
-                  value={value}
-                  onChange={handleSliderChange}
-                  aria-labelledby="input-slider"
-                  step={1}
-                  min={0}
-                  max={props.appliedDimensions.maxLimit}
-                />
-              </Grid>
-              <Grid item xs={2}>
-                <Input
-                  disabled={props.loading || !props.appliedDimensions.maxLimit}
-                  className={classes.input}
-                  value={value[1]}
-                  margin="dense"
-                  onChange={(e) => handleInputChange(e, 1)}
-                  onBlur={handleBlur}
-                  inputProps={{
-                    step: 1,
-                    min: 0,
-                    max: props.appliedDimensions.maxLimit,
-                    type: "number",
-                    "aria-labelledby": "input-slider",
-                  }}
-                />
-              </Grid>
+                </Box>
+              </Typography>
             </Grid>
-          </Paper>
-        </Grid>
+            <Grid item>
+              <Paper
+                // component={outlinedPaper}
+                variant="outlined"
+                elevation={0}
+                style={{ padding: theme.spacing(1) }}
+              >
+                <Typography gutterBottom>Number of Items</Typography>
+                <Grid container spacing={1} alignItems="center">
+                  <Grid item xs={2}>
+                    <Input
+                      disabled={
+                        props.loading || !props.appliedDimensions.maxLimit
+                      }
+                      className={classes.input}
+                      value={value[0]}
+                      margin="dense"
+                      onChange={(e) => handleInputChange(e, 0)}
+                      onBlur={handleBlur}
+                      inputProps={{
+                        step: 1,
+                        min: 0,
+                        max: props.appliedDimensions.maxLimit,
+                        type: "number",
+                        "aria-labelledby": "input-slider",
+                      }}
+                    />
+                  </Grid>
+                  <Grid item xs={8}>
+                    <Slider
+                      disabled={
+                        props.loading || !props.appliedDimensions.maxLimit
+                      }
+                      value={value}
+                      onChange={handleSliderChange}
+                      aria-labelledby="input-slider"
+                      step={1}
+                      min={0}
+                      max={props.appliedDimensions.maxLimit}
+                    />
+                  </Grid>
+                  <Grid item xs={2}>
+                    <Input
+                      disabled={
+                        props.loading || !props.appliedDimensions.maxLimit
+                      }
+                      className={classes.input}
+                      value={value[1]}
+                      margin="dense"
+                      onChange={(e) => handleInputChange(e, 1)}
+                      onBlur={handleBlur}
+                      inputProps={{
+                        step: 1,
+                        min: 0,
+                        max: props.appliedDimensions.maxLimit,
+                        type: "number",
+                        "aria-labelledby": "input-slider",
+                      }}
+                    />
+                  </Grid>
+                </Grid>
+              </Paper>
+            </Grid>{" "}
+          </React.Fragment>
+        ) : null}
       </Grid>
       <Grid
         container

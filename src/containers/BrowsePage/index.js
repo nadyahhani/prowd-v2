@@ -33,16 +33,24 @@ const useStyles = makeStyles({
   table: {
     height: "88%",
     overflowY: "scroll",
+    flex: "1 1 auto",
   },
   content: {
-    marginTop: "7vh",
-    height: "93vh",
+    // marginTop: "9vh",
+    height: "90%",
+    backgroundColor: theme.palette.background.main,
+    display: "flex",
+    flexDirection: "column",
+    marginBottom: theme.spacing(2),
     padding: `0 ${theme.spacing(2)}px`,
   },
   bg: {
     backgroundColor: theme.palette.background.main,
     height: "100vh",
     width: "100vw",
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "center",
     position: "absolute",
   },
   filterPopup: {

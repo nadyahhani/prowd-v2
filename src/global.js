@@ -44,22 +44,27 @@ export const getUnique = (arr, comp) => {
 
 // custom function to count properties
 export const countProperties = (entities, max_props = null) => {
-  const maxPropertyNum = max_props
-    ? max_props + 1
-    : Math.max.apply(
-        Math,
-        entities.map((item) => item.propertyCount)
-      );
-  let propertyNums = new Array(maxPropertyNum + 1).fill(0);
-  entities.forEach((item) => {
-    propertyNums[item.propertyCount] += 1;
-  });
-  return {
-    labels: Object.keys(propertyNums),
-    values: Object.values(propertyNums),
-    maxLabel: max_props ? max_props : maxPropertyNum,
-    maxValue: Math.max.apply(Math, Object.values(propertyNums)),
-  };
+  const maxPropertyNum =
+    typeof max_props === "number"
+      ? max_props + 1
+      : Math.max.apply(
+          Math,
+          entities.map((item) => item.propertyCount)
+        );
+  try {
+    let propertyNums = new Array(maxPropertyNum + 1).fill(0);
+    entities.forEach((item) => {
+      propertyNums[item.propertyCount] += 1;
+    });
+    return {
+      labels: Object.keys(propertyNums),
+      values: Object.values(propertyNums),
+      maxLabel: max_props ? max_props : maxPropertyNum,
+      maxValue: Math.max.apply(Math, Object.values(propertyNums)),
+    };
+  } catch (error) {
+    return { labels: [], values: [], maxLabel: [], maxValue: [] };
+  }
 };
 
 // custom function to map properties for labels and values and sort ascending

@@ -65,6 +65,7 @@ export default function FilterBox(props) {
                 size="small"
                 disabled={props.disabled}
                 color="primary"
+                variant="outlined"
                 label={<Typography>Add Filter</Typography>}
                 onClick={(e) => {
                   setState((s) => ({

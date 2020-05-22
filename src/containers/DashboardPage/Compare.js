@@ -31,10 +31,13 @@ import { editCompare } from "../../services/dashboard";
 import LineChart from "../../components/Dashboard/LineChart";
 import VennProperties from "../../components/Dashboard/VennProperties";
 import ScatterLineChart from "../../components/Dashboard/ScatterLineChart";
+import Onboarding from "../../components/Misc/Onboarding";
+import { useHistory } from "react-router-dom";
 
 const useStyles = makeStyles((theme) => ({
   root: {
     height: "66.3vh",
+    minHeight: "500px",
     // padding: theme.spacing(0),
   },
   gridItem: {
@@ -102,6 +105,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function Compare(props) {
+  const history = useHistory();
   const classes = useStyles();
   const { state, setState } = props;
   const effectNeeds = {
@@ -159,6 +163,32 @@ export default function Compare(props) {
 
   return (
     <ThemeProvider theme={theme}>
+      <Onboarding
+        {...props.data.onboarding}
+        hash={props.hash}
+        goToStep={7}
+        getCurrentStep={(curr) => {
+          if (props.data.onboarding.page === "example") {
+            if (curr >= 8) {
+              history.push(
+                `/dashboards/${props.hash}/analysis/onboarding-example`
+              );
+              props.updateData((s) => ({
+                ...s,
+                onboarding: { ...s.onboarding, running: false },
+              }));
+            } else if (curr <= 6) {
+              history.push(
+                `/dashboards/${props.hash}/profile/onboarding-example`
+              );
+              props.updateData((s) => ({
+                ...s,
+                onboarding: { ...s.onboarding, running: false },
+              }));
+            }
+          }
+        }}
+      />
       <Grid
         container
         spacing={1}
@@ -202,8 +232,8 @@ export default function Compare(props) {
             </Grid>
           </Paper>
         </Grid>
-        {!props.data.entity ||
-        state.loading.compareFilters ||
+        {props.data.entity &&
+        !state.loading.compareFilters &&
         state.compareFilters.length > 0 ? (
           <React.Fragment>
             <Grid item xs={4} classes={{ root: classes.outerGrid }}>
@@ -637,7 +667,6 @@ export default function Compare(props) {
             item
             xs={8}
             style={{
-              height: "60vh",
               display: "flex",
               flexDirection: "column",
               alignItems: "center",
@@ -648,7 +677,17 @@ export default function Compare(props) {
               Compare two subclasses of the Profile
             </Typography>
             <CompareIllustrationIcon />
-            {props.data.entity && props.data.entity.entityID !== "Q5" ? (
+            {!props.data.entity ? (
+              <Typography
+                style={{
+                  width: theme.spacing(65),
+                  marginTop: `-${theme.spacing(4)}px`,
+                  textAlign: "justify",
+                }}
+              >
+                <Loading variant="text" />
+              </Typography>
+            ) : props.data.entity.entityID !== "Q5" ? (
               <Typography
                 style={{
                   width: theme.spacing(65),
@@ -662,17 +701,7 @@ export default function Compare(props) {
                 {props.data.entity.entityID}) which you can see in the Property
                 Frequency section of the Profile tab .
               </Typography>
-            ) : (
-              <Typography
-                style={{
-                  width: theme.spacing(65),
-                  marginTop: `-${theme.spacing(4)}px`,
-                  textAlign: "justify",
-                }}
-              >
-                <Loading variant="text" />
-              </Typography>
-            )}
+            ) : null}
           </Grid>
         )}
       </Grid>

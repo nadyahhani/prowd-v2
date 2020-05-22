@@ -34,10 +34,12 @@ import ProfileProperties from "../../components/Dashboard/ProfileProperties";
 import TableSort from "../../components/Misc/TableSort";
 import Onboarding from "../../components/Misc/Onboarding";
 import Link from "../../components/Misc/Link";
+import { useHistory } from "react-router-dom";
 
 const useStyles = makeStyles((theme) => ({
   root: {
     height: "66.3vh",
+    minHeight: "500px",
     // padding: theme.spacing(0),
   },
   columnGrid: { height: "100%" },
@@ -143,6 +145,7 @@ const tableColumns = [
 ];
 
 export default function Profile(props) {
+  const history = useHistory();
   const classes = useStyles();
   const { state, setState } = props;
 
@@ -175,12 +178,37 @@ export default function Profile(props) {
 
   return (
     <ThemeProvider theme={theme}>
-      {/* <Onboarding /> */}
+      <Onboarding
+        {...props.data.onboarding}
+        hash={props.hash}
+        getCurrentStep={(curr) => {
+          if (props.data.onboarding.page === "example") {
+            if (curr >= 8) {
+              history.push(
+                `/dashboards/${props.hash}/analysis/onboarding-example`
+              );
+              props.updateData((s) => ({
+                ...s,
+                onboarding: { ...s.onboarding, running: false },
+              }));
+            } else if (curr >= 7) {
+              history.push(
+                `/dashboards/${props.hash}/compare/onboarding-example`
+              );
+              props.updateData((s) => ({
+                ...s,
+                onboarding: { ...s.onboarding, running: false },
+              }));
+            }
+          }
+        }}
+      />
       <Grid
         container
         spacing={1}
         direction="row"
         classes={{ root: classes.root }}
+        id="profile-info-block"
       >
         <Grid
           item
@@ -195,7 +223,10 @@ export default function Profile(props) {
             style={{ flex: "1 1 auto" }}
           >
             <Grid item xs={12} style={{ display: "flex" }}>
-              <Paper style={{ width: "100%", overflowY: "scroll" }}>
+              <Paper
+                style={{ width: "100%", overflowY: "scroll" }}
+                id="profile-item-table"
+              >
                 {state.loading.gini || state.loading.properties ? (
                   <Loading />
                 ) : (
@@ -283,6 +314,7 @@ export default function Profile(props) {
             </Grid>
           </Grid>
         </Grid>
+
         <Grid item xs={3} classes={{ root: classes.outerGrid }}>
           <div
             style={{
@@ -502,7 +534,7 @@ export default function Profile(props) {
                         flexDirection: "row",
                         justifyContent: "space-between",
                         alignItems: "center",
-                        width: "43%",
+                        width: "50%",
                       }}
                     >
                       <PercentageSwitch
@@ -510,7 +542,7 @@ export default function Profile(props) {
                           setState((s) => ({ ...s, propertyPercent: newVal }))
                         }
                       />
-                      <Box>
+                      <Box style={{ marginLeft: theme.spacing(1) }}>
                         <FormControl
                           variant="outlined"
                           size="small"

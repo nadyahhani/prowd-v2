@@ -14,6 +14,7 @@ import theme from "../../theme";
 import { NavigateNext } from "@material-ui/icons";
 import { useHistory } from "react-router-dom";
 import { DouglasAdamsStructure } from "../../images/export";
+import Tour from "reactour";
 
 function Typography(props) {
   return <TypographyMui style={{ textAlign: "justify" }} {...props} />;
@@ -33,12 +34,8 @@ export default function Onboarding(props) {
   const repeatingSteps = {
     wikidata: {
       title: "So, how exactly does Wikidata store information?",
-      text: "",
-      action1: "Next",
-      action2: "Stop",
-      enableBackground: true,
       style: { maxWidth: "fit-content" },
-      customChild: (
+      content: (
         <div
           style={{
             display: "flex",
@@ -155,7 +152,7 @@ export default function Onboarding(props) {
         action2: "Stop",
         enableBackground: true,
         style: { maxWidth: "fit-content" },
-        customChild: (
+        content: (
           <div
             style={{
               display: "flex",
@@ -215,15 +212,17 @@ export default function Onboarding(props) {
       action1: "Next",
       action2: "Stop",
       enableBackground: false,
-      style: {
-        left: theme.spacing(-20),
-        top: theme.spacing(30),
-        width: theme.spacing(40),
-      },
+      // style: {
+      //   left: theme.spacing(-20),
+      //   top: theme.spacing(30),
+      //   width: theme.spacing(40),
+      // },
     },
     searchWiki: {
       title: "",
-      text: (
+      selector: "#search-wikidata-navbar",
+      position: "bottom",
+      content: (
         <Typography component="div">
           {`You can look up the statements of an item by using the searchbar above.`}
         </Typography>
@@ -231,11 +230,11 @@ export default function Onboarding(props) {
       action1: "Next",
       action2: "Stop",
       enableBackground: false,
-      style: {
-        top: theme.spacing(-34),
-        left: theme.spacing(65),
-        width: theme.spacing(36),
-      },
+      // style: {
+      //   top: theme.spacing(-34),
+      //   left: theme.spacing(65),
+      //   width: theme.spacing(36),
+      // },
     },
     infoIntro: {
       title: "",
@@ -252,17 +251,20 @@ export default function Onboarding(props) {
       action1: "Next",
       action2: "Stop",
       enableBackground: false,
-      style: {
-        top: theme.spacing(8),
-        left: theme.spacing(30),
-        width: theme.spacing(50),
-      },
     },
   };
   const steps = {
     example: [
       {
-        title: "Are you familiar with Wikidata?",
+        content: ({ goTo, inDOM }) => (
+          <div>
+            <Typography>Are you familiar with Wikidata?</Typography>
+            <div>
+              <Button onClick={() => goTo(2)}>Not really</Button>
+              <Button onClick={() => goTo(3)}>Yes</Button>
+            </div>
+          </div>
+        ),
         text: "",
         action1: "Not really",
         action2: "Yes",
@@ -285,7 +287,7 @@ export default function Onboarding(props) {
       {
         title:
           "Creating a dashboard will show you all about writer-comedian human items",
-        text: (
+        content: (
           <Typography>
             This dashboard is configured with{" "}
             <a href="https://www.wikidata.org/wiki/Q5">Human (Q5)</a> as its
@@ -293,31 +295,24 @@ export default function Onboarding(props) {
             occupations as a writer and also a comedian
           </Typography>
         ),
-        action1: "Next",
-        action2: "Stop",
+        selector: "#global-dashboard-data",
         enableBackground: false,
         style: {},
       },
       {
         title: "",
-        text: (
+        selector: "#profile-item-table",
+        content: (
           <Typography component="div">
             {`These items are those writer-comedian humans. There's Douglas Adams right over there!`}
           </Typography>
         ),
-        action1: "Next",
-        action2: "Stop",
-        enableBackground: false,
-        style: {
-          left: theme.spacing(-20),
-          top: theme.spacing(10),
-          width: theme.spacing(40),
-        },
       },
       repeatingSteps.searchWiki,
       {
         title: "",
-        text: (
+        selector: "#profile-info-block",
+        content: (
           <Typography component="div">
             These information can give you insights on the writer-comedian
             humans.{" "}
@@ -327,60 +322,19 @@ export default function Onboarding(props) {
             </b>
           </Typography>
         ),
-        action1: "Next",
-        action2: "Stop",
-        func: {
-          action1: () => {
-            history.push(
-              `/dashboards/${state.hash}/compare/onboarding-example`
-            );
-            setState((s) => ({ ...s, currentStep: s.currentStep + 1 }));
-            props.onChange({ reason: "continue", state });
-          },
-          action2: () => {
-            handleClose();
-          },
-        },
-        enableBackground: false,
-        style: {
-          top: theme.spacing(8),
-          left: theme.spacing(30),
-          width: theme.spacing(50),
-        },
       },
       {
-        title: "",
-        text: (
+        content: (
           <Typography component="div">
             <b>Compare two subclasses of the writer-comedian human topic.</b>{" "}
             Right here, you can see the difference between writer-comedian human
             items from Germany and from the United States of America
           </Typography>
         ),
-        action1: "Next",
-        action2: "Stop",
-        func: {
-          action1: () => {
-            history.push(
-              `/dashboards/${state.hash}/analysis/onboarding-example`
-            );
-            setState((s) => ({ ...s, currentStep: s.currentStep + 1 }));
-            props.onChange({ reason: "continue", state });
-          },
-          action2: () => {
-            handleClose();
-          },
-        },
-        enableBackground: false,
-        style: {
-          left: theme.spacing(-20),
-          top: theme.spacing(10),
-          width: theme.spacing(60),
-        },
+        redirect: `/dashboards/${state.hash}/profile/onboarding-example`,
       },
       {
-        title: "",
-        text: (
+        content: (
           <React.Fragment>
             <Typography component="div" gutterBottom>
               <b>Want to discover more about writer-comedians?</b> This example
@@ -393,57 +347,45 @@ export default function Onboarding(props) {
             </Typography>
           </React.Fragment>
         ),
-        action1: "Next",
-        action2: "Stop",
-        func: {
-          action1: () => {
-            history.push("/dashboards/8ce49fd3001b/profile/onboarding-example");
-            setState((s) => ({ ...s, currentStep: s.currentStep + 1 }));
-            props.onChange({ reason: "continue", state });
-          },
-          action2: () => {
-            handleClose();
-          },
-        },
-        enableBackground: false,
-        style: {
-          left: theme.spacing(-20),
-          top: theme.spacing(10),
-          width: theme.spacing(60),
-        },
+        redirect: `/dashboards/${state.hash}/analysis/onboarding-example`,
       },
       {
         title: "Now it's time to create your own Dashboard!",
-        text: (
-          <Typography component="div">
-            <Button
-              variant="contained"
-              color="primary"
-              size="small"
-              onClick={() => {
-                history.push("/#home");
-              }}
-            >
-              Back to main page
-            </Button>{" "}
-            or{" "}
-            <Button
-              color="primary"
-              size="small"
-              onClick={() => {
-                history.push("/browse/search=");
-              }}
-            >
-              Browse created Dashboards
-            </Button>
-          </Typography>
+        content: (
+          <React.Fragment>
+            <Typography variant="h2">
+              Now it's time to create your own Dashboard!
+            </Typography>
+            <Typography component="div">
+              <Button
+                variant="contained"
+                color="primary"
+                size="small"
+                onClick={() => {
+                  history.push("/#home");
+                }}
+              >
+                Back to main page
+              </Button>{" "}
+              or{" "}
+              <Button
+                color="primary"
+                size="small"
+                onClick={() => {
+                  history.push("/browse/search=");
+                }}
+              >
+                Browse created Dashboards
+              </Button>
+            </Typography>
+          </React.Fragment>
         ),
         action1: "Finish",
         action2: "Stop",
         hideAction1: true,
         hideAction2: true,
         enableBackground: true,
-        style: {},
+        // style: {},
       },
     ],
     profile: [
@@ -453,7 +395,7 @@ export default function Onboarding(props) {
         action1: "Sure",
         action2: "Later",
         enableBackground: true,
-        style: {},
+        // style: {},
       },
       {
         title: "Are you familiar with Wikidata?",
@@ -471,7 +413,7 @@ export default function Onboarding(props) {
           },
         },
         enableBackground: true,
-        style: {},
+        // style: {},
       },
       repeatingSteps.wikidata,
       repeatingSteps.prowd(),
@@ -492,24 +434,7 @@ export default function Onboarding(props) {
         ),
         action1: "Next",
         action2: "Stop",
-        func: {
-          action1: () => {
-            history.push(
-              `/dashboards/${state.hash}/analysis/onboarding-profile`
-            );
-            setState((s) => ({ ...s, currentStep: s.currentStep + 1 }));
-            props.onChange({ reason: "continue", state });
-          },
-          action2: () => {
-            handleClose();
-          },
-        },
-        enableBackground: false,
-        style: {
-          left: theme.spacing(-20),
-          top: theme.spacing(10),
-          width: theme.spacing(60),
-        },
+        redirect: `/dashboards/${state.hash}/compare/onboarding-profile`,
       },
       {
         title: "",
@@ -530,6 +455,7 @@ export default function Onboarding(props) {
         ),
         action1: "Next",
         action2: "Stop",
+        redirect: `/dashboards/${state.hash}/analysis/onboarding-profile`,
         func: {
           action1: () => {
             history.push(
@@ -543,11 +469,6 @@ export default function Onboarding(props) {
           },
         },
         enableBackground: false,
-        style: {
-          left: theme.spacing(-20),
-          top: theme.spacing(10),
-          width: theme.spacing(60),
-        },
       },
       {
         title: "Now have fun exploring!",
@@ -556,11 +477,6 @@ export default function Onboarding(props) {
         action2: "Stop",
         hideAction2: true,
         enableBackground: false,
-        style: {
-          left: theme.spacing(-20),
-          top: theme.spacing(-20),
-          width: theme.spacing(36),
-        },
       },
     ],
   };
@@ -585,8 +501,6 @@ export default function Onboarding(props) {
   }, [step, page, running, dashclass, filters, hash]);
 
   const handleClose = () => {
-    // setState((s) => ({ ...s, running: false }));
-
     switch (state.currentPage) {
       case "profile":
         props.onChange({ reason: "stop", state });
@@ -596,70 +510,15 @@ export default function Onboarding(props) {
         return;
     }
   };
-  const current = steps[state.currentPage][state.currentStep];
+  const current = steps[state.currentPage];
+
   return (
-    <div>
-      <Dialog
-        disableBackdropClick
-        open={state.running}
-        onClose={handleClose}
-        aria-labelledby="alert-dialog-title"
-        aria-describedby="alert-dialog-description"
-        hideBackdrop={!current.enableBackground}
-        classes={{ paper: classes.dialogRoot }}
-      >
-        {current.title === "" ? null : (
-          <DialogTitle id="alert-dialog-title">{current.title}</DialogTitle>
-        )}
-        <DialogContent
-          style={current.customChild ? { width: "fit-content" } : null}
-        >
-          {current.customChild ? (
-            current.customChild
-          ) : (
-            <Typography>{current.text}</Typography>
-          )}
-        </DialogContent>
-        <DialogActions style={{ justifyContent: "flex-start" }}>
-          {current.hideAction1 ? null : (
-            <Button
-              onClick={() => {
-                if (!current.func) {
-                  if (steps[state.currentPage].length > state.currentStep + 1) {
-                    setState((s) => ({ ...s, currentStep: s.currentStep + 1 }));
-                    props.onChange({ reason: "continue", state });
-                  } else {
-                    handleClose();
-                  }
-                } else {
-                  current.func.action1();
-                }
-              }}
-              color="primary"
-              variant="contained"
-              size="small"
-              autoFocus
-            >
-              {current.action1}
-            </Button>
-          )}
-          {current.hideAction2 ? null : (
-            <Button
-              onClick={() => {
-                if (!current.func) {
-                  handleClose();
-                } else {
-                  current.func.action2();
-                }
-              }}
-              color="primary"
-              size="small"
-            >
-              {current.action2}
-            </Button>
-          )}
-        </DialogActions>
-      </Dialog>
-    </div>
+    <Tour
+      steps={current}
+      isOpen={state.running}
+      onRequestClose={handleClose}
+      {...props}
+    />
   );
 }
+

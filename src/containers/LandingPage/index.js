@@ -10,12 +10,28 @@ import {
   Grid,
   Button,
   Chip,
+  IconButton,
+  Tabs,
+  Tab,
+  Dialog,
+  DialogContent,
+  TableContainer,
+  TableRow,
+  TableCell,
+  TableBody,
+  Checkbox,
+  Table,
+  TableHead,
+  TextField,
+  Popover,
+  Tooltip,
 } from "@material-ui/core";
 import tempData from "./tempData";
 import Navbar from "../../components/Navigation/Navbar";
 import VirtualAutocomp from "../../components/Inputs/VirtualAutocomp";
 import FilterBox from "../../components/Inputs/FilterBox";
-import { getClasses } from "../../services/general";
+import OnboardingTour from "../../components/Misc/OnboardingTour";
+import { getClasses, getEntityInfo } from "../../services/general";
 import { createDashboard } from "../../services/dashboard";
 import { cut, getUnique } from "../../global";
 import {
@@ -27,8 +43,9 @@ import {
   MpiiLogo,
   UILogo,
 } from "../../images/export";
-import { NavigateNext, ExpandMore } from "@material-ui/icons";
+import { NavigateNext, ExpandMore, CheckBox, Search } from "@material-ui/icons";
 import Help from "../../components/Misc/Help";
+import Loading from "../../components/Misc/Loading";
 
 const useStyles = makeStyles(() => ({
   centerContent: {
@@ -37,7 +54,7 @@ const useStyles = makeStyles(() => ({
     alignItems: "center",
   },
   mainLanding: {
-    marginTop: "8vh",
+    // marginTop: "8vh",
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
@@ -58,9 +75,10 @@ const useStyles = makeStyles(() => ({
     minWidth: theme.spacing(70),
     width: "90%",
     maxWidth: theme.spacing(100),
-    height: theme.spacing(30),
+    height: theme.spacing(40),
     display: "flex",
-    justifyContent: "center",
+    flexDirection: "column",
+    justifyContent: "flex-start",
     alignItems: "center",
     // backgroundColor: theme.palette.common.white,
   },
@@ -76,7 +94,9 @@ const useStyles = makeStyles(() => ({
     height: "100%",
   },
   inputInput: {
-    width: "85%",
+    padding: `0 ${theme.spacing(4)}px`,
+    flex: "1 1 auto",
+    height: "50%",
   },
   filters: {
     width: "97%",
@@ -103,7 +123,7 @@ const useStyles = makeStyles(() => ({
   },
   subText: {
     zIndex: 1,
-    width: "50%",
+    width: "65%",
     marginBottom: theme.spacing(2),
   },
   subTextDesc: {
@@ -111,13 +131,10 @@ const useStyles = makeStyles(() => ({
     width: "70%",
     marginBottom: theme.spacing(2),
     marginTop: theme.spacing(2),
+    textAlign: "justify",
   },
   exampleCarousel: {
-    width: "90%",
     flexWrap: "nowrap",
-    minWidth: theme.spacing(70),
-    maxWidth: theme.spacing(100),
-    margin: `4px 0 !important`,
     overflowX: "scroll",
     "&::-webkit-scrollbar": {
       display: "none",
@@ -145,12 +162,24 @@ const useStyles = makeStyles(() => ({
   footerLogo: {
     width: theme.spacing(20),
   },
+  logodiv: {
+    display: "flex",
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  dialogPaper: {
+    width: theme.spacing(80),
+    maxWidth: theme.spacing(80),
+    padding: theme.spacing(2),
+  },
 }));
 
 function Landing(props) {
   const classes = useStyles();
   const history = useHistory();
   const [state, setState] = React.useState({
+    onboarding: false,
     classes: [],
     classInput: "",
     selectedClass: null,
@@ -161,23 +190,369 @@ function Landing(props) {
     filtersOfSearch: [],
     selectedProps: "",
     appliedFilters: [],
-    searchisloading: false,
+    inputtab: 0,
+    inputisloading: false,
+    // item search
+    itemsearchinput: "",
+    iteminfoisloading: true,
+    selecteditem: null,
+    iteminfo: null,
+    filtersSelected: {},
+    itemDialogisOpen: false,
+    itemstatementsearch: "",
+    anchoritemDialog: null,
+    // end of item search
     popper: {
       open: false,
       anchorEl: null,
     },
   });
 
-  React.useEffect(() => {
-    console.log("jalan");
+  React.useEffect(() => {}, []);
+  const handleItemDialogClose = () =>
+    setState((s) => ({
+      ...s,
+      itemDialogisOpen: false,
+      itemsearchinput: "",
+      iteminfoisloading: true,
+      selecteditem: null,
+      iteminfo: null,
+      filtersSelected: {},
+    }));
 
-    getClasses("", (response) => {
-      setState((s) => ({ ...s, classes: response.entities }));
-    });
-  }, []);
+  const itemSearch = () => {
+    return (
+      <Grid
+        item
+        style={{
+          display: "flex",
+          flexDirection: "row",
+          justifyContent: "space-between",
+          alignItems: "center",
+        }}
+      >
+        <Popover
+          open={state.itemDialogisOpen}
+          anchorEl={state.anchoritemDialog}
+          anchorOrigin={{
+            vertical: "center",
+            horizontal: "left",
+          }}
+          transformOrigin={{
+            vertical: "center",
+            horizontal: "right",
+          }}
+          onClose={handleItemDialogClose}
+          classes={{ paper: classes.dialogPaper }}
+        >
+          <Typography variant="h2" gutterBottom>
+            {state.iteminfoisloading || !state.selecteditem ? (
+              <Loading variant="text" />
+            ) : (
+              `${state.selecteditem.label} (${state.selecteditem.id})`
+            )}
+          </Typography>
+          <Typography gutterBottom style={{ fontWeight: "bold" }}>
+            {state.iteminfoisloading || !state.selecteditem ? (
+              <Loading variant="text" />
+            ) : (
+              "Items of my topic of interest can be classified as... (Select one)"
+            )}
+          </Typography>
+          <Paper
+            variant="outlined"
+            elevation={0}
+            style={{ padding: theme.spacing(1) }}
+          >
+            {state.iteminfoisloading || !state.selecteditem ? (
+              <Typography>
+                <Loading />
+              </Typography>
+            ) : (
+              <Grid container spacing={1}>
+                {state.iteminfo.classes.map((item, index) => (
+                  <Grid item>
+                    <Chip
+                      variant={
+                        state.selectedClass &&
+                        state.selectedClass.id === item.id
+                          ? "default"
+                          : "outlined"
+                      }
+                      color="primary"
+                      onClick={() =>
+                        setState((s) => ({
+                          ...s,
+                          selectedClass: item,
+                          classInput: `${item.label} (${item.id})`,
+                        }))
+                      }
+                      label={`${item.label} (${item.id})`}
+                    />
+                  </Grid>
+                ))}
+              </Grid>
+            )}
+          </Paper>
+          <Typography
+            style={{
+              marginTop: theme.spacing(1),
+              fontWeight: "bold",
+            }}
+          >
+            {state.iteminfoisloading || !state.selecteditem ? (
+              <Loading variant="text" />
+            ) : (
+              `Need to be more specific? Select the statements
+            about ${state.selecteditem.label} that is similar to
+            other items of your topic of interest`
+            )}
+          </Typography>
+          <div>
+            <TextField
+              variant="outlined"
+              size="small"
+              fullWidth
+              margin="dense"
+              InputProps={{ startAdornment: <Search /> }}
+              placeholder="Search for statements..."
+              value={state.itemstatementsearch}
+              onChange={(e) => {
+                const tempVal = e.target.value;
+                setState((s) => ({
+                  ...s,
+                  itemstatementsearch: tempVal,
+                }));
+              }}
+            />
+          </div>
+          <TableContainer
+            component={(props) => (
+              <Paper {...props} variant="outlined" elevation={0} />
+            )}
+            style={{ height: theme.spacing(40) }}
+          >
+            <Table stickyHeader size="small">
+              <TableHead>
+                <TableRow>
+                  <TableCell />
+                  <TableCell>Property</TableCell>
+                  <TableCell>Value</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {state.iteminfoisloading || !state.selecteditem
+                  ? [0, 0, 0, 0, 0].map((item) => (
+                      <TableRow>
+                        <TableCell colSpan={3}>
+                          <Loading variant="text" />
+                        </TableCell>
+                      </TableRow>
+                    ))
+                  : state.iteminfo.filters
+                      .filter((item) =>
+                        `${item.property.label} (${item.property.id}) ${item.value.label} (${item.value.id})`
+                          .toLowerCase()
+                          .includes(state.itemstatementsearch.toLowerCase())
+                      )
+                      .map((item, index) => (
+                        <TableRow>
+                          <TableCell>
+                            <Checkbox
+                              color="primary"
+                              checked={
+                                state.filtersSelected[
+                                  `${item.property.id}${item.value.id}`
+                                ]
+                              }
+                              onChange={() => {
+                                let temp = { ...state.filtersSelected };
+                                if (
+                                  !temp[`${item.property.id}${item.value.id}`]
+                                ) {
+                                  temp[
+                                    `${item.property.id}${item.value.id}`
+                                  ] = true;
+                                } else {
+                                  temp[
+                                    `${item.property.id}${item.value.id}`
+                                  ] = false;
+                                }
+                                setState((s) => ({
+                                  ...s,
+                                  filtersSelected: temp,
+                                }));
+                              }}
+                            />
+                          </TableCell>
+                          <TableCell>
+                            {item.property.label} ({item.property.id})
+                          </TableCell>
+                          <TableCell>
+                            {item.value.label} ({item.value.id})
+                          </TableCell>
+                        </TableRow>
+                      ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "row",
+              marginTop: theme.spacing(1),
+            }}
+          >
+            <Button
+              disabled={!state.selectedClass}
+              variant="contained"
+              size="small"
+              color="primary"
+              onClick={() =>
+                setState((s) => ({
+                  ...s,
+                  appliedFilters: s.iteminfo.filters.filter(
+                    (item, index) =>
+                      s.filtersSelected[`${item.property.id}${item.value.id}`]
+                  ),
+                  inputtab: 1,
+                  itemDialogisOpen: false,
+                  itemsearchinput: "",
+                  iteminfoisloading: true,
+                  selecteditem: null,
+                  iteminfo: null,
+                  filtersSelected: {},
+                }))
+              }
+            >
+              Apply configuration
+            </Button>
+            <Button
+              size="small"
+              color="primary"
+              onClick={handleItemDialogClose}
+              style={{ marginLeft: theme.spacing(1) }}
+            >
+              Close
+            </Button>
+          </div>
+        </Popover>
+        <div style={{ width: "96%" }}>
+          <VirtualAutocomp
+            placeholder="Type and select a good example of your topic of interest"
+            options={state.classes}
+            noOptionsText={
+              state.classes.length === 0
+                ? "Type to see options"
+                : `There are no items containing "${state.itemsearchinput}"`
+            }
+            inputProps={{
+              autoFocus: true,
+            }}
+            loading={state.inputisloading}
+            inputValue={state.itemsearchinput}
+            value={state.selecteditem}
+            onInputChange={(e) => {
+              // console.log(e);
+              if (e) {
+                const tempval = e.target.value;
+                setState((s) => ({
+                  ...s,
+                  itemsearchinput: tempval,
+                  inputisloading: true,
+                  // classes: [],
+                }));
 
+                getClasses(e.target.value, (response) => {
+                  response.success &&
+                    setState((s) => ({
+                      ...s,
+                      inputisloading: false,
+                      classes: getUnique(
+                        [...s.classes, ...response.entities],
+                        "id"
+                      ),
+                    }));
+                });
+              }
+            }}
+            onChange={(event, newValue, reason) => {
+              if (newValue) {
+                setState((s) => ({
+                  ...s,
+                  selecteditem: newValue,
+                  itemsearchinput: `${newValue.label} (${newValue.id})`,
+                  itemDialogisOpen: true,
+                  iteminfoisloading: true,
+                  anchoritemDialog: document.getElementById("input-box"),
+                }));
+                getEntityInfo(newValue.id, (r) => {
+                  if (r.success) {
+                    setState((s) => ({
+                      ...s,
+                      iteminfoisloading: false,
+                      iteminfo: {
+                        classes: r.classes,
+                        filters: r.filters.filter(
+                          (item) => item.property.id !== "P31"
+                        ),
+                      },
+                    }));
+                  }
+                });
+              }
+              if (reason === "clear") {
+                setState((s) => ({
+                  ...s,
+                  selecteditem: null,
+                  itemsearchinput: "",
+                }));
+              }
+            }}
+            onClose={(event, reason) => {
+              console.log(reason, state.selectedClass);
+
+              if (reason !== "select-option" && !state.selectedClass) {
+                setState((s) => ({
+                  ...s,
+                  itemsearchinput: "",
+                  selecteditem: null,
+                }));
+              }
+            }}
+            getOptionLabel={(option) => {
+              return `${option.label} (${option.id})${
+                option.aliases
+                  ? ` also known as ${option.aliases.join(", ")}`
+                  : ""
+              }`;
+            }}
+            renderOption={(option) => (
+              <div>
+                <Typography
+                  noWrap
+                >{`${option.label} (${option.id})`}</Typography>
+                <Typography variant="caption" style={{ lineHeight: "1.3vmin" }}>
+                  {cut(option.description, 500)}
+                </Typography>
+              </div>
+            )}
+          />
+        </div>
+        <Help text="Interested in painters? Type and select Leonardo Da Vinci. Interested in a topic? Type and select an instance of your topic of interest." />
+      </Grid>
+    );
+  };
   return (
     <ThemeProvider theme={theme}>
+      <OnboardingTour
+        open={state.onboarding}
+        onChange={(reason) => {
+          if (reason === "close") {
+            setState((s) => ({ ...s, onboarding: false }));
+          }
+        }}
+      />
       <div className={classes.mainLanding} id="home">
         <LandingTopIcon style={{ position: "absolute", width: "100%" }} />
         <Navbar />
@@ -219,254 +594,281 @@ function Landing(props) {
                 style={{
                   marginBottom: theme.spacing(2),
                 }}
+                variant="contained"
                 color="primary"
                 endIcon={<NavigateNext />}
-                onClick={() =>
-                  history.push(
-                    "/dashboards/8ce49fd3001b/profile/onboarding-example"
-                  )
-                }
+                onClick={() => setState((s) => ({ ...s, onboarding: true }))}
               >
                 Show me how
               </Button>
             </div>
             <div className={classes.mainDiv}>
-              <Typography
-                style={{ width: "90%", marginRight: theme.spacing(2) }}
-              >
-                Examples:{" "}
-              </Typography>
-              {/* <GridList
-                spacing={2}
-                cols={4}
-                cellHeight="auto"
-                className={classes.exampleCarousel}
-              > */}
-              <Grid container spacing={1} className={classes.exampleCarousel}>
-                {[...tempData.ex, ...tempData.ex].map((x, idx) => (
-                  // <GridListTile key={idx}>
-                  <Grid item key={idx}>
-                    <Chip
-                      size="small"
-                      variant="outlined"
-                      clickable
-                      style={{ width: "98%" }}
-                      color="primary"
-                      onClick={() => {
-                        setState((s) => ({
-                          ...s,
-                          selectedClass: x.class,
-                          classInput: `${x.class.label} (${x.class.id})`,
-                          appliedFilters: x.filters,
-                        }));
-                      }}
-                      label={<Typography variant="body1">{x.label}</Typography>}
-                    />
-                  </Grid>
-                  // </GridListTile>
-                ))}
-              </Grid>
-              {/* </GridList> */}
-              <Paper className={classes.inputBox} elevation={1}>
-                <Grid
-                  container
-                  justify="center"
-                  spacing={2}
-                  direction="column"
-                  className={classes.inputInput}
-                >
-                  <Grid
-                    item
-                    style={{
-                      display: "flex",
-                      flexDirection: "row",
-                      alignItems: "center",
-                      justifyContent: "space-between",
-                    }}
+              <Paper className={classes.inputBox} elevation={1} id="input-box">
+                <div style={{ width: "100%" }}>
+                  <Tabs
+                    value={state.inputtab}
+                    onChange={(e, value) =>
+                      setState((s) => ({ ...s, inputtab: value }))
+                    }
+                    indicatorColor="primary"
+                    textColor="primary"
+                    variant="fullWidth"
                   >
-                    <div style={{ width: "94%" }}>
-                      <VirtualAutocomp
-                        label="Class"
-                        placeholder="e.g. Human, Disease, Country"
-                        options={state.classes}
-                        loading={state.classes.length === 0}
-                        inputValue={state.classInput}
-                        value={state.selectedClass}
-                        onInputChange={(e) => {
-                          // console.log(e);
-                          if (e) {
-                            const tempval = e.target.value;
-                            setState((s) => ({
-                              ...s,
-                              classInput: tempval,
-                              // classes: [],
-                            }));
-
-                            getClasses(e.target.value, (response) => {
-                              response.success &&
-                                setState((s) => ({
-                                  ...s,
-                                  classes: getUnique(
-                                    [...s.classes, ...response.entities],
-                                    "id"
-                                  ),
-                                }));
-                            });
-                          }
-                        }}
-                        onChange={(event, newValue, reason) => {
-                          if (newValue) {
-                            setState((s) => ({
-                              ...s,
-                              selectedClass: newValue,
-                              classInput: `${newValue.label} (${newValue.id})`,
-                            }));
-                          }
-                          if (reason === "clear") {
-                            setState((s) => ({
-                              ...s,
-                              selectedClass: null,
-                              classInput: "",
-                            }));
-                          }
-                        }}
-                        onClose={(event, reason) => {
-                          console.log(reason, state.selectedClass);
-
-                          if (
-                            reason !== "select-option" &&
-                            !state.selectedClass
-                          ) {
-                            setState((s) => ({
-                              ...s,
-                              classInput: "",
-                              selectedClass: null,
-                            }));
-                          }
-                        }}
-                        getOptionLabel={(option) => {
-                          return `${option.label} (${option.id})${
-                            option.aliases
-                              ? ` also known as ${option.aliases.join(", ")}`
-                              : ""
-                          }`;
-                        }}
-                        renderOption={(option) => (
-                          <div>
-                            <Typography
-                              noWrap
-                            >{`${option.label} (${option.id})`}</Typography>
-                            <Typography
-                              variant="caption"
-                              style={{ lineHeight: "1.3vmin" }}
-                            >
-                              {cut(option.description, 500)}
-                            </Typography>
-                          </div>
-                        )}
-                      />
-                    </div>
-                    <Help
-                      text={
-                        <Typography component="div">
-                          Click on the examples above to get a hint.{" "}
-                          <Box fontWeight="bold">
-                            Use 'Search for Wikidata Item' on the navbar to find
-                            the class and filters of a specific object.
-                          </Box>
-                        </Typography>
-                      }
-                    />
-                  </Grid>
-                  <Grid item>
-                    <FilterBox
-                      class={state.selectedClass}
-                      classes={{ root: classes.filters }}
-                      options={state.appliedFilters}
-                      propertiesOptions={state.propertiesOptions}
-                      selectedClass={state.selectedClass}
-                      // disabled={!state.selectedClass}
-
-                      onApply={(applied) =>
-                        setState((s) => ({ ...s, appliedFilters: applied }))
-                      }
-                      renderTagText={(opt) =>
-                        cut(`${opt.property.label}: ${opt.value.label}`, 1000)
-                      }
-                      onDelete={(idx) => {
-                        const temp = [...state.appliedFilters];
-                        temp.splice(idx, 1);
-                        setState((s) => ({ ...s, appliedFilters: temp }));
-                      }}
-                      onClear={() =>
-                        setState((s) => ({ ...s, appliedFilters: [] }))
-                      }
-                    />
-                  </Grid>
-                  <Grid item xs={10}>
-                    <div
+                    <Tab label="Item Search" />
+                    <Tab label="Create Dashboard" id="create-dashboard-tab" />
+                  </Tabs>
+                </div>
+                {state.inputtab === 1 ? (
+                  <Grid
+                    container
+                    justify="center"
+                    spacing={2}
+                    direction="column"
+                    className={classes.inputInput}
+                  >
+                    <Grid
+                      item
                       style={{
-                        width: "100%",
                         display: "flex",
                         flexDirection: "row",
+                        alignItems: "center",
+                        justifyContent: "space-between",
                       }}
                     >
+                      <div style={{ width: "94%" }}>
+                        <VirtualAutocomp
+                          label="Class"
+                          placeholder="e.g. Human, Disease, Country"
+                          options={state.classes}
+                          loading={state.inputisloading}
+                          inputValue={state.classInput}
+                          value={state.selectedClass}
+                          onInputChange={(e) => {
+                            // console.log(e);
+                            if (e) {
+                              const tempval = e.target.value;
+                              setState((s) => ({
+                                ...s,
+                                classInput: tempval,
+                                inputisloading: true,
+                                // classes: [],
+                              }));
+
+                              getClasses(e.target.value, (response) => {
+                                response.success &&
+                                  setState((s) => ({
+                                    ...s,
+                                    inputisloading: false,
+                                    classes: getUnique(
+                                      [...s.classes, ...response.entities],
+                                      "id"
+                                    ),
+                                  }));
+                              });
+                            }
+                          }}
+                          onChange={(event, newValue, reason) => {
+                            if (newValue) {
+                              setState((s) => ({
+                                ...s,
+                                selectedClass: newValue,
+                                classInput: `${newValue.label} (${newValue.id})`,
+                              }));
+                            }
+                            if (reason === "clear") {
+                              setState((s) => ({
+                                ...s,
+                                selectedClass: null,
+                                classInput: "",
+                              }));
+                            }
+                          }}
+                          onClose={(event, reason) => {
+                            console.log(reason, state.selectedClass);
+
+                            if (
+                              reason !== "select-option" &&
+                              !state.selectedClass
+                            ) {
+                              setState((s) => ({
+                                ...s,
+                                classInput: "",
+                                selectedClass: null,
+                              }));
+                            }
+                          }}
+                          getOptionLabel={(option) => {
+                            return `${option.label} (${option.id})${
+                              option.aliases
+                                ? ` also known as ${option.aliases.join(", ")}`
+                                : ""
+                            }`;
+                          }}
+                          renderOption={(option) => (
+                            <div>
+                              <Typography
+                                noWrap
+                              >{`${option.label} (${option.id})`}</Typography>
+                              <Typography
+                                variant="caption"
+                                style={{ lineHeight: "1.3vmin" }}
+                              >
+                                {cut(option.description, 500)}
+                              </Typography>
+                            </div>
+                          )}
+                        />
+                      </div>
+                      <Help
+                        text={
+                          <Typography component="div">
+                            Click on the examples above to get a hint.{" "}
+                            <Box fontWeight="bold">
+                              Use the Search Item tab to configure the dashboard
+                              based on an item.
+                            </Box>
+                          </Typography>
+                        }
+                      />
+                    </Grid>
+                    <Grid item>
+                      <FilterBox
+                        class={state.selectedClass}
+                        classes={{ root: classes.filters }}
+                        options={state.appliedFilters}
+                        propertiesOptions={state.propertiesOptions}
+                        selectedClass={state.selectedClass}
+                        // disabled={!state.selectedClass}
+
+                        onApply={(applied) =>
+                          setState((s) => ({ ...s, appliedFilters: applied }))
+                        }
+                        renderTagText={(opt) =>
+                          cut(`${opt.property.label}: ${opt.value.label}`, 1000)
+                        }
+                        onDelete={(idx) => {
+                          const temp = [...state.appliedFilters];
+                          temp.splice(idx, 1);
+                          setState((s) => ({ ...s, appliedFilters: temp }));
+                        }}
+                        onClear={() =>
+                          setState((s) => ({ ...s, appliedFilters: [] }))
+                        }
+                      />
+                    </Grid>
+                    <Grid item>
                       <div
-                        style={{ width: "42%", marginRight: theme.spacing(1) }}
+                        style={{
+                          width: "100%",
+                          display: "flex",
+                          flexDirection: "row",
+                        }}
                       >
-                        <Button
-                          variant="contained"
-                          color="primary"
-                          disableElevation
-                          fullWidth
-                          disabled={state.selectedClass === null}
-                          onClick={() => {
-                            createDashboard(
-                              state.selectedClass.id,
-                              state.appliedFilters.map((x) => {
-                                let temp = {};
-                                temp[x.property.id] = x.value.id;
-                                return temp;
-                              }),
-                              (response) =>
-                                history.push(
-                                  `/dashboards/${response.hashCode}/profile/onboarding-profile`
-                                )
-                            );
+                        <div
+                          style={{
+                            width: "42%",
+                            marginRight: theme.spacing(1),
                           }}
                         >
-                          CREATE DASHBOARD
-                        </Button>
+                          <Button
+                            variant="contained"
+                            color="primary"
+                            disableElevation
+                            fullWidth
+                            disabled={state.selectedClass === null}
+                            onClick={() => {
+                              createDashboard(
+                                state.selectedClass.id,
+                                state.appliedFilters.map((x) => {
+                                  let temp = {};
+                                  temp[x.property.id] = x.value.id;
+                                  return temp;
+                                }),
+                                (response) =>
+                                  history.push(
+                                    `/dashboards/${response.hashCode}/profile`
+                                  )
+                              );
+                            }}
+                          >
+                            CREATE DASHBOARD
+                          </Button>
+                        </div>
                       </div>
-                    </div>
+                    </Grid>
                   </Grid>
-                </Grid>
+                ) : (
+                  <Grid
+                    container
+                    justify="center"
+                    spacing={2}
+                    direction="column"
+                    className={classes.inputInput}
+                  >
+                    <Grid item>
+                      <Typography
+                        variant="h2"
+                        style={{ marginBottom: theme.spacing(1) }}
+                      >
+                        What are you interested in today?
+                      </Typography>
+                    </Grid>
+                    {itemSearch()}
+                    <Grid item style={{ maxWidth: "100%" }}>
+                      <Grid
+                        container
+                        spacing={1}
+                        className={classes.exampleCarousel}
+                      >
+                        {[...tempData.items].map((x, idx) => (
+                          // <GridListTile key={idx}>
+                          <Grid item key={idx}>
+                            <Tooltip
+                              title={
+                                <Typography>{`${x.label} (${x.id})`}</Typography>
+                              }
+                            >
+                              <Chip
+                                size="small"
+                                variant="outlined"
+                                style={{ width: "98%" }}
+                                color="primary"
+                                label={
+                                  <Typography variant="body1">
+                                    {x.topic}
+                                  </Typography>
+                                }
+                              />
+                            </Tooltip>
+                          </Grid>
+                        ))}
+                      </Grid>
+                    </Grid>
+                  </Grid>
+                )}
               </Paper>
             </div>
           </div>
-          <div className={classes.landingRow}>
-            <div
-              style={{
-                position: "absolute",
-                width: theme.spacing(20),
-                marginLeft: `-${theme.spacing(10)}px`,
-                left: "50%",
-                bottom: "5%",
+          <div
+            style={{
+              // position: "absolute",
+              display: "flex",
+              flexDirection: "row",
+              justifyContent: "center",
+            }}
+          >
+            <IconButton
+              color="primary"
+              id="about"
+              onClick={() => {
+                history.push("/");
+                window.location.hash = "about";
               }}
             >
-              <Button
-                color="primary"
-                fullWidth
-                endIcon={<ExpandMore />}
-                id="about"
-                onClick={() => {
-                  history.push("/");
-                  window.location.hash = "about";
-                }}
-              >
-                Learn More
-              </Button>
-            </div>
+              <ExpandMore />
+            </IconButton>
+          </div>
+          <div className={classes.landingRow}>
             <div className={classes.mainDivLeft}>
               <Typography variant="h2" component="div">
                 <Box fontSize={40} fontWeight="bold">
@@ -484,7 +886,7 @@ function Landing(props) {
                     style={{ textDecoration: "none" }}
                   >
                     Wikidata
-                  </a>
+                  </a>{" "}
                   by profiling your topic of interest.
                 </Box>
               </Typography>
@@ -492,6 +894,25 @@ function Landing(props) {
             <div className={classes.mainDiv}>
               <MindMapIcon />
             </div>
+          </div>
+          <div
+            style={{
+              // position: "absolute",
+              display: "flex",
+              flexDirection: "row",
+              justifyContent: "center",
+            }}
+          >
+            <IconButton
+              color="primary"
+              id="about-1"
+              onClick={() => {
+                history.push("/");
+                window.location.hash = "about-1";
+              }}
+            >
+              <ExpandMore />
+            </IconButton>
           </div>
           <div className={classes.landingRow}>
             <div className={classes.mainDivLeft}>
@@ -506,15 +927,34 @@ function Landing(props) {
                   </Box>
                   <Box
                     className={classes.subTextDesc}
-                    style={{ width: "100%" }}
+                    style={{ width: "100%", textAlign: "justify" }}
                   >
                     Knowledge gaps are a very real thing. By identifying any
-                    imbalanced and underrepresented topics, we can already get
+                    imbalanced and underrepresented topics, we one step closer
                     closer to knowledge equity.
                   </Box>
                 </Typography>
               </div>
             </div>
+          </div>
+          <div
+            style={{
+              // position: "absolute",
+              display: "flex",
+              flexDirection: "row",
+              justifyContent: "center",
+            }}
+          >
+            <IconButton
+              color="primary"
+              id="about-2"
+              onClick={() => {
+                history.push("/");
+                window.location.hash = "about-2";
+              }}
+            >
+              <ExpandMore />
+            </IconButton>
           </div>
           <div className={classes.landingRow}>
             <div className={classes.mainDivLeft}>
@@ -527,6 +967,15 @@ function Landing(props) {
                   Interested in a particular topic about science, art, socials,
                   and more? Start profiling your topic by creating a dashboard!
                 </Box>
+                <Button
+                  color="primary"
+                  variant="contained"
+                  onClick={() => {
+                    window.location.hash = "home";
+                  }}
+                >
+                  Get Started
+                </Button>
               </Typography>
             </div>
             <div className={classes.mainDiv}>
@@ -542,7 +991,6 @@ function Landing(props) {
           flexDirection: "column",
           justifyContent: "space-evenly",
           alignItems: "center",
-          // width: "100vw",
           backgroundColor: theme.palette.common.white,
         }}
       >
@@ -551,7 +999,7 @@ function Landing(props) {
             height: "fit-content",
             display: "flex",
             padding: `${theme.spacing(2)}px 0`,
-            flexDirection: "row",
+            flexDirection: "column",
             justifyContent: "space-between",
             alignItems: "center",
             width: "80%",
@@ -565,18 +1013,17 @@ function Landing(props) {
             justify="center"
             alignItems="center"
             direction="row"
-            style={{ width: "50%" }}
           >
-            <Grid item xs={6}>
+            <Grid item xs={3} className={classes.logodiv}>
               <UILogo className={classes.footerLogo} />
             </Grid>
-            <Grid item xs={6}>
+            <Grid item xs={3} className={classes.logodiv}>
               <UnibzLogo className={classes.footerLogo} />
             </Grid>
-            <Grid item xs={6}>
+            <Grid item xs={3} className={classes.logodiv}>
               <MpiiLogo className={classes.footerLogo} />
             </Grid>
-            <Grid item xs={6}>
+            <Grid item xs={3} className={classes.logodiv}>
               <img
                 src="https://upload.wikimedia.org/wikipedia/commons/6/66/Wikidata-logo-en.svg"
                 alt="wikidata-logo"
@@ -584,13 +1031,8 @@ function Landing(props) {
               />
             </Grid>
           </Grid>
-          <Grid container>
-            <Grid item>
-              <Button size="small">Dashboard example</Button>
-            </Grid>
-          </Grid>
         </div>
-        <Typography style={{ width: "100%", textAlign: "center" }}>
+        <Typography style={{ textAlign: "center" }}>
           2020 - Free University of Bozen-Bolzano, Universitas Indonesia and
           Max-Planck Institute for Informatics.
         </Typography>

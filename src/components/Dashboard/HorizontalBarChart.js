@@ -31,6 +31,12 @@ export default function HorizontalBarChart(props) {
               beginAtZero: true,
               min: 0,
               max: props.max,
+              callback: function (value, index, values) {
+                if (props.percent) {
+                  return value + "%";
+                }
+                return value;
+              },
             },
             scaleLabel: {
               display: !props.simple,

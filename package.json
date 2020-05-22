@@ -19,8 +19,10 @@
     "react-scripts": "3.4.1",
     "react-virtualized": "^9.21.2",
     "react-window": "^1.8.5",
+    "reactour": "^1.17.0",
     "serve": "^11.3.0",
-    "serve-handler": "^6.1.2"
+    "serve-handler": "^6.1.2",
+    "styled-components": "^4.4.1"
   },
   "scripts": {
     "start": "react-scripts start",

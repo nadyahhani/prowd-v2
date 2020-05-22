@@ -28,7 +28,7 @@ const useStyles = makeStyles(() => ({
     // flexGrow: 1,
     minWidth: "1225px",
     width: "100vw",
-    position: "absolute",
+    // position: "absolute",
     height: theme.spacing(6),
   },
   menuButton: {
@@ -492,7 +492,7 @@ export default function Navbar() {
                     Home
                   </Button>
                 </Grid>
-                <Grid item>
+                <Grid item id="dashboards-nav-button">
                   <Button
                     color={
                       window.location.pathname.includes("/browse/")
@@ -518,12 +518,17 @@ export default function Navbar() {
                 </Grid>
               </Grid>
             </Grid>
-            <Grid item xs={3}>
+            <Grid item xs={3} id="search-wikidata-navbar">
               <Autocomplete
                 label=""
                 placeholder="Search for Wikidata Items..."
                 options={state.classes}
                 loading={state.searchisloading}
+                noOptionsText={
+                  state.classes.length === 0
+                    ? "Type to see options"
+                    : `There are no items containing ${state.searchInput}`
+                }
                 inputValue={state.searchInput}
                 value={state.selectedSearch}
                 onInputChange={(e) => {

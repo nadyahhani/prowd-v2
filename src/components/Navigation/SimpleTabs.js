@@ -93,56 +93,58 @@ export default function SimpleTabs(props) {
     >
       {value === 0 || value === 1 || value === 2 ? (
         <Paper>
-          <Tabs
-            value={value}
-            aria-label="Dashboard Navigation"
-            classes={{ root: classes.tabs }}
-            TabIndicatorProps={{ className: classes.indicator }}
-          >
-            <Tab
-              component="a"
-              onClick={() => {
-                history.push(`/dashboards/${props.dashId}/profile`);
-              }}
-              classes={{ selected: classes.selectedTab, root: classes.tab }}
-              label={
-                <Typography component="div">
-                  <Box fontWeight="bold">Profile</Box>
-                </Typography>
-              }
-              {...a11yProps(0)}
-            />
-            <Tab
-              component="a"
-              onClick={() => {
-                history.push(`/dashboards/${props.dashId}/compare`);
-              }}
-              classes={{ selected: classes.selectedTab, root: classes.tab }}
-              className={classes.tab}
-              label={
-                <Typography component="div">
-                  <Box fontWeight="bold">Compare</Box>
-                </Typography>
-              }
-              {...a11yProps(1)}
-            />
-            <Tab
-              component="a"
-              onClick={() => {
-                history.push(`/dashboards/${props.dashId}/analysis`);
-              }}
-              classes={{ selected: classes.selectedTab, root: classes.tab }}
-              className={classes.tab}
-              label={
-                <Typography component="div">
-                  <Box fontWeight="bold">Discover</Box>
-                </Typography>
-              }
-              {...a11yProps(2)}
-            />
-            {/* <div className={classes.fillerTab} /> */}
-          </Tabs>
-
+            <Tabs
+              value={value}
+              aria-label="Dashboard Navigation"
+              classes={{ root: classes.tabs }}
+              TabIndicatorProps={{ className: classes.indicator }}
+            >
+              <Tab
+                component="a"
+                onClick={() => {
+                  history.push(`/dashboards/${props.dashId}/profile`);
+                }}
+                classes={{ selected: classes.selectedTab, root: classes.tab }}
+                label={
+                  <Typography component="div">
+                    <Box fontWeight="bold">Profile</Box>
+                  </Typography>
+                }
+                {...a11yProps(0)}
+                id="profile-tab"
+              />
+              <Tab
+                component="a"
+                onClick={() => {
+                  history.push(`/dashboards/${props.dashId}/compare`);
+                }}
+                classes={{ selected: classes.selectedTab, root: classes.tab }}
+                className={classes.tab}
+                label={
+                  <Typography component="div">
+                    <Box fontWeight="bold">Compare</Box>
+                  </Typography>
+                }
+                {...a11yProps(1)}
+                id="compare-tab"
+              />
+              <Tab
+                component="a"
+                onClick={() => {
+                  history.push(`/dashboards/${props.dashId}/analysis`);
+                }}
+                classes={{ selected: classes.selectedTab, root: classes.tab }}
+                className={classes.tab}
+                label={
+                  <Typography component="div">
+                    <Box fontWeight="bold">Discover</Box>
+                  </Typography>
+                }
+                {...a11yProps(2)}
+                id="discover"
+              />
+              {/* <div className={classes.fillerTab} /> */}
+            </Tabs>
           <TabPanel value={value} index={0}>
             <Profile
               data={props.data}

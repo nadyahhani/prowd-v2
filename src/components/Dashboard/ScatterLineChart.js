@@ -76,7 +76,7 @@ function ScatterLineChart(props) {
             },
             scaleLabel: {
               display: true,
-              labelString: "Percentage of Properties",
+              labelString: "Percentage of Properties (of max # of properties)",
               lineHeight: 1,
               padding: 0,
             },
@@ -93,7 +93,7 @@ function ScatterLineChart(props) {
             },
             scaleLabel: {
               display: true,
-              labelString: "Percentage of Items",
+              labelString: "Percentage of Items (of # of items)",
             },
           },
         ],

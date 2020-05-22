@@ -20,6 +20,22 @@ export function createDashboard(entityID, filters, afterFunc) {
     });
 }
 
+export function copyDashboard(hash, afterFunc) {
+  axios
+    .get(`${url}/api/dashboard/duplicate?hash_code=${hash}`)
+    .then(
+      (response) => {
+        afterFunc({ success: true, ...response.data });
+      },
+      (error) => {
+        afterFunc({ success: false, ...error });
+      }
+    )
+    .catch((err) => {
+      afterFunc({ success: false, ...err });
+    });
+}
+
 export function getDashInfo(hash, afterFunc) {
   axios
     .get(`${url}/api/dashboard/info?hash_code=${hash}`)
@@ -88,13 +104,21 @@ export function getPropertyGap(hash, afterFunc) {
     });
 }
 
-export function editGlobal(hash, classID, filters, dashData, afterFunc) {
+export function editGlobal(
+  hash,
+  publicity,
+  classID,
+  filters,
+  dashData,
+  afterFunc
+) {
   axios
     .post(`${url}/api/dashboard/edit/global`, {
       ...dashData,
       hashCode: hash,
       entityID: classID,
       filters: filters,
+      public: publicity,
       properties: [],
       additionalFilters: "[]",
     })

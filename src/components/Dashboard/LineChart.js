@@ -110,7 +110,7 @@ function LineChart(props) {
             },
             scaleLabel: {
               display: true,
-              labelString: "Percentage of Properties",
+              labelString: "Percentage of Properties (of max # of properties)",
               lineHeight: 1,
               padding: 0,
             },
@@ -121,10 +121,13 @@ function LineChart(props) {
             ticks: {
               beginAtZero: true,
               max: props.maxValue,
+              callback: function (value, index, values) {
+                return value + "%";
+              },
             },
             scaleLabel: {
               display: true,
-              labelString: "Percentage of Items",
+              labelString: "Percentage of Items (of # of items)",
             },
           },
         ],
