@@ -100,6 +100,11 @@ export default function VirtualAutocomp(props) {
       <InputLabel shrink={true}>{props.label}</InputLabel>
       <Autocomplete
         size="small"
+        noOptionsText={
+          props.options.length > 0
+            ? `There are no options containing "${props.inputValue}"`
+            : "Type to see options"
+        }
         classes={{ listbox: classes.listbox, option: classes.option }}
         renderInput={(params) => (
           <TextField

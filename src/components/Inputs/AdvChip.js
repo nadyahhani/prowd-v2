@@ -12,6 +12,7 @@ import {
   List,
   TextField,
   InputAdornment,
+  Tooltip,
 } from "@material-ui/core";
 import SearchIcon from "@material-ui/icons/Search";
 
@@ -90,21 +91,23 @@ export default function AdvChip(props) {
   const [state, setState] = React.useState({ popoverOpen: false });
   return (
     <React.Fragment>
-      <Chip
-        size="small"
-        color="primary"
-        label={<Typography>{props.label}</Typography>}
-        // onClick={(e) => {
-        //   setState((s) => ({
-        //     ...s,
-        //     popoverOpen: true,
-        //     anchorEl: e.currentTarget,
-        //   }));
-        // }}
-        onDelete={props.onDelete}
-        variant="outlined"
-        disabled={props.disabled}
-      />
+      <Tooltip
+        title={
+          <div>
+            <Typography>Property: {props.property}</Typography>
+            <Typography>Value: {props.value}</Typography>
+          </div>
+        }
+      >
+        <Chip
+          size="small"
+          color="primary"
+          label={<Typography>{props.label}</Typography>}
+          onDelete={props.onDelete}
+          variant="outlined"
+          disabled={props.disabled}
+        />
+      </Tooltip>
       <Popover
         open={state.popoverOpen}
         anchorEl={state.anchorEl}

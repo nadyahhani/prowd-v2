@@ -86,6 +86,12 @@ export default function FilterBox(props) {
                     label={
                       props.renderTagText ? props.renderTagText(x) : x.label
                     }
+                    property={`${
+                      x.property ? x.property.label : x.filterLabel
+                    } (${x.property ? x.property.id : x.filterID})`}
+                    value={`${x.value ? x.value.label : x.filterValueLabel} (${
+                      x.value ? x.value.id : x.filterValueID
+                    })`}
                     onDelete={() => props.onDelete(index)}
                     disabled={props.disabled}
                   />

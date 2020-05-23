@@ -9,7 +9,7 @@ export default function Loading(props) {
         height: "100%",
         width: "100%",
         display: "flex",
-        justifyContent: "center",
+        justifyContent: props.alignLeft ? "flex-statrt" : "center",
         alignItems: "center",
       }}
     >

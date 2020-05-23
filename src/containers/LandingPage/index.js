@@ -25,6 +25,7 @@ import {
   TextField,
   Popover,
   Tooltip,
+  Collapse,
 } from "@material-ui/core";
 import tempData from "./tempData";
 import Navbar from "../../components/Navigation/Navbar";
@@ -181,6 +182,7 @@ function Landing(props) {
   const [state, setState] = React.useState({
     onboarding: false,
     classes: [],
+    classesItem: [],
     classInput: "",
     selectedClass: null,
     searchInput: "",
@@ -190,7 +192,7 @@ function Landing(props) {
     filtersOfSearch: [],
     selectedProps: "",
     appliedFilters: [],
-    inputtab: 0,
+    inputtab: 1,
     inputisloading: false,
     // item search
     itemsearchinput: "",
@@ -208,10 +210,21 @@ function Landing(props) {
     },
   });
 
-  React.useEffect(() => {}, []);
+  React.useEffect(() => {
+    getClasses("", (response) => {
+      response.success &&
+        setState((s) => ({
+          ...s,
+          inputisloading: false,
+          classes: getUnique([...s.classes, ...response.entities], "id"),
+        }));
+    });
+  }, []);
   const handleItemDialogClose = () =>
     setState((s) => ({
       ...s,
+      selectedClass: null,
+      classInput: "",
       itemDialogisOpen: false,
       itemsearchinput: "",
       iteminfoisloading: true,
@@ -247,7 +260,7 @@ function Landing(props) {
         >
           <Typography variant="h2" gutterBottom>
             {state.iteminfoisloading || !state.selecteditem ? (
-              <Loading variant="text" />
+              <Loading variant="text" alignLeft style={{ width: "45%" }} />
             ) : (
               `${state.selecteditem.label} (${state.selecteditem.id})`
             )}
@@ -256,7 +269,7 @@ function Landing(props) {
             {state.iteminfoisloading || !state.selecteditem ? (
               <Loading variant="text" />
             ) : (
-              "Items of my topic of interest can be classified as... (Select one)"
+              "Select the class which best describes the items of your topic of interest"
             )}
           </Typography>
           <Paper
@@ -266,7 +279,7 @@ function Landing(props) {
           >
             {state.iteminfoisloading || !state.selecteditem ? (
               <Typography>
-                <Loading />
+                <Loading variant="text" style={{ width: theme.spacing(10) }} />
               </Typography>
             ) : (
               <Grid container spacing={1}>
@@ -294,108 +307,117 @@ function Landing(props) {
               </Grid>
             )}
           </Paper>
-          <Typography
-            style={{
-              marginTop: theme.spacing(1),
-              fontWeight: "bold",
-            }}
-          >
-            {state.iteminfoisloading || !state.selecteditem ? (
-              <Loading variant="text" />
-            ) : (
-              `Need to be more specific? Select the statements
-            about ${state.selecteditem.label} that is similar to
-            other items of your topic of interest`
-            )}
-          </Typography>
-          <div>
-            <TextField
-              variant="outlined"
-              size="small"
-              fullWidth
-              margin="dense"
-              InputProps={{ startAdornment: <Search /> }}
-              placeholder="Search for statements..."
-              value={state.itemstatementsearch}
-              onChange={(e) => {
-                const tempVal = e.target.value;
-                setState((s) => ({
-                  ...s,
-                  itemstatementsearch: tempVal,
-                }));
-              }}
-            />
-          </div>
-          <TableContainer
-            component={(props) => (
-              <Paper {...props} variant="outlined" elevation={0} />
-            )}
-            style={{ height: theme.spacing(40) }}
-          >
-            <Table stickyHeader size="small">
-              <TableHead>
-                <TableRow>
-                  <TableCell />
-                  <TableCell>Property</TableCell>
-                  <TableCell>Value</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {state.iteminfoisloading || !state.selecteditem
-                  ? [0, 0, 0, 0, 0].map((item) => (
-                      <TableRow>
-                        <TableCell colSpan={3}>
-                          <Loading variant="text" />
-                        </TableCell>
-                      </TableRow>
-                    ))
-                  : state.iteminfo.filters
-                      .filter((item) =>
-                        `${item.property.label} (${item.property.id}) ${item.value.label} (${item.value.id})`
-                          .toLowerCase()
-                          .includes(state.itemstatementsearch.toLowerCase())
-                      )
-                      .map((item, index) => (
-                        <TableRow>
-                          <TableCell>
-                            <Checkbox
-                              color="primary"
-                              checked={
-                                state.filtersSelected[
-                                  `${item.property.id}${item.value.id}`
-                                ]
-                              }
-                              onChange={() => {
-                                let temp = { ...state.filtersSelected };
-                                if (
-                                  !temp[`${item.property.id}${item.value.id}`]
-                                ) {
-                                  temp[
-                                    `${item.property.id}${item.value.id}`
-                                  ] = true;
-                                } else {
-                                  temp[
-                                    `${item.property.id}${item.value.id}`
-                                  ] = false;
-                                }
-                                setState((s) => ({
-                                  ...s,
-                                  filtersSelected: temp,
-                                }));
-                              }}
-                            />
-                          </TableCell>
-                          <TableCell>
-                            {item.property.label} ({item.property.id})
-                          </TableCell>
-                          <TableCell>
-                            {item.value.label} ({item.value.id})
-                          </TableCell>
-                        </TableRow>
-                      ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
+          {!state.iteminfoisloading &&
+          state.selectedClass &&
+          state.iteminfo.classes.filter(
+            (item) => state.selectedClass.id === item.id
+          ).length !== 0 ? (
+            <React.Fragment>
+              <Typography
+                style={{
+                  marginTop: theme.spacing(1),
+                  fontWeight: "bold",
+                }}
+              >
+                {state.iteminfoisloading || !state.selecteditem ? (
+                  <Loading variant="text" />
+                ) : (
+                  `Need to be more specific? Filter the class by selecting statements
+            about ${state.selecteditem.label} that best describes your topic of interest`
+                )}
+              </Typography>
+              <div>
+                <TextField
+                  variant="outlined"
+                  size="small"
+                  fullWidth
+                  margin="dense"
+                  InputProps={{ startAdornment: <Search /> }}
+                  placeholder="Search for statements..."
+                  value={state.itemstatementsearch}
+                  onChange={(e) => {
+                    const tempVal = e.target.value;
+                    setState((s) => ({
+                      ...s,
+                      itemstatementsearch: tempVal,
+                    }));
+                  }}
+                />
+              </div>
+              <TableContainer
+                component={(props) => (
+                  <Paper {...props} variant="outlined" elevation={0} />
+                )}
+                style={{ height: theme.spacing(40) }}
+              >
+                <Table stickyHeader size="small">
+                  <TableHead>
+                    <TableRow>
+                      <TableCell />
+                      <TableCell>Property</TableCell>
+                      <TableCell>Value</TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {state.iteminfoisloading || !state.selecteditem
+                      ? [0, 0, 0, 0, 0].map((item) => (
+                          <TableRow>
+                            <TableCell colSpan={3}>
+                              <Loading variant="text" />
+                            </TableCell>
+                          </TableRow>
+                        ))
+                      : state.iteminfo.filters
+                          .filter((item) =>
+                            `${item.property.label} (${item.property.id}) ${item.value.label} (${item.value.id})`
+                              .toLowerCase()
+                              .includes(state.itemstatementsearch.toLowerCase())
+                          )
+                          .map((item, index) => (
+                            <TableRow>
+                              <TableCell>
+                                <Checkbox
+                                  color="primary"
+                                  checked={
+                                    state.filtersSelected[
+                                      `${item.property.id}${item.value.id}`
+                                    ]
+                                  }
+                                  onChange={() => {
+                                    let temp = { ...state.filtersSelected };
+                                    if (
+                                      !temp[
+                                        `${item.property.id}${item.value.id}`
+                                      ]
+                                    ) {
+                                      temp[
+                                        `${item.property.id}${item.value.id}`
+                                      ] = true;
+                                    } else {
+                                      temp[
+                                        `${item.property.id}${item.value.id}`
+                                      ] = false;
+                                    }
+                                    setState((s) => ({
+                                      ...s,
+                                      filtersSelected: temp,
+                                    }));
+                                  }}
+                                />
+                              </TableCell>
+                              <TableCell>
+                                {item.property.label} ({item.property.id})
+                              </TableCell>
+                              <TableCell>
+                                {item.value.label} ({item.value.id})
+                              </TableCell>
+                            </TableRow>
+                          ))}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+            </React.Fragment>
+          ) : null}
           <div
             style={{
               display: "flex",
@@ -403,30 +425,36 @@ function Landing(props) {
               marginTop: theme.spacing(1),
             }}
           >
-            <Button
-              disabled={!state.selectedClass}
-              variant="contained"
-              size="small"
-              color="primary"
-              onClick={() =>
-                setState((s) => ({
-                  ...s,
-                  appliedFilters: s.iteminfo.filters.filter(
-                    (item, index) =>
-                      s.filtersSelected[`${item.property.id}${item.value.id}`]
-                  ),
-                  inputtab: 1,
-                  itemDialogisOpen: false,
-                  itemsearchinput: "",
-                  iteminfoisloading: true,
-                  selecteditem: null,
-                  iteminfo: null,
-                  filtersSelected: {},
-                }))
-              }
-            >
-              Apply configuration
-            </Button>
+            <Tooltip title={<Typography>Select a class</Typography>}>
+              <div>
+                <Button
+                  disabled={!state.selectedClass}
+                  variant="contained"
+                  size="small"
+                  color="primary"
+                  onClick={() =>
+                    setState((s) => ({
+                      ...s,
+                      appliedFilters: s.iteminfo.filters.filter(
+                        (item, index) =>
+                          s.filtersSelected[
+                            `${item.property.id}${item.value.id}`
+                          ]
+                      ),
+                      inputtab: 1,
+                      itemDialogisOpen: false,
+                      itemsearchinput: "",
+                      iteminfoisloading: true,
+                      selecteditem: null,
+                      iteminfo: null,
+                      filtersSelected: {},
+                    }))
+                  }
+                >
+                  Apply configuration
+                </Button>
+              </div>
+            </Tooltip>
             <Button
               size="small"
               color="primary"
@@ -439,13 +467,8 @@ function Landing(props) {
         </Popover>
         <div style={{ width: "96%" }}>
           <VirtualAutocomp
-            placeholder="Type and select a good example of your topic of interest"
-            options={state.classes}
-            noOptionsText={
-              state.classes.length === 0
-                ? "Type to see options"
-                : `There are no items containing "${state.itemsearchinput}"`
-            }
+            placeholder="Type and select an item"
+            options={state.classesItem}
             inputProps={{
               autoFocus: true,
             }}
@@ -468,7 +491,7 @@ function Landing(props) {
                     setState((s) => ({
                       ...s,
                       inputisloading: false,
-                      classes: getUnique(
+                      classesItem: getUnique(
                         [...s.classes, ...response.entities],
                         "id"
                       ),
@@ -494,7 +517,9 @@ function Landing(props) {
                       iteminfo: {
                         classes: r.classes,
                         filters: r.filters.filter(
-                          (item) => item.property.id !== "P31"
+                          (item) =>
+                            item.property.id !== "P31" ||
+                            item.value.id[0] !== "Q"
                         ),
                       },
                     }));
@@ -545,14 +570,16 @@ function Landing(props) {
   };
   return (
     <ThemeProvider theme={theme}>
-      <OnboardingTour
-        open={state.onboarding}
-        onChange={(reason) => {
-          if (reason === "close") {
-            setState((s) => ({ ...s, onboarding: false }));
-          }
-        }}
-      />
+      {state.onboarding ? (
+        <OnboardingTour
+          open={state.onboarding}
+          onChange={(reason) => {
+            if (reason === "close") {
+              setState((s) => ({ ...s, onboarding: false }));
+            }
+          }}
+        />
+      ) : null}
       <div className={classes.mainLanding} id="home">
         <LandingTopIcon style={{ position: "absolute", width: "100%" }} />
         <Navbar />
@@ -614,8 +641,11 @@ function Landing(props) {
                     textColor="primary"
                     variant="fullWidth"
                   >
-                    <Tab label="Item Search" />
-                    <Tab label="Create Dashboard" id="create-dashboard-tab" />
+                    <Tab label="Topic Subject" id="topic-item-tab" />
+                    <Tab
+                      label="Configure Dashboard"
+                      id="create-dashboard-tab"
+                    />
                   </Tabs>
                 </div>
                 {state.inputtab === 1 ? (
@@ -635,101 +665,107 @@ function Landing(props) {
                         justifyContent: "space-between",
                       }}
                     >
-                      <div style={{ width: "94%" }}>
-                        <VirtualAutocomp
-                          label="Class"
-                          placeholder="e.g. Human, Disease, Country"
-                          options={state.classes}
-                          loading={state.inputisloading}
-                          inputValue={state.classInput}
-                          value={state.selectedClass}
-                          onInputChange={(e) => {
-                            // console.log(e);
-                            if (e) {
-                              const tempval = e.target.value;
-                              setState((s) => ({
-                                ...s,
-                                classInput: tempval,
-                                inputisloading: true,
-                                // classes: [],
-                              }));
-
-                              getClasses(e.target.value, (response) => {
-                                response.success &&
-                                  setState((s) => ({
-                                    ...s,
-                                    inputisloading: false,
-                                    classes: getUnique(
-                                      [...s.classes, ...response.entities],
-                                      "id"
-                                    ),
-                                  }));
-                              });
-                            }
-                          }}
-                          onChange={(event, newValue, reason) => {
-                            if (newValue) {
-                              setState((s) => ({
-                                ...s,
-                                selectedClass: newValue,
-                                classInput: `${newValue.label} (${newValue.id})`,
-                              }));
-                            }
-                            if (reason === "clear") {
-                              setState((s) => ({
-                                ...s,
-                                selectedClass: null,
-                                classInput: "",
-                              }));
-                            }
-                          }}
-                          onClose={(event, reason) => {
-                            console.log(reason, state.selectedClass);
-
-                            if (
-                              reason !== "select-option" &&
-                              !state.selectedClass
-                            ) {
-                              setState((s) => ({
-                                ...s,
-                                classInput: "",
-                                selectedClass: null,
-                              }));
-                            }
-                          }}
-                          getOptionLabel={(option) => {
-                            return `${option.label} (${option.id})${
-                              option.aliases
-                                ? ` also known as ${option.aliases.join(", ")}`
-                                : ""
-                            }`;
-                          }}
-                          renderOption={(option) => (
-                            <div>
-                              <Typography
-                                noWrap
-                              >{`${option.label} (${option.id})`}</Typography>
-                              <Typography
-                                variant="caption"
-                                style={{ lineHeight: "1.3vmin" }}
-                              >
-                                {cut(option.description, 500)}
-                              </Typography>
-                            </div>
-                          )}
-                        />
-                      </div>
-                      <Help
-                        text={
+                      {" "}
+                      <Tooltip
+                        placement="left"
+                        title={
                           <Typography component="div">
-                            Click on the examples above to get a hint.{" "}
+                            What are the items of your topic classified as?{" "}
                             <Box fontWeight="bold">
-                              Use the Search Item tab to configure the dashboard
-                              based on an item.
+                              Click on the examples at the bottom or use the
+                              "Topic Subject" tab to configure the dashboard
+                              based on an subject of your topic.
                             </Box>
                           </Typography>
                         }
-                      />
+                      >
+                        <div style={{ width: "100%" }}>
+                          <VirtualAutocomp
+                            label="Class"
+                            placeholder="Input the classification for the items in your topic"
+                            options={state.classes}
+                            loading={state.inputisloading}
+                            inputValue={state.classInput}
+                            value={state.selectedClass}
+                            onInputChange={(e) => {
+                              // console.log(e);
+                              if (e) {
+                                const tempval = e.target.value;
+                                setState((s) => ({
+                                  ...s,
+                                  classInput: tempval,
+                                  inputisloading: true,
+                                  // classes: [],
+                                }));
+
+                                getClasses(e.target.value, (response) => {
+                                  response.success &&
+                                    setState((s) => ({
+                                      ...s,
+                                      inputisloading: false,
+                                      classes: getUnique(
+                                        [...s.classes, ...response.entities],
+                                        "id"
+                                      ),
+                                    }));
+                                });
+                              }
+                            }}
+                            onChange={(event, newValue, reason) => {
+                              if (newValue) {
+                                setState((s) => ({
+                                  ...s,
+                                  selectedClass: newValue,
+                                  classInput: `${newValue.label} (${newValue.id})`,
+                                }));
+                              }
+                              if (reason === "clear") {
+                                setState((s) => ({
+                                  ...s,
+                                  selectedClass: null,
+                                  classInput: "",
+                                }));
+                              }
+                            }}
+                            onClose={(event, reason) => {
+                              console.log(reason, state.selectedClass);
+
+                              if (
+                                reason !== "select-option" &&
+                                !state.selectedClass
+                              ) {
+                                setState((s) => ({
+                                  ...s,
+                                  classInput: "",
+                                  selectedClass: null,
+                                }));
+                              }
+                            }}
+                            getOptionLabel={(option) => {
+                              return `${option.label} (${option.id})${
+                                option.aliases
+                                  ? ` also known as ${option.aliases.join(
+                                      ", "
+                                    )}`
+                                  : ""
+                              }`;
+                            }}
+                            renderOption={(option) => (
+                              <div>
+                                <Typography
+                                  noWrap
+                                >{`${option.label} (${option.id})`}</Typography>
+                                <Typography
+                                  variant="caption"
+                                  style={{ lineHeight: "1.3vmin" }}
+                                >
+                                  {cut(option.description, 500)}
+                                </Typography>
+                              </div>
+                            )}
+                          />
+                        </div>
+                      </Tooltip>
                     </Grid>
                     <Grid item>
                       <FilterBox
@@ -755,6 +791,39 @@ function Landing(props) {
                           setState((s) => ({ ...s, appliedFilters: [] }))
                         }
                       />
+                    </Grid>
+                    <Grid item>
+                      <Grid
+                        container
+                        spacing={1}
+                        justify="space-between"
+                        className={classes.exampleCarousel}
+                      >
+                        {[...tempData.ex].map((x, idx) => (
+                          // <GridListTile key={idx}>
+                          <Grid item key={idx}>
+                            <Chip
+                              size="small"
+                              variant="outlined"
+                              style={{ width: "98%" }}
+                              color="primary"
+                              onClick={() => {
+                                setState((s) => ({
+                                  ...s,
+                                  selectedClass: x.class,
+                                  classInput: `${x.class.label} (${x.class.id})`,
+                                  appliedFilters: x.filters,
+                                }));
+                              }}
+                              label={
+                                <Typography variant="body1">
+                                  {x.label}
+                                </Typography>
+                              }
+                            />
+                          </Grid>
+                        ))}
+                      </Grid>
                     </Grid>
                     <Grid item>
                       <div
@@ -810,7 +879,7 @@ function Landing(props) {
                         variant="h2"
                         style={{ marginBottom: theme.spacing(1) }}
                       >
-                        What are you interested in today?
+                        What is a subject of your topic of interest?
                       </Typography>
                     </Grid>
                     {itemSearch()}
@@ -825,7 +894,7 @@ function Landing(props) {
                           <Grid item key={idx}>
                             <Tooltip
                               title={
-                                <Typography>{`${x.label} (${x.id})`}</Typography>
+                                <Typography>{`Topic with this subject: ${x.topic}`}</Typography>
                               }
                             >
                               <Chip
@@ -833,9 +902,35 @@ function Landing(props) {
                                 variant="outlined"
                                 style={{ width: "98%" }}
                                 color="primary"
+                                onClick={() => {
+                                  setState((s) => ({
+                                    ...s,
+                                    selecteditem: x,
+                                    itemsearchinput: `${x.label} (${x.id})`,
+                                    itemDialogisOpen: true,
+                                    iteminfoisloading: true,
+                                    anchoritemDialog: document.getElementById(
+                                      "input-box"
+                                    ),
+                                  }));
+                                  getEntityInfo(x.id, (r) => {
+                                    if (r.success) {
+                                      setState((s) => ({
+                                        ...s,
+                                        iteminfoisloading: false,
+                                        iteminfo: {
+                                          classes: r.classes,
+                                          filters: r.filters.filter(
+                                            (item) => item.property.id !== "P31"
+                                          ),
+                                        },
+                                      }));
+                                    }
+                                  });
+                                }}
                                 label={
                                   <Typography variant="body1">
-                                    {x.topic}
+                                    {x.label} ({x.id})
                                   </Typography>
                                 }
                               />

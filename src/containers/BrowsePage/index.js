@@ -319,10 +319,14 @@ export default function BrowsePage(props) {
                           item.author === ""
                             ? "anonymous"
                             : item.author.toLowerCase()
-                        } ${item.entityInfo.entityLabel} ${item.filtersInfo.map(
-                          (filter) =>
-                            `${filter.filterLabel} ${filter.filterValueLabel}`
-                        )}`;
+                        } ${item.entityInfo.entityLabel} ${
+                          Array.isArray(item.filtersInfo)
+                            ? item.filtersInfo.map(
+                                (filter) =>
+                                  `${filter.filterLabel} ${filter.filterValueLabel}`
+                              )
+                            : ""
+                        }`;
                         return (
                           (state.classFilterValue
                             ? item.entityInfo.entityID ===

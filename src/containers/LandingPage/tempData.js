@@ -146,7 +146,7 @@ const tempData = {
       ],
     },
     {
-      label: "Countries of the World",
+      label: "Countries in Europe",
       class: {
         id: "Q6256",
         title: "Q6256",
@@ -160,10 +160,21 @@ const tempData = {
         match: { type: "alias", language: "en", text: "countries" },
         aliases: ["countries"],
       },
-      filters: [],
+      filters: [
+        {
+          property: {
+            id: "P30",
+            label: "continent",
+          },
+          value: {
+            id: "Q46",
+            label: "Europe",
+          },
+        },
+      ],
     },
     {
-      label: "Diseases",
+      label: "Diseases with Fever",
       class: {
         id: "Q12136",
         title: "Q12136",
@@ -175,7 +186,18 @@ const tempData = {
         description: "abnormal condition negatively affecting organisms",
         match: { type: "label", language: "en", text: "disease" },
       },
-      filters: [],
+      filters: [
+        {
+          property: {
+            id: "P780",
+            label: "symptoms",
+          },
+          value: {
+            id: "Q38933",
+            label: "fever",
+          },
+        },
+      ],
     },
   ],
 };

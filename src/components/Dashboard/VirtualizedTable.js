@@ -172,6 +172,7 @@ class MuiVirtualizedTable extends React.PureComponent {
               options={this.props.options ? this.props.options : []}
               renderInput={(params) => (
                 <Tooltip
+                  position="top"
                   title={
                     <Typography>Check the presence of a property</Typography>
                   }
