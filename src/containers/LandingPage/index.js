@@ -518,8 +518,8 @@ function Landing(props) {
                         classes: r.classes,
                         filters: r.filters.filter(
                           (item) =>
-                            item.property.id !== "P31" ||
-                            item.value.id[0] !== "Q"
+                            item.property.id !== "P31" &&
+                            item.value.id.slice(0, 1).includes("Q")
                         ),
                       },
                     }));
@@ -921,7 +921,11 @@ function Landing(props) {
                                         iteminfo: {
                                           classes: r.classes,
                                           filters: r.filters.filter(
-                                            (item) => item.property.id !== "P31"
+                                            (item) =>
+                                              item.property.id !== "P31" &&
+                                              item.value.id
+                                                .slice(0, 1)
+                                                .includes("Q")
                                           ),
                                         },
                                       }));
