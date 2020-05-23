@@ -522,6 +522,20 @@ export default function DashboardPage(props) {
 
   return (
     <ThemeProvider theme={theme}>
+      {state.onboarding.running ? (
+        <Onboarding
+          {...state.onboarding}
+          onChange={({ reason, state }) => {
+            if (reason === "stop") {
+              history.push(`/dashboards/${props.match.params.id}/profile`);
+              setState((s) => ({
+                ...s,
+                onboarding: { ...s.onboarding, running: false },
+              }));
+            }
+          }}
+        />
+      ) : null}
       <div className={classes.root}>
         {/* modals */}
         <Notif {...state.notif} />
@@ -575,6 +589,7 @@ export default function DashboardPage(props) {
             }}
           >
             <div
+              id="dashboard-name-author"
               style={{
                 display: "flex",
                 flexDirection: "row",
@@ -639,7 +654,7 @@ export default function DashboardPage(props) {
                         state.globalData.entity.entityID,
                         tempFilter,
                         {
-                          name: state.globalData.author,
+                          name: state.globalData.name,
                           author: val,
                         },
                         (r) => {}
@@ -755,7 +770,7 @@ export default function DashboardPage(props) {
                 onChange={(e) => {
                   if (e.reason === "restart_onboarding") {
                     history.push(
-                      `/dashboards/${props.match.params.id}/${props.match.params.page}/onboarding-${props.match.params.page}`
+                      `/dashboards/${props.match.params.id}/profile/onboarding-profile`
                     );
                   }
                 }}

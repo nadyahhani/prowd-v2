@@ -786,7 +786,7 @@ function Landing(props) {
                                 }),
                                 (response) =>
                                   history.push(
-                                    `/dashboards/${response.hashCode}/profile`
+                                    `/dashboards/${response.hashCode}/profile/onboarding-profile`
                                   )
                               );
                             }}

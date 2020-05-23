@@ -178,31 +178,6 @@ export default function Profile(props) {
 
   return (
     <ThemeProvider theme={theme}>
-      <Onboarding
-        {...props.data.onboarding}
-        hash={props.hash}
-        getCurrentStep={(curr) => {
-          if (props.data.onboarding.page === "example") {
-            if (curr >= 8) {
-              history.push(
-                `/dashboards/${props.hash}/analysis/onboarding-example`
-              );
-              props.updateData((s) => ({
-                ...s,
-                onboarding: { ...s.onboarding, running: false },
-              }));
-            } else if (curr >= 7) {
-              history.push(
-                `/dashboards/${props.hash}/compare/onboarding-example`
-              );
-              props.updateData((s) => ({
-                ...s,
-                onboarding: { ...s.onboarding, running: false },
-              }));
-            }
-          }
-        }}
-      />
       <Grid
         container
         spacing={1}
@@ -409,7 +384,7 @@ export default function Profile(props) {
                         <Box fontWeight="bold">
                           Distinct Properties{" "}
                           <Help
-                            text={`The number of information (property) about items of the ${props.data.entity.entityLabel} (${props.data.entity.entityID}) class with the applied filters.
+                            text={`The amount of information (property) about items of the ${props.data.entity.entityLabel} (${props.data.entity.entityID}) class with the applied filters.
                              This is also the total number of properties in the property frequency chart on the right.`}
                           />
                         </Box>

@@ -135,13 +135,36 @@ export const filterEntities = (data, param, sort = 0) => {
       .includes(param.toLowerCase())
   );
   result.sort((b, a) => {
+    // # of properties
+    if (sort === 1){
+      if (a.propertyCount < b.propertyCount) {
+        return 1;
+      } else if (a.propertyCount === b.propertyCount) {
+        if (
+          parseInt(a.percentile.slice(0, -1)) <
+          parseInt(b.percentile.slice(0, -1))
+        ) {
+          return 1;
+        } else {
+          return -1;
+        }
+      } else {
+        return -1;
+      }
+    }
     // property check
-    if (sort === 2) {
+    else if (sort === 2) {
       return a.entityProperties ? 1 : -1;
     }
+    else if (sort === 3) {
+      return !a.entityProperties ? 1 : -1;
+    }
     // entity label
-    else if (sort === 1) {
+    else if (sort === 4) {
       return b.label.toLowerCase() > a.label.toLowerCase() ? 1 : -1;
+    }
+    else if (sort === 5) {
+      return b.label.toLowerCase() < a.label.toLowerCase() ? 1 : -1;
     }
     // # of properties
     else {

@@ -141,7 +141,7 @@ export default function SimpleTabs(props) {
                   </Typography>
                 }
                 {...a11yProps(2)}
-                id="discover"
+                id="discover-tab"
               />
               {/* <div className={classes.fillerTab} /> */}
             </Tabs>

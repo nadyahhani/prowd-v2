@@ -163,32 +163,6 @@ export default function Compare(props) {
 
   return (
     <ThemeProvider theme={theme}>
-      <Onboarding
-        {...props.data.onboarding}
-        hash={props.hash}
-        goToStep={7}
-        getCurrentStep={(curr) => {
-          if (props.data.onboarding.page === "example") {
-            if (curr >= 8) {
-              history.push(
-                `/dashboards/${props.hash}/analysis/onboarding-example`
-              );
-              props.updateData((s) => ({
-                ...s,
-                onboarding: { ...s.onboarding, running: false },
-              }));
-            } else if (curr <= 6) {
-              history.push(
-                `/dashboards/${props.hash}/profile/onboarding-example`
-              );
-              props.updateData((s) => ({
-                ...s,
-                onboarding: { ...s.onboarding, running: false },
-              }));
-            }
-          }
-        }}
-      />
       <Grid
         container
         spacing={1}
@@ -602,8 +576,8 @@ export default function Compare(props) {
                           <Help
                             text={
                               <Typography>
-                                {`A peak on the left indicates that most items of that subclass has a low number of information (properties),
-                                 while a peak on the right indicates a high number of information which is ideal.`}
+                                {`A peak on the left indicates that most items of that subclass has a low amount of information (properties),
+                                 while a peak on the right indicates a high amount of information which is ideal.`}
                               </Typography>
                             }
                           />

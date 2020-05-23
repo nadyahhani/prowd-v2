@@ -79,15 +79,24 @@ export default function VennProperties(props) {
         result.intersection.valuesA.push(count1int);
         result.intersection.valuesB.push(count2int);
       }
+      // all a
+      if (count1int > 0) {
+        result.allA.labels.push(`${item.label} (${item.id})`);
+        result.allA.valuesA.push(count1int);
+        result.allA.valuesB.push(count2int);
+      }
+      // all b
+      if (count2int > 0) {
+        result.allB.labels.push(`${item.label} (${item.id})`);
+        result.allB.valuesA.push(count1int);
+        result.allB.valuesB.push(count2int);
+      }
     });
     tempPropsA.forEach((item) => {
       const count1int = parseInt(item.count1);
       const count2int = parseInt(item.count2);
-      // All A & exclusive A
+      // exclusive A
       if (count1int > 0) {
-        result.allA.labels.push(`${item.label} (${item.id})`);
-        result.allA.valuesA.push(count1int);
-        result.allA.valuesB.push(0);
         if (count2int === 0) {
           result.excA.labels.push(`${item.label} (${item.id})`);
           result.excA.valuesA.push(count1int);
@@ -98,11 +107,8 @@ export default function VennProperties(props) {
     tempPropsB.forEach((item) => {
       const count1int = parseInt(item.count1);
       const count2int = parseInt(item.count2);
-      // All B && exclusive B
+      // exclusive B
       if (count2int > 0) {
-        result.allB.labels.push(`${item.label} (${item.id})`);
-        result.allB.valuesA.push(0);
-        result.allB.valuesB.push(count2int);
         if (count1int === 0) {
           result.excB.labels.push(`${item.label} (${item.id})`);
           result.excB.valuesA.push(count1int);

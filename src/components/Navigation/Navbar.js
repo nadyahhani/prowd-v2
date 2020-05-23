@@ -14,6 +14,12 @@ import {
   Dialog,
   CircularProgress,
   Box,
+  TableContainer,
+  Table,
+  TableHead,
+  TableRow,
+  TableCell,
+  TableBody,
 } from "@material-ui/core";
 import theme from "../../theme";
 import { useHistory } from "react-router-dom";
@@ -22,6 +28,7 @@ import { getEntityInfo, getClasses } from "../../services/general";
 import { getUnique, cut } from "../../global";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import Loading from "../Misc/Loading";
+import { Search } from "@material-ui/icons";
 
 const useStyles = makeStyles(() => ({
   root: {
@@ -127,7 +134,7 @@ export default function Navbar() {
       {...params}
       size="small"
       variant="outlined"
-      placeholder="Search for Wikidata Items..."
+      placeholder="Search Wikidata for item..."
       inputProps={{
         ...params.inputProps,
         autoComplete: "new-password",
@@ -181,7 +188,7 @@ export default function Navbar() {
         >
           <Grid item>
             <Typography>
-              <Box fontWeight="bold">Item Class and Filters</Box>
+              <Box fontWeight="bold">Item information on Wikidata</Box>
             </Typography>
           </Grid>
           <Grid
@@ -196,7 +203,7 @@ export default function Navbar() {
             <div style={{ width: "100%" }}>
               <Autocomplete
                 disableClearable
-                label="Search Wikidata"
+                label="Search Wikidata for item..."
                 placeholder="Type and select the item to see its class and filters"
                 options={state.classes}
                 loading={state.searchisloading}
@@ -299,10 +306,8 @@ export default function Navbar() {
             >
               {state.selectedSearch ? state.selectedSearch.label : ""} is an
               instance of th
-              {state.classOfSearch.length > 1 ? "ese " : "is "}
-              <Box fontWeight="bold" style={{ marginLeft: theme.spacing(1) }}>
-                Class{state.classOfSearch.length > 1 ? "es" : ""}
-              </Box>
+              {state.classOfSearch.length > 1 ? "ese " : "is "} Class
+              {state.classOfSearch.length > 1 ? "es" : ""}
             </Typography>
             <Paper
               variant="outlined"
@@ -337,8 +342,7 @@ export default function Navbar() {
               style={{ display: "flex", flexDirection: "row" }}
             >
               Statements about{" "}
-              {state.selectedSearch ? state.selectedSearch.label : ""} (
-              <Box fontWeight="bold">Filters</Box>)
+              {state.selectedSearch ? state.selectedSearch.label : ""}
             </Typography>
             <Autocomplete
               freeSolo
@@ -360,6 +364,10 @@ export default function Navbar() {
                     ...params.inputProps,
                     autoComplete: "new-password",
                   }}
+                  InputProps={{
+                    ...params.InputProps,
+                    startAdornment: <Search />,
+                  }}
                 />
               )}
               onInputChange={(e, val, reason) => {
@@ -379,38 +387,47 @@ export default function Navbar() {
                 }
               }}
             />
-            <Paper
-              variant="outlined"
-              elevation={0}
-              style={{
-                padding: theme.spacing(1),
-                width: "98%",
-                height: theme.spacing(30),
-                overflowY: "scroll",
-              }}
-            >
-              {state.searchisloading ? (
-                <Loading />
-              ) : (
-                <Grid container spacing={1}>
-                  {state.filtersOfSearch
-                    .filter((obj) => {
-                      return `${obj.property.label} (${obj.property.id}): ${obj.value.label} (${obj.value.id})`
-                        .toLowerCase()
-                        .includes(state.filterInput.toLowerCase());
-                    })
-                    .map((item) => (
-                      <Grid item>
-                        <Chip
-                          size="small"
-                          label={`${item.property.label} (${item.property.id}): ${item.value.label} (${item.value.id})`}
-                          variant="outlined"
-                        />
-                      </Grid>
-                    ))}
-                </Grid>
+            <TableContainer
+              component={(props) => (
+                <Paper {...props} variant="outlined" elevation={0} />
               )}
-            </Paper>
+              style={{ height: theme.spacing(40) }}
+            >
+              <Table stickyHeader size="small">
+                <TableHead>
+                  <TableRow>
+                    <TableCell>Property</TableCell>
+                    <TableCell>Value</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {state.searchisloading
+                    ? [0, 0, 0, 0, 0].map((item) => (
+                        <TableRow>
+                          <TableCell colSpan={3}>
+                            <Loading variant="text" />
+                          </TableCell>
+                        </TableRow>
+                      ))
+                    : state.filtersOfSearch
+                        .filter((item) =>
+                          `${item.property.label} (${item.property.id}) ${item.value.label} (${item.value.id})`
+                            .toLowerCase()
+                            .includes(state.filterInput.toLowerCase())
+                        )
+                        .map((item, index) => (
+                          <TableRow>
+                            <TableCell>
+                              {item.property.label} ({item.property.id})
+                            </TableCell>
+                            <TableCell>
+                              {item.value.label} ({item.value.id})
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
           </Grid>
           <Grid item>
             <Button
@@ -521,7 +538,7 @@ export default function Navbar() {
             <Grid item xs={3} id="search-wikidata-navbar">
               <Autocomplete
                 label=""
-                placeholder="Search for Wikidata Items..."
+                placeholder="Search Wikidata for item..."
                 options={state.classes}
                 loading={state.searchisloading}
                 noOptionsText={

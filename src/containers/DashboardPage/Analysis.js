@@ -510,32 +510,6 @@ export default function Analysis(props) {
 
   return (
     <ThemeProvider theme={theme}>
-      <Onboarding
-        {...props.data.onboarding}
-        hash={props.hash}
-        goToStep={8}
-        getCurrentStep={(curr) => {
-          if (props.data.onboarding.page === "example") {
-            if (curr <= 6) {
-              history.push(
-                `/dashboards/${props.hash}/profile/onboarding-example`
-              );
-              props.updateData((s) => ({
-                ...s,
-                onboarding: { ...s.onboarding, running: false },
-              }));
-            } else if (curr <= 7) {
-              history.push(
-                `/dashboards/${props.hash}/compare/onboarding-example`
-              );
-              props.updateData((s) => ({
-                ...s,
-                onboarding: { ...s.onboarding, running: false },
-              }));
-            }
-          }
-        }}
-      />
       <Grid
         container
         spacing={1}
