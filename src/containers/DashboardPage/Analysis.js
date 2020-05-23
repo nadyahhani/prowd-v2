@@ -55,6 +55,12 @@ const useStyles = makeStyles((theme) => ({
     padding: theme.spacing(1),
   },
   table: { height: "87%", overflowY: "scroll", overflowX: "hidden" },
+  // tableCell: {
+  //   padding: `${theme.spacing(2)}px 4px`,
+  // },
+  // tableCellnum: {
+  //   padding: `${theme.spacing(2)}px 4px ${theme.spacing(2)} 4px`,
+  // },
   //charts
   histogramChart: {
     paddingTop: theme.spacing(1),
@@ -108,10 +114,13 @@ export default function Analysis(props) {
     data.forEach((item) => {
       temp.push(item.id);
     });
-    console.log(config);
 
     if (!config.pull) {
-      setState((s) => ({ ...s, loading: { ...s.loading, gini: true } }));
+      setState((s) => ({
+        ...s,
+        limit: config.limit,
+        loading: { ...s.loading, gini: true },
+      }));
     }
     editDiscover(props.hash, temp, (r) => {
       if (r.success) {
@@ -242,7 +251,7 @@ export default function Analysis(props) {
             <Table stickyHeader size="small">
               <TableHead>
                 <TableRow>
-                  <TableCell colSpan={state.dimensions.length + 6}>
+                  <TableCell colSpan={state.dimensions.length * 2 + 6}>
                     <Grid container direction="row" spacing={1}>
                       <Grid item xs={7}>
                         <TextField
@@ -251,9 +260,17 @@ export default function Analysis(props) {
                           margin="dense"
                           fullWidth
                           placeholder="Search..."
+                          value={state.searchSubclassTable}
+                          onChange={(e) => {
+                            let val = e.target.value;
+                            setState((s) => ({
+                              ...s,
+                              searchSubclassTable: val,
+                            }));
+                          }}
                         />
                       </Grid>
-                      <Grid item xs={3}>
+                      <Grid item xs={5}>
                         <TextField
                           select
                           fullWidth
@@ -265,10 +282,6 @@ export default function Analysis(props) {
                             }))
                           }
                           variant="outlined"
-                          style={{
-                            width: theme.spacing(20),
-                            marginLeft: theme.spacing(1),
-                          }}
                           size="small"
                           margin="dense"
                           label="Sort by"
@@ -312,65 +325,156 @@ export default function Analysis(props) {
             </Table>
           </TableContainer>
           <TableContainer component="div" className={classes.table}>
-            <Table stickyHeader size="small">
+            <Table stickyHeader size="small" padding="default">
               <TableHead>
                 <TableRow>
-                  <TableCell>{state.dimensions[0].label}</TableCell>
+                  <TableCell className={classes.tableCell} colSpan={2}>
+                    {`${state.dimensions[0].label} (${state.dimensions[0].id})`}
+                  </TableCell>
                   {state.dimensions.length === 2 ? (
-                    <TableCell>{state.dimensions[1].label}</TableCell>
+                    <TableCell className={classes.tableCell} colSpan={2}>
+                      {`${state.dimensions[1].label} (${state.dimensions[1].id})`}
+                    </TableCell>
                   ) : null}
-                  <TableCell>Item Count</TableCell>
-                  <TableCell>Imbalance Score</TableCell>
-                  <TableCell>Average Properties</TableCell>
-                  <TableCell />
+                  <TableCell className={classes.tableCell} align="right">
+                    Item Count
+                  </TableCell>
+                  <TableCell className={classes.tableCell} align="right">
+                    Imbalance Score
+                  </TableCell>
+                  <TableCell className={classes.tableCell} align="right">
+                    Average Properties
+                  </TableCell>
+                  {/* <TableCell /> */}
                 </TableRow>
               </TableHead>
               <TableBody>
-                {sorted.map((row, idx) => {
-                  return (
-                    <TableRow>
-                      <TableCell>{row.analysis_info.item_1_label}</TableCell>
-                      {state.dimensions.length === 2 ? (
-                        <TableCell>{row.analysis_info.item_2_label}</TableCell>
-                      ) : null}
-                      <TableCell align="right">{row.amount}</TableCell>
-                      <TableCell align="right">
-                        <Typography
-                          component="div"
-                          style={{
-                            display: "flex",
-                            flexDirection: "row",
-                            alignItems: "center",
-                            justifyContent: "space-between",
-                          }}
+                {state.loading.gini
+                  ? [0, 0, 0, 0, 0, 0, 0].map((item) => (
+                      <TableRow>
+                        <TableCell className={classes.tableCell} colSpan={2}>
+                          <Loading variant="text" />
+                        </TableCell>
+                        {state.dimensions.length === 2 ? (
+                          <TableCell className={classes.tableCell} colSpan={2}>
+                            <Loading variant="text" />
+                          </TableCell>
+                        ) : null}
+                        <TableCell
+                          className={classes.tableCellnum}
+                          align="right"
                         >
-                          <div
+                          <Loading variant="text" />
+                        </TableCell>
+                        <TableCell
+                          className={classes.tableCellnum}
+                          align="right"
+                        >
+                          <Typography
+                            component="div"
                             style={{
-                              width: theme.spacing(1),
-                              height: theme.spacing(1),
-                              borderRadius: "50%",
-                              backgroundColor:
-                                row.gini < 0.2
-                                  ? theme.palette.success.main
-                                  : row.gini >= 0.4
-                                  ? theme.palette.error.main
-                                  : theme.palette.warning.main,
+                              display: "flex",
+                              flexDirection: "row",
+                              alignItems: "center",
+                              justifyContent: "flex-end",
                             }}
-                          />{" "}
-                          {row.gini}
-                        </Typography>
-                      </TableCell>
-                      <TableCell align="right">
-                        {Math.ceil(row.statistics.average_distinct_properties)}
-                      </TableCell>
-                      <TableCell>
-                        <IconButton size="small" edge="end">
-                          <MoreHoriz />
-                        </IconButton>
-                      </TableCell>
-                    </TableRow>
-                  );
-                })}
+                          >
+                            <Loading variant="text" />
+                          </Typography>
+                        </TableCell>
+                        <TableCell
+                          className={classes.tableCellnum}
+                          align="right"
+                        >
+                          <Loading variant="text" />
+                        </TableCell>
+                      </TableRow>
+                    ))
+                  : sorted
+                      .filter((item) =>
+                        `${item.analysis_info.item_1_label} ${
+                          state.dimensions.length === 2
+                            ? item.analysis_info.item_2_label
+                            : ""
+                        }`
+                          .toLowerCase()
+                          .includes(state.searchSubclassTable.toLowerCase())
+                      )
+                      .map((row, idx) => {
+                        return (
+                          <TableRow>
+                            <TableCell
+                              className={classes.tableCell}
+                              colSpan={2}
+                            >
+                              {`${row.analysis_info.item_1_label}`}
+                            </TableCell>
+                            {state.dimensions.length === 2 ? (
+                              <TableCell
+                                className={classes.tableCell}
+                                colSpan={2}
+                              >
+                                {row.analysis_info.item_2_label}
+                              </TableCell>
+                            ) : null}
+                            <TableCell
+                              className={classes.tableCellnum}
+                              align="right"
+                            >
+                              {row.amount}
+                            </TableCell>
+                            <TableCell
+                              className={classes.tableCellnum}
+                              align="right"
+                            >
+                              <Typography
+                                component="div"
+                                style={{
+                                  display: "flex",
+                                  flexDirection: "row",
+                                  alignItems: "center",
+                                  justifyContent: "flex-end",
+                                }}
+                              >
+                                <div
+                                  style={{
+                                    width: theme.spacing(1),
+                                    height: theme.spacing(1),
+                                    borderRadius: "50%",
+                                    marginRight: theme.spacing(1),
+                                    backgroundColor:
+                                      row.gini < 0.2
+                                        ? theme.palette.success.main
+                                        : row.gini >= 0.4
+                                        ? theme.palette.error.main
+                                        : theme.palette.warning.main,
+                                  }}
+                                />{" "}
+                                {row.gini.toFixed(3)}
+                              </Typography>
+                            </TableCell>
+                            <TableCell
+                              className={classes.tableCellnum}
+                              align="right"
+                            >
+                              {Number.isNaN(
+                                Math.ceil(
+                                  row.statistics.average_distinct_properties
+                                )
+                              )
+                                ? 0
+                                : Math.ceil(
+                                    row.statistics.average_distinct_properties
+                                  )}
+                            </TableCell>
+                            {/* <TableCell>
+                          <IconButton size="small" edge="end">
+                            <MoreHoriz />
+                          </IconButton>
+                        </TableCell> */}
+                          </TableRow>
+                        );
+                      })}
               </TableBody>
             </Table>
           </TableContainer>

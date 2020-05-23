@@ -9,6 +9,7 @@ import analysis_1 from "./analysis_ 1.svg";
 import files_and_folder_1 from "./files_and_folder 1.svg";
 import compare_illustration from "./CompareIllustration.svg";
 import discover_illustration from "./discover_illustration.svg";
+import no_instances from "./no_instances.svg";
 import mindmap from "./mindmap.svg";
 import logo from "./logo.svg";
 import logoMpii from "./logo-mpii.png";
@@ -110,6 +111,9 @@ function MpiiLogo(props) {
 function DouglasAdamsStructure(props) {
   return <img {...props} src={douglasAdams} alt="logo_mpii" />;
 }
+function NoInstancesLogo(props) {
+  return <img {...props} src={no_instances} alt="no_instances" />;
+}
 export {
   AllIcon,
   AllAIcon,
@@ -127,5 +131,6 @@ export {
   UILogo,
   UnibzLogo,
   MpiiLogo,
-  DouglasAdamsStructure
+  DouglasAdamsStructure,
+  NoInstancesLogo
 };

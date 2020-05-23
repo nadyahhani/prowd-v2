@@ -35,6 +35,7 @@ import TableSort from "../../components/Misc/TableSort";
 import Onboarding from "../../components/Misc/Onboarding";
 import Link from "../../components/Misc/Link";
 import { useHistory } from "react-router-dom";
+import { NoInstancesLogo } from "../../images/export";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -178,437 +179,471 @@ export default function Profile(props) {
 
   return (
     <ThemeProvider theme={theme}>
-      <Grid
-        container
-        spacing={1}
-        direction="row"
-        classes={{ root: classes.root }}
-        id="profile-info-block"
-      >
+      {!(state.loading.gini || state.loading.properties) &&
+      state.entities.length === 0 ? (
+        <div
+          className={classes.root}
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          <Typography variant="h2" gutterBottom>
+            This topic does not seem to have any instances :(
+          </Typography>
+          <NoInstancesLogo />
+          <Typography variant="h2" style={{ width: "40%" }} gutterBottom>
+            Try changing the Class and Filters
+          </Typography>
+          <Typography gutterBottom style={{ width: "40%" }} align="justify">
+            You can use the searchbar on the top right of the page to find
+            statements about an item which you can use as the class and filters
+            input.
+          </Typography>
+        </div>
+      ) : (
         <Grid
-          item
-          xs={5}
-          classes={{ root: classes.outerGrid }}
-          style={{ display: "flex" }}
+          container
+          spacing={1}
+          direction="row"
+          classes={{ root: classes.root }}
+          id="profile-info-block"
         >
           <Grid
-            container
-            direction="column"
-            spacing={1}
-            style={{ flex: "1 1 auto" }}
-          >
-            <Grid item xs={12} style={{ display: "flex" }}>
-              <Paper
-                style={{ width: "100%", overflowY: "scroll" }}
-                id="profile-item-table"
-              >
-                {state.loading.gini || state.loading.properties ? (
-                  <Loading />
-                ) : (
-                  <div
-                    style={{
-                      height: "100%",
-                      width: "100%",
-                      overflow: "hidden",
-                      display: "flex",
-                      flexDirection: "column",
-                    }}
-                  >
-                    <Grid
-                      container
-                      className={classes.tableToolbar}
-                      spacing={1}
-                      justify="center"
-                      alignItems="center"
-                    >
-                      <Grid item xs={7}>
-                        <TextField
-                          placeholder="Search for item..."
-                          size="small"
-                          variant="outlined"
-                          fullWidth
-                          InputProps={{
-                            startAdornment: (
-                              <InputAdornment position="start">
-                                <Search />
-                              </InputAdornment>
-                            ),
-                          }}
-                          onChange={(e) => {
-                            let temp = e.target.value;
-                            setState((s) => ({ ...s, tableSearch: temp }));
-                          }}
-                        />
-                      </Grid>
-                      <Grid item xs={3}>
-                        <TableSort
-                          onChange={(val) =>
-                            setState((s) => ({ ...s, tableSort: val }))
-                          }
-                        />
-                      </Grid>
-                      <Grid item>
-                        <Tooltip title="Download items data">
-                          <IconButton size="small" edge="end">
-                            <SaveAltIcon color="primary" />
-                          </IconButton>
-                        </Tooltip>
-                      </Grid>
-                      <Grid item>
-                        <Tooltip title="Open query in Wikidata">
-                          <a
-                            href={state.giniData.query_link}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                          >
-                            <IconButton size="small" edge="end" color="primary">
-                              <OpenInNew />
-                            </IconButton>
-                          </a>
-                        </Tooltip>
-                      </Grid>
-                    </Grid>
-                    <div className={classes.table}>
-                      <VirtualizedTable
-                        rows={filterEntities(
-                          state.entities,
-                          state.tableSearch,
-                          state.tableSort
-                        )}
-                        columns={tableColumns}
-                        rowHeight={50}
-                        headerHeight={60}
-                        selectProperty={checkProperty}
-                        options={state.mappedProperties.labels}
-                        loading={state.loading.checkProperty}
-                      />
-                    </div>
-                  </div>
-                )}
-              </Paper>
-            </Grid>
-          </Grid>
-        </Grid>
-
-        <Grid item xs={3} classes={{ root: classes.outerGrid }}>
-          <div
-            style={{
-              width: "100%",
-              height: "100%",
-              display: "flex",
-              flexDirection: "column",
-            }}
+            item
+            xs={5}
+            classes={{ root: classes.outerGrid }}
+            style={{ display: "flex" }}
           >
             <Grid
               container
+              direction="column"
               spacing={1}
-              style={{
-                // width: "100%",
-                height: "25%",
-                marginBottom: theme.spacing(1),
-              }}
+              style={{ flex: "1 1 auto" }}
             >
-              <Grid item xs={5} style={{ display: "flex" }}>
-                <Paper classes={{ root: classes.card }}>
-                  {!state.loading.gini ? (
-                    <React.Fragment>
-                      <Typography variant="h1" component="div">
-                        <Box fontWeight="medium">
-                          {state.giniData.amount
-                            ? state.giniData.amount
-                            : state.entities.length}
-                        </Box>
-                      </Typography>
-                      <Typography
-                        component="div"
-                        style={{
-                          display: "flex",
-                          flexDirection: "row",
-                          justifyContent: "space-between",
-                          alignItems: "center",
-                        }}
+              <Grid item xs={12} style={{ display: "flex" }}>
+                <Paper
+                  style={{ width: "100%", overflowY: "scroll" }}
+                  id="profile-item-table"
+                >
+                  {state.loading.gini || state.loading.properties ? (
+                    <Loading />
+                  ) : (
+                    <div
+                      style={{
+                        height: "100%",
+                        width: "100%",
+                        overflow: "hidden",
+                        display: "flex",
+                        flexDirection: "column",
+                      }}
+                    >
+                      <Grid
+                        container
+                        className={classes.tableToolbar}
+                        spacing={1}
+                        justify="center"
+                        alignItems="center"
                       >
-                        {props.data.entity ? (
-                          <Box fontWeight="bold">
-                            Items{" "}
-                            <Help
-                              text={`The number of items which are instances of ${props.data.entity.entityLabel} (${props.data.entity.entityID}) with the applied filters.
-                             This is also the number of items in the item table on the left.`}
-                            />
-                          </Box>
-                        ) : (
-                          <Loading variant="text" />
-                        )}
-                        {state.giniData.exceedLimit ? (
-                          <Tooltip
-                            title={
-                              <Typography>
-                                This number is limited and is only a sample of
-                                the whole population{" "}
-                              </Typography>
+                        <Grid item xs={7}>
+                          <TextField
+                            placeholder="Search for item..."
+                            size="small"
+                            variant="outlined"
+                            fullWidth
+                            InputProps={{
+                              startAdornment: (
+                                <InputAdornment position="start">
+                                  <Search />
+                                </InputAdornment>
+                              ),
+                            }}
+                            onChange={(e) => {
+                              let temp = e.target.value;
+                              setState((s) => ({ ...s, tableSearch: temp }));
+                            }}
+                          />
+                        </Grid>
+                        <Grid item xs={3}>
+                          <TableSort
+                            onChange={(val) =>
+                              setState((s) => ({ ...s, tableSort: val }))
                             }
-                            aria-label="warning"
-                          >
-                            <IconButton color="primary" size="small" edge="end">
-                              <WarningOutlinedIcon
-                                style={{ color: theme.palette.warning.main }}
-                              />
+                          />
+                        </Grid>
+                        <Grid item>
+                          <Tooltip title="Download items data">
+                            <IconButton size="small" edge="end">
+                              <SaveAltIcon color="primary" />
                             </IconButton>
                           </Tooltip>
-                        ) : null}
-                      </Typography>
-                    </React.Fragment>
-                  ) : (
-                    <Loading />
-                  )}
-                </Paper>
-              </Grid>
-              <Grid item xs={7} style={{ display: "flex" }}>
-                <Paper classes={{ root: classes.card }}>
-                  {!state.loading.properties && props.data.entity ? (
-                    <React.Fragment>
-                      <Typography variant="h1" component="div">
-                        <Box fontWeight="medium">
-                          {state.mappedProperties.labels.length}
-                        </Box>
-                      </Typography>
-                      <Typography
-                        component="div"
-                        style={{
-                          display: "flex",
-                          flexDirection: "row",
-                          justifyContent: "space-between",
-                          alignItems: "center",
-                        }}
-                      >
-                        <Box fontWeight="bold">
-                          Distinct Properties{" "}
-                          <Help
-                            text={`The amount of information (property) about items of the ${props.data.entity.entityLabel} (${props.data.entity.entityID}) class with the applied filters.
-                             This is also the total number of properties in the property frequency chart on the right.`}
-                          />
-                        </Box>
-                      </Typography>
-                    </React.Fragment>
-                  ) : (
-                    <Loading />
+                        </Grid>
+                        <Grid item>
+                          <Tooltip title="Open query in Wikidata">
+                            <a
+                              href={state.giniData.query_link}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                            >
+                              <IconButton
+                                size="small"
+                                edge="end"
+                                color="primary"
+                              >
+                                <OpenInNew />
+                              </IconButton>
+                            </a>
+                          </Tooltip>
+                        </Grid>
+                      </Grid>
+                      <div className={classes.table}>
+                        <VirtualizedTable
+                          rows={filterEntities(
+                            state.entities,
+                            state.tableSearch,
+                            state.tableSort
+                          )}
+                          columns={tableColumns}
+                          rowHeight={50}
+                          headerHeight={60}
+                          selectProperty={checkProperty}
+                          options={state.mappedProperties.labels}
+                          loading={state.loading.checkProperty}
+                        />
+                      </div>
+                    </div>
                   )}
                 </Paper>
               </Grid>
             </Grid>
+          </Grid>
 
-            <Paper
+          <Grid item xs={3} classes={{ root: classes.outerGrid }}>
+            <div
               style={{
-                padding: theme.spacing(1),
-                flex: "1 1 auto",
-                height: "50%",
-              }}
-            >
-              {!state.loading.gini ? (
-                <React.Fragment>
-                  <div
-                    style={{
-                      display: "flex",
-                      flexDirection: "row",
-                      justifyContent: "space-between",
-                      alignItems: "center",
-                      width: "100%",
-                    }}
-                  >
-                    <Typography
-                      component="div"
-                      style={{
-                        display: "flex",
-                        flexDirection: "row",
-                        justifyContent: "space-between",
-                        alignItems: "center",
-                      }}
-                    >
-                      <Box fontWeight="bold">Topic Imbalance</Box>
-                      <Help
-                        text={
-                          <Typography component="div">
-                            {`The imbalance score for this topic is ${
-                              state.giniData.gini
-                            } which is the area of the ${(() => {
-                              if (state.giniData.gini < 0.2) {
-                                return "green";
-                              } else if (state.giniData.gini >= 0.4) {
-                                return "red";
-                              } else {
-                                return "yellow";
-                              }
-                            })()} section of the chart. A balanced topic's score would be closer to 0 as the area gets smaller as well. 
-                           A balanced topic indicates that items of the topic has similar amount of information. The imbalance score is based on the Gini Coefficient.`}
-                          </Typography>
-                        }
-                      />
-                    </Typography>
-
-                    <Status value={state.giniData.gini}>Imbalanced</Status>
-                  </div>
-                  <GiniChart
-                    labels={state.giniData.percentileData}
-                    data={state.giniData.data}
-                    gini={state.giniData.gini}
-                    actual={state.giniData.each_amount}
-                    insight={state.giniData.insight}
-                    classes={{
-                      root: classes.giniChartroot,
-                      ChartWrapper: classes.giniChart,
-                    }}
-                  />
-                </React.Fragment>
-              ) : (
-                <Loading />
-              )}
-            </Paper>
-          </div>
-        </Grid>
-        <Grid item xs={4} classes={{ root: classes.outerGrid }}>
-          <div
-            style={{
-              width: "100%",
-              height: "100%",
-              display: "flex",
-              flexDirection: "column",
-            }}
-          >
-            <Paper
-              style={{
-                // width: "100%",
-                height: "40%",
-                marginBottom: theme.spacing(1),
-                padding: theme.spacing(1),
-              }}
-            >
-              {!state.loading.properties && !state.loading.gini ? (
-                <React.Fragment>
-                  <Typography
-                    component="div"
-                    style={{
-                      display: "flex",
-                      flexDirection: "row",
-                      justifyContent: "space-between",
-                      width: "100%",
-                    }}
-                  >
-                    <Box fontWeight="bold">
-                      Property Frequency{" "}
-                      <Help
-                        text={
-                          <Typography>{`Every item in Wikidata is linked with information (property). Property frequency is how many items possess a certain piece of information (property). 
-                      You can see which properties are common, and those which are less common.`}</Typography>
-                        }
-                      />
-                    </Box>
-                    <Typography
-                      component="div"
-                      style={{
-                        display: "flex",
-                        flexDirection: "row",
-                        justifyContent: "space-between",
-                        alignItems: "center",
-                        width: "50%",
-                      }}
-                    >
-                      <PercentageSwitch
-                        onChange={(newVal) =>
-                          setState((s) => ({ ...s, propertyPercent: newVal }))
-                        }
-                      />
-                      <Box style={{ marginLeft: theme.spacing(1) }}>
-                        <FormControl
-                          variant="outlined"
-                          size="small"
-                          className={classes.formControl}
-                        >
-                          <Select
-                            value={state.propertySort}
-                            onChange={(e, child) => {
-                              setState((s) => ({
-                                ...s,
-                                propertySort: child.props.value,
-                              }));
-                            }}
-                          >
-                            <MenuItem value={0}>Descending</MenuItem>
-                            <MenuItem value={1}>Ascending</MenuItem>
-                          </Select>
-                        </FormControl>
-                      </Box>
-                    </Typography>
-                  </Typography>
-                  <ProfileProperties
-                    max={state.giniData.amount}
-                    labels={state.mappedProperties.labels}
-                    values={state.mappedProperties.values}
-                    propertySort={state.propertySort}
-                    propertyPercent={state.propertyPercent}
-                  />
-                </React.Fragment>
-              ) : (
-                <Loading />
-              )}
-            </Paper>
-
-            <Paper
-              style={{
-                padding: theme.spacing(1),
-                flex: "1 1 auto",
-                height: "70%",
+                width: "100%",
+                height: "100%",
                 display: "flex",
                 flexDirection: "column",
               }}
             >
-              {!state.loading.gini ? (
-                <React.Fragment>
-                  <Typography component="div" gutterBottom>
-                    <Box fontWeight="bold">
-                      Property Distribution{" "}
-                      <Help
-                        text={
-                          <Typography>{`From the shape of the distribution, you can see whether most of the 
+              <Grid
+                container
+                spacing={1}
+                style={{
+                  // width: "100%",
+                  height: "25%",
+                  marginBottom: theme.spacing(1),
+                }}
+              >
+                <Grid item xs={5} style={{ display: "flex" }}>
+                  <Paper classes={{ root: classes.card }}>
+                    {!state.loading.gini ? (
+                      <React.Fragment>
+                        <Typography variant="h1" component="div">
+                          <Box fontWeight="medium">
+                            {state.giniData.amount
+                              ? state.giniData.amount
+                              : state.entities.length}
+                          </Box>
+                        </Typography>
+                        <Typography
+                          component="div"
+                          style={{
+                            display: "flex",
+                            flexDirection: "row",
+                            justifyContent: "space-between",
+                            alignItems: "center",
+                          }}
+                        >
+                          {props.data.entity ? (
+                            <Box fontWeight="bold">
+                              Items{" "}
+                              <Help
+                                text={`The number of items which are instances of ${props.data.entity.entityLabel} (${props.data.entity.entityID}) with the applied filters.
+                             This is also the number of items in the item table on the left.`}
+                              />
+                            </Box>
+                          ) : (
+                            <Loading variant="text" />
+                          )}
+                          {state.giniData.exceedLimit ? (
+                            <Tooltip
+                              title={
+                                <Typography>
+                                  This number is limited and is only a sample of
+                                  the whole population{" "}
+                                </Typography>
+                              }
+                              aria-label="warning"
+                            >
+                              <IconButton
+                                color="primary"
+                                size="small"
+                                edge="end"
+                              >
+                                <WarningOutlinedIcon
+                                  style={{ color: theme.palette.warning.main }}
+                                />
+                              </IconButton>
+                            </Tooltip>
+                          ) : null}
+                        </Typography>
+                      </React.Fragment>
+                    ) : (
+                      <Loading />
+                    )}
+                  </Paper>
+                </Grid>
+                <Grid item xs={7} style={{ display: "flex" }}>
+                  <Paper classes={{ root: classes.card }}>
+                    {!state.loading.properties && props.data.entity ? (
+                      <React.Fragment>
+                        <Typography variant="h1" component="div">
+                          <Box fontWeight="medium">
+                            {state.mappedProperties.labels.length}
+                          </Box>
+                        </Typography>
+                        <Typography
+                          component="div"
+                          style={{
+                            display: "flex",
+                            flexDirection: "row",
+                            justifyContent: "space-between",
+                            alignItems: "center",
+                          }}
+                        >
+                          <Box fontWeight="bold">
+                            Distinct Properties{" "}
+                            <Help
+                              text={`The amount of information (property) about items of the ${props.data.entity.entityLabel} (${props.data.entity.entityID}) class with the applied filters.
+                             This is also the total number of properties in the property frequency chart on the right.`}
+                            />
+                          </Box>
+                        </Typography>
+                      </React.Fragment>
+                    ) : (
+                      <Loading />
+                    )}
+                  </Paper>
+                </Grid>
+              </Grid>
+
+              <Paper
+                style={{
+                  padding: theme.spacing(1),
+                  flex: "1 1 auto",
+                  height: "50%",
+                }}
+              >
+                {!state.loading.gini ? (
+                  <React.Fragment>
+                    <div
+                      style={{
+                        display: "flex",
+                        flexDirection: "row",
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                        width: "100%",
+                      }}
+                    >
+                      <Typography
+                        component="div"
+                        style={{
+                          display: "flex",
+                          flexDirection: "row",
+                          justifyContent: "space-between",
+                          alignItems: "center",
+                        }}
+                      >
+                        <Box fontWeight="bold">Topic Imbalance</Box>
+                        <Help
+                          text={
+                            <Typography component="div">
+                              {`The imbalance score for this topic is ${
+                                state.giniData.gini
+                              } which is the area of the ${(() => {
+                                if (state.giniData.gini < 0.2) {
+                                  return "green";
+                                } else if (state.giniData.gini >= 0.4) {
+                                  return "red";
+                                } else {
+                                  return "yellow";
+                                }
+                              })()} section of the chart. A balanced topic's score would be closer to 0 as the area gets smaller as well. 
+                           A balanced topic indicates that items of the topic has similar amount of information. The imbalance score is based on the Gini Coefficient.`}
+                            </Typography>
+                          }
+                        />
+                      </Typography>
+
+                      <Status value={state.giniData.gini}>Imbalanced</Status>
+                    </div>
+                    <GiniChart
+                      labels={state.giniData.percentileData}
+                      data={state.giniData.data}
+                      gini={state.giniData.gini}
+                      actual={state.giniData.each_amount}
+                      insight={state.giniData.insight}
+                      classes={{
+                        root: classes.giniChartroot,
+                        ChartWrapper: classes.giniChart,
+                      }}
+                    />
+                  </React.Fragment>
+                ) : (
+                  <Loading />
+                )}
+              </Paper>
+            </div>
+          </Grid>
+          <Grid item xs={4} classes={{ root: classes.outerGrid }}>
+            <div
+              style={{
+                width: "100%",
+                height: "100%",
+                display: "flex",
+                flexDirection: "column",
+              }}
+            >
+              <Paper
+                style={{
+                  // width: "100%",
+                  height: "40%",
+                  marginBottom: theme.spacing(1),
+                  padding: theme.spacing(1),
+                }}
+              >
+                {!state.loading.properties && !state.loading.gini ? (
+                  <React.Fragment>
+                    <Typography
+                      component="div"
+                      style={{
+                        display: "flex",
+                        flexDirection: "row",
+                        justifyContent: "space-between",
+                        width: "100%",
+                      }}
+                    >
+                      <Box fontWeight="bold">
+                        Property Frequency{" "}
+                        <Help
+                          text={
+                            <Typography>{`Every item in Wikidata is linked with information (property). Property frequency is how many items possess a certain piece of information (property). 
+                      You can see which properties are common, and those which are less common.`}</Typography>
+                          }
+                        />
+                      </Box>
+                      <Typography
+                        component="div"
+                        style={{
+                          display: "flex",
+                          flexDirection: "row",
+                          justifyContent: "space-between",
+                          alignItems: "center",
+                          width: "50%",
+                        }}
+                      >
+                        <PercentageSwitch
+                          onChange={(newVal) =>
+                            setState((s) => ({ ...s, propertyPercent: newVal }))
+                          }
+                        />
+                        <Box style={{ marginLeft: theme.spacing(1) }}>
+                          <FormControl
+                            variant="outlined"
+                            size="small"
+                            className={classes.formControl}
+                          >
+                            <Select
+                              value={state.propertySort}
+                              onChange={(e, child) => {
+                                setState((s) => ({
+                                  ...s,
+                                  propertySort: child.props.value,
+                                }));
+                              }}
+                            >
+                              <MenuItem value={0}>Descending</MenuItem>
+                              <MenuItem value={1}>Ascending</MenuItem>
+                            </Select>
+                          </FormControl>
+                        </Box>
+                      </Typography>
+                    </Typography>
+                    <ProfileProperties
+                      max={state.giniData.amount}
+                      labels={state.mappedProperties.labels}
+                      values={state.mappedProperties.values}
+                      propertySort={state.propertySort}
+                      propertyPercent={state.propertyPercent}
+                    />
+                  </React.Fragment>
+                ) : (
+                  <Loading />
+                )}
+              </Paper>
+
+              <Paper
+                style={{
+                  padding: theme.spacing(1),
+                  flex: "1 1 auto",
+                  height: "70%",
+                  display: "flex",
+                  flexDirection: "column",
+                }}
+              >
+                {!state.loading.gini ? (
+                  <React.Fragment>
+                    <Typography component="div" gutterBottom>
+                      <Box fontWeight="bold">
+                        Property Distribution{" "}
+                        <Help
+                          text={
+                            <Typography>{`From the shape of the distribution, you can see whether most of the 
                           items are rich in information (property) or not. A peak in the distribution shows the number of properties most of the items in this profile has.`}</Typography>
-                        }
-                      />
-                    </Box>
-                  </Typography>
-                  <LineChart
-                    data={(function () {
-                      const temp = countProperties(state.entities);
-                      return {
-                        labels: temp.labels.map(
-                          (item) =>
-                            `${((item * 100) / temp.maxLabel).toFixed(1)}%`
-                        ),
-                        datasets: [
-                          {
-                            data: temp.values.map(
-                              (item) => (item * 100) / state.giniData.amount
-                            ),
-                            actualLabels: temp.labels,
-                            actualValues: temp.values,
-                            entityCount: state.giniData.amount,
-                            // label: "Africa",
-                            borderColor: theme.palette.chart.main,
-                            backgroundColor: theme.palette.chart.main,
-                            fill: true,
-                          },
-                        ],
-                      };
-                    })()}
-                    // maxValue={}
-                    classes={{ ChartWrapper: classes.histogramChart }}
-                  />
-                </React.Fragment>
-              ) : (
-                <Loading />
-              )}
-            </Paper>
-          </div>
+                          }
+                        />
+                      </Box>
+                    </Typography>
+                    <LineChart
+                      data={(function () {
+                        const temp = countProperties(state.entities);
+                        return {
+                          labels: temp.labels.map(
+                            (item) =>
+                              `${((item * 100) / temp.maxLabel).toFixed(1)}%`
+                          ),
+                          datasets: [
+                            {
+                              data: temp.values.map(
+                                (item) => (item * 100) / state.giniData.amount
+                              ),
+                              actualLabels: temp.labels,
+                              actualValues: temp.values,
+                              entityCount: state.giniData.amount,
+                              // label: "Africa",
+                              borderColor: theme.palette.chart.main,
+                              backgroundColor: theme.palette.chart.main,
+                              fill: true,
+                            },
+                          ],
+                        };
+                      })()}
+                      // maxValue={}
+                      classes={{ ChartWrapper: classes.histogramChart }}
+                    />
+                  </React.Fragment>
+                ) : (
+                  <Loading />
+                )}
+              </Paper>
+            </div>
+          </Grid>
         </Grid>
-      </Grid>
+      )}
     </ThemeProvider>
   );
 }

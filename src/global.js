@@ -136,7 +136,7 @@ export const filterEntities = (data, param, sort = 0) => {
   );
   result.sort((b, a) => {
     // # of properties
-    if (sort === 1){
+    if (sort === 1) {
       if (a.propertyCount < b.propertyCount) {
         return 1;
       } else if (a.propertyCount === b.propertyCount) {
@@ -155,15 +155,13 @@ export const filterEntities = (data, param, sort = 0) => {
     // property check
     else if (sort === 2) {
       return a.entityProperties ? 1 : -1;
-    }
-    else if (sort === 3) {
+    } else if (sort === 3) {
       return !a.entityProperties ? 1 : -1;
     }
     // entity label
     else if (sort === 4) {
       return b.label.toLowerCase() > a.label.toLowerCase() ? 1 : -1;
-    }
-    else if (sort === 5) {
+    } else if (sort === 5) {
       return b.label.toLowerCase() < a.label.toLowerCase() ? 1 : -1;
     }
     // # of properties
@@ -231,13 +229,15 @@ export const selectDistribution = (filtered) => {
     theme.palette.itemMerge.opaque,
   ];
   let result = [];
-  const sortedbyGini = [...filtered].sort((b, a) => {
-    if (a.gini > b.gini) {
-      return 1;
-    } else {
-      return -1;
-    }
-  });
+  const sortedbyGini = [...filtered]
+    .filter((item) => item.newHistogramData && item.newHistogramData.raw_data)
+    .sort((b, a) => {
+      if (a.gini > b.gini) {
+        return 1;
+      } else {
+        return -1;
+      }
+    });
   const getName = (info) =>
     `${info.item_1_label ? info.item_1_label : ""}${
       info.item_2_label ? `-${info.item_2_label}` : ""

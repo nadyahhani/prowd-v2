@@ -145,25 +145,15 @@ export default function DashboardPage(props) {
     gini: [],
     distributions: [],
     maxAmount: null,
-    limit: [2, 2],
+    limit: [1, 2],
     sortTable: 0,
+    searchSubclassTable: "",
     // loading states
     loading: {
       dimensions: true,
       gini: true,
     },
   });
-  const onboardingChangeHandler = (e) => {
-    if (e.reason === "stop") {
-      setState((s) => ({
-        ...s,
-        onboarding: { ...s.onboarding, running: false },
-      }));
-      history.push(
-        `/dashboards/${props.match.params.id}/${props.match.params.page}`
-      );
-    }
-  };
 
   const fetchData = React.useCallback(
     (scope = "") => {
@@ -449,14 +439,14 @@ export default function DashboardPage(props) {
         getDiscoverGini(props.match.params.id, (r) => {
           if (r.success) {
             const filtered = [...r.data].filter(
-              (item) => item.amount >= 2 && item.amount <= r.max_number
+              (item) => item.amount >= 1 && item.amount <= r.max_number
             );
             setDiscoverState((s) => ({
               ...s,
               gini: r.data,
               shown: filtered,
               maxAmount: r.max_number,
-              limit: [2, r.max_number],
+              limit: [1, r.max_number],
               distributions: selectDistribution(filtered),
               loading: { ...s.loading, gini: false },
             }));
