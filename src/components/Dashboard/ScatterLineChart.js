@@ -52,7 +52,7 @@ function ScatterLineChart(props) {
             const maxItem = current.amount;
             const maxProps = propertyActual[propertyActual.length - 1];
 
-            let label = `${current.raw[index]} item${
+            let label = `${current.name}: ${current.raw[index]} item${
               parseInt(current.raw[index]) > 1 ? "s" : ""
             } (${dataPercent[index].toFixed(1)}% of ${maxItem}) has ${
               propertyActual[index]

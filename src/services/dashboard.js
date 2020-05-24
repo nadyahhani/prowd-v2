@@ -272,4 +272,3 @@ export function getActualItemCount(hash, afterFunc) {
       afterFunc({ success: false, ...err });
     });
 }
-

@@ -5,6 +5,7 @@ import {
   makeStyles,
   TextField,
   Typography,
+  Button,
 } from "@material-ui/core";
 import EditIcon from "@material-ui/icons/Edit";
 import Autocomplete from "@material-ui/lab/Autocomplete";
@@ -86,7 +87,7 @@ export default function EditClass(props) {
         classes={{ paper: classes.popoverPaper }}
       >
         <Autocomplete
-        filterOptions={filterOptions}
+          filterOptions={filterOptions}
           renderTags={(value) => <Typography>{value.label}</Typography>}
           value={state.selected}
           getOptionLabel={(option) => {
@@ -125,6 +126,28 @@ export default function EditClass(props) {
             renderInput(params, "Type and select a new class")
           }
         />
+        <div style={{ marginTop: theme.spacing(1) }}>
+          {/* <Button
+            variant="contained"
+            color="primary"
+            size="small"
+            onClick={() => {
+              setState((s) => ({ ...s, open: false, anchorEl: null }));
+              props.undo();
+            }}
+          >
+            Undo
+          </Button> */}
+          <Button
+            color="primary"
+            size="small"
+            onClick={(e) =>
+              setState((s) => ({ ...s, open: false, anchorEl: null }))
+            }
+          >
+            Close
+          </Button>
+        </div>
       </Popover>
     </React.Fragment>
   );

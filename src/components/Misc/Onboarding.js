@@ -29,7 +29,7 @@ export default function Onboarding(props) {
       {
         content: ({ goTo, inDOM }) => (
           <div className={classes.contentdiv}>
-            <Typography variant="h2" gutterBottom>
+            <Typography variant="h2" gutterBottom style={{ textAlign: "left" }}>
               <Box fontWeight="bold">
                 Welcome to your new Dashboard! Would you like a tour?
               </Box>
@@ -187,6 +187,9 @@ export default function Onboarding(props) {
       steps={current}
       isOpen={state.running}
       onRequestClose={handleClose}
+      disableInteraction
+      onAfterOpen={(target) => (document.body.style.overflow = "hidden")}
+      onBeforeClose={(target) => (document.body.style.overflow = "scroll")}
       lastStepNextButton={
         <Button size="small" variant="contained" color="primary">
           ok!

@@ -148,15 +148,36 @@ export default function VennProperties(props) {
     let tempLabels = [...state[getType(props.selected)].labels];
     let tempValuesA = [...state[getType(props.selected)].valuesA];
     let tempValuesB = [...state[getType(props.selected)].valuesB];
-    tempLabels = tempLabels.map(
-      (item, idx) =>
-        `${tempLabels[idx]} (A: ${tempValuesA[idx]}, B: ${tempValuesB[idx]})`
-    );
+
+    if (props.percent) {
+      tempLabels = tempLabels.map(
+        (item, idx) =>
+          `${tempLabels[idx]} (A: ${(
+            (tempValuesA[idx] * 100) /
+            props.entityCount.entityA
+          ).toFixed(1)}%, B: ${(
+            (tempValuesB[idx] * 100) /
+            props.entityCount.entityB
+          ).toFixed(1)}%)`
+      );
+      tempValuesA = tempValuesA.map((num) =>
+        ((num * 100) / props.entityCount.entityA).toFixed(1)
+      );
+      tempValuesB = tempValuesB.map((num) =>
+        ((num * 100) / props.entityCount.entityB).toFixed(1)
+      );
+    } else {
+      tempLabels = tempLabels.map(
+        (item, idx) =>
+          `${tempLabels[idx]} (A: ${tempValuesA[idx]}, B: ${tempValuesB[idx]})`
+      );
+    }
     if (tempLabels.length > 0) {
       return (
         <React.Fragment>
           <HorizontalBarChart
-            key={`${getType(props.selected)}`}
+            key={`${getType(props.selected)}-${props.percent ? 1 : 0}`}
+            percent={props.percent}
             data={{
               labels: tempLabels.slice(0, 5),
 
@@ -171,8 +192,8 @@ export default function VennProperties(props) {
                 },
               ],
             }}
-            max={state[getType(props.selected)].count}
-            stacked
+            max={props.percent ? 100 : state[getType(props.selected)].count}
+            stacked={!props.percent}
             classes={{
               root: classes.horizontalbar,
               ChartWrapper: classes.horizontalbarchart,
@@ -180,12 +201,13 @@ export default function VennProperties(props) {
           />
           <AllPropertiesModal
             key="modal-asc"
-            stacked
+            stacked={!props.percent}
+            multiple
             data={{
               labels: tempLabels,
               valuesA: tempValuesA,
               valuesB: tempValuesB,
-              max: state[getType(props.selected)].count,
+              max: props.percent ? 100 : state[getType(props.selected)].count,
             }}
           />
         </React.Fragment>
@@ -212,5 +234,6 @@ export default function VennProperties(props) {
 VennProperties.defaultProps = {
   properties: {},
   selected: 0,
+  percent: false,
   entityCount: { entityA: 0, entityB: 0 },
 };

@@ -698,6 +698,10 @@ export default function Analysis(props) {
                       </Typography>
                       <ScatterLineChart
                         hideLegend
+                        legendInDot
+                        key={state.distributions
+                          .map((item) => item.name)
+                          .join("-")}
                         data={{
                           datasets: state.distributions.map((item) => ({
                             ...item,
@@ -712,6 +716,9 @@ export default function Analysis(props) {
                       <DistributionCustomize
                         data={state.distributions}
                         allData={state.shown}
+                        onApply={(newData) => {
+                          setState((s) => ({ ...s, distributions: newData }));
+                        }}
                       />
                     </React.Fragment>
                   ) : (

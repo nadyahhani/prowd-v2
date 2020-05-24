@@ -173,11 +173,13 @@ export default function DistributionCustomize(props) {
               />
             </Grid>
             <Grid item>
-              <Typography>Legend</Typography>
+              <Typography>
+                <Box fontWeight="bold">Legend</Box>
+              </Typography>
               <Paper
                 variant="outlined"
                 elevation={0}
-                style={{ height: theme.spacing(40), overflowY: "scroll" }}
+                style={{ height: theme.spacing(30), overflowY: "scroll" }}
               >
                 <Table size="small" padding="none">
                   {state.data.map((item, index) => (
@@ -311,7 +313,25 @@ export default function DistributionCustomize(props) {
                 </Table>
               </Paper>
             </Grid>
-            <Grid item></Grid>
+            <Grid item>
+              <Button
+                color="primary"
+                variant="contained"
+                style={{ marginLeft: theme.spacing(1) }}
+                onClick={() => {
+                  props.onApply(state.data);
+                  setState((s) => ({ ...s, open: false }));
+                }}
+              >
+                Apply
+              </Button>
+              <Button
+                color="primary"
+                onClick={() => setState((s) => ({ ...s, open: false }))}
+              >
+                Close
+              </Button>
+            </Grid>
           </Grid>
         </Dialog>
       ) : null}

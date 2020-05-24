@@ -29,6 +29,7 @@ import { getUnique, cut, filterOptions } from "../../global";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import Loading from "../Misc/Loading";
 import { Search } from "@material-ui/icons";
+import Link from "../Misc/Link";
 
 const useStyles = makeStyles(() => ({
   root: {
@@ -202,7 +203,7 @@ export default function Navbar() {
           >
             <div style={{ width: "100%" }}>
               <Autocomplete
-              filterOptions={filterOptions}
+                filterOptions={filterOptions}
                 disableClearable
                 label="Search Wikidata for item..."
                 placeholder="Type and select the item to see its class and filters"
@@ -267,7 +268,6 @@ export default function Navbar() {
                   }
                 }}
                 onClose={(event, reason) => {
-
                   if (reason !== "select-option" && !state.selectedClass) {
                     setState((s) => ({
                       ...s,
@@ -345,7 +345,6 @@ export default function Navbar() {
               {state.selectedSearch ? state.selectedSearch.label : ""}
             </Typography>
             <Autocomplete
-
               freeSolo
               disableClearable
               options={[...state.showFilterOptions]
@@ -495,50 +494,54 @@ export default function Navbar() {
             <Grid item xs={3}>
               <Grid container justify="center" spacing={4}>
                 <Grid item>
-                  <Button
-                    color={
-                      window.location.pathname === "/" ||
-                      window.location.hash.includes("home")
-                        ? "primary"
-                        : ""
-                    }
-                    onClick={() => {
-                      history.push("/");
-                      window.location.hash = "home";
-                    }}
-                  >
-                    Home
-                  </Button>
+                  <Link to={{ pathname: "/", hash: "#home" }}>
+                    <Button
+                      color={
+                        window.location.pathname === "/" ||
+                        window.location.hash.includes("home")
+                          ? "primary"
+                          : ""
+                      }
+                      // onClick={() => {
+                      //   history.push("/");
+                      //   window.location.hash = "home";
+                      // }}
+                    >
+                      Home
+                    </Button>
+                  </Link>
                 </Grid>
                 <Grid item id="dashboards-nav-button">
-                  <Button
-                    color={
-                      window.location.pathname.includes("/browse/")
-                        ? "primary"
-                        : ""
-                    }
-                    onClick={() => history.push("/browse/search=")}
-                  >
-                    Dashboards
-                  </Button>
+                  <Link to="/browse/search=">
+                    <Button
+                      color={
+                        window.location.pathname.includes("/browse/")
+                          ? "primary"
+                          : ""
+                      }
+                      // onClick={() => history.push("/browse/search=")}
+                    >
+                      Dashboards
+                    </Button>
+                  </Link>
                 </Grid>
                 <Grid item>
-                  {/* <a href="/#about" style={{ textDecoration: "none" }}> */}
-                  <Button
-                    onClick={() => {
-                      history.push("/");
-                      window.location.hash = "about";
-                    }}
-                  >
-                    About
-                  </Button>
-                  {/* </a> */}
+                  <Link to={{ pathname: "/", hash: "#about" }}>
+                    <Button
+                    // onClick={() => {
+                    //   history.push("/");
+                    //   window.location.hash = "about";
+                    // }}
+                    >
+                      About
+                    </Button>
+                  </Link>
                 </Grid>
               </Grid>
             </Grid>
             <Grid item xs={3} id="search-wikidata-navbar">
               <Autocomplete
-              filterOptions={filterOptions}
+                filterOptions={filterOptions}
                 label=""
                 placeholder="Search Wikidata for item..."
                 options={state.classes}
@@ -605,7 +608,6 @@ export default function Navbar() {
                   }
                 }}
                 onClose={(event, reason) => {
-
                   if (reason !== "select-option" && !state.selectedClass) {
                     setState((s) => ({
                       ...s,

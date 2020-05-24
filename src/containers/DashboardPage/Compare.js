@@ -507,47 +507,56 @@ export default function Compare(props) {
                           />
                         </Box>
                         <Box>
-                          <PercentageSwitch style={{marginRight: theme.spacing(1)}}/>
-                        <FormControl
-                          variant="outlined"
-                          size="small"
-                          className={classes.formControl}
-                        >
-                          <Select
-                            value={state.propertySort}
-                            onChange={(e, child) => {
+                          <PercentageSwitch
+                            style={{ marginRight: theme.spacing(1) }}
+                            onChange={(val) =>
                               setState((s) => ({
                                 ...s,
-                                propertySort: child.props.value,
-                              }));
-                            }}
+                                propertyNumberPercent: val,
+                              }))
+                            }
+                          />
+                          <FormControl
+                            variant="outlined"
+                            size="small"
+                            className={classes.formControl}
                           >
-                            {[
-                              { label: "All", icon: <AllIcon /> },
-                              {
-                                label: "Exclusive A",
-                                icon: <ExclusiveAIcon />,
-                              },
-                              {
-                                label: "Exclusive B",
-                                icon: <ExclusiveBIcon />,
-                              },
-                              { label: "All A", icon: <AllAIcon /> },
-                              { label: "All B", icon: <AllBIcon /> },
-                              {
-                                label: "Intersection",
-                                icon: <IntersectionIcon />,
-                              },
-                            ].map((item, index) => (
-                              <MenuItem key={index} value={index} dense>
-                                <ListItemIcon className={classes.venn}>
-                                  {item.icon}
-                                </ListItemIcon>
-                                {item.label}
-                              </MenuItem>
-                            ))}
-                          </Select>
-                        </FormControl></Box>
+                            <Select
+                              value={state.propertySort}
+                              onChange={(e, child) => {
+                                setState((s) => ({
+                                  ...s,
+                                  propertySort: child.props.value,
+                                }));
+                              }}
+                            >
+                              {[
+                                { label: "All", icon: <AllIcon /> },
+                                {
+                                  label: "Exclusive A",
+                                  icon: <ExclusiveAIcon />,
+                                },
+                                {
+                                  label: "Exclusive B",
+                                  icon: <ExclusiveBIcon />,
+                                },
+                                { label: "All A", icon: <AllAIcon /> },
+                                { label: "All B", icon: <AllBIcon /> },
+                                {
+                                  label: "Intersection",
+                                  icon: <IntersectionIcon />,
+                                },
+                              ].map((item, index) => (
+                                <MenuItem key={index} value={index} dense>
+                                  <ListItemIcon className={classes.venn}>
+                                    {item.icon}
+                                  </ListItemIcon>
+                                  {item.label}
+                                </MenuItem>
+                              ))}
+                            </Select>
+                          </FormControl>
+                        </Box>
                       </Typography>
                       <VennProperties
                         properties={state.properties}
@@ -556,6 +565,7 @@ export default function Compare(props) {
                           entityB: state.giniB.amount,
                         }}
                         selected={state.propertySort}
+                        percent={state.propertyNumberPercent === 1}
                       />
                     </React.Fragment>
                   )}

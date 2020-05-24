@@ -10,7 +10,7 @@ import CloseIcon from "@material-ui/icons/Close";
 import SettingsIcon from "@material-ui/icons/Settings";
 
 import Typography from "@material-ui/core/Typography";
-import { List, ListItem, ListItemText } from "@material-ui/core";
+import { List, ListItem, ListItemText, Popover } from "@material-ui/core";
 import theme from "../../theme";
 
 const styles = (theme) => ({
@@ -59,9 +59,11 @@ const DialogActions = withStyles((theme) => ({
 
 export default function Settings(props) {
   const [open, setOpen] = React.useState(false);
+  const [anchorEl, setAnchorEl] = React.useState(null);
 
-  const handleClickOpen = () => {
+  const handleClickOpen = (e) => {
     setOpen(true);
+    setAnchorEl(e.currentTarget);
   };
   const handleClose = () => {
     setOpen(false);
@@ -72,40 +74,43 @@ export default function Settings(props) {
       <IconButton size="small" edge="end" onClick={handleClickOpen}>
         <SettingsIcon color="primary" />
       </IconButton>
-      <Dialog
+      <Popover
+        anchorEl={anchorEl}
         onClose={handleClose}
         aria-labelledby="customized-dialog-title"
         open={open}
+        anchorOrigin={{
+          vertical: "bottom",
+          horizontal: "center",
+        }}
+        transformOrigin={{
+          vertical: "top",
+          horizontal: "right",
+        }}
       >
-        <DialogTitle id="customized-dialog-title" onClose={handleClose}>
-          Settings
-        </DialogTitle>
-        <DialogContent dividers>
-          <List>
-            <ListItem
-              button
-              onClick={() => {
-                props.onChange({ reason: "restart_onboarding" });
-                handleClose();
-              }}
-            >
-              <ListItemText color="primary" primary={`Restart Onboarding`} />
-            </ListItem>
-            <ListItem
-              button
-              onClick={() => {
-                props.onChange({ reason: "dashboard_deletion" });
-                handleClose();
-              }}
-            >
-              <ListItemText
-                style={{ color: theme.palette.error.main }}
-                primary={`Delete Dashboard`}
-              />
-            </ListItem>
-          </List>
-        </DialogContent>
-      </Dialog>
+        <List>
+          <ListItem
+            button
+            onClick={() => {
+              props.onChange({ reason: "restart_onboarding" });
+              handleClose();
+            }}
+          >
+            <Typography>Restart Onboarding</Typography>
+          </ListItem>
+          <ListItem
+            button
+            onClick={() => {
+              props.onChange({ reason: "dashboard_deletion" });
+              handleClose();
+            }}
+          >
+            <Typography style={{ color: theme.palette.error.main }}>
+              Delete Dashboard
+            </Typography>
+          </ListItem>
+        </List>
+      </Popover>
     </React.Fragment>
   );
 }

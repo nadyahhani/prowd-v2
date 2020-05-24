@@ -268,8 +268,10 @@ function Landing(props) {
           <Typography gutterBottom style={{ fontWeight: "bold" }}>
             {state.iteminfoisloading || !state.selecteditem ? (
               <Loading variant="text" />
-            ) : (
+            ) : state.iteminfo.classes.length > 0 ? (
               "Select the class which best describes the items of your topic of interest"
+            ) : (
+              "This item is not an instance of any class. Maybe try another item?"
             )}
           </Typography>
           <Paper
@@ -283,27 +285,33 @@ function Landing(props) {
               </Typography>
             ) : (
               <Grid container spacing={1}>
-                {state.iteminfo.classes.map((item, index) => (
+                {state.iteminfo.classes.length > 0 ? (
+                  state.iteminfo.classes.map((item, index) => (
+                    <Grid item>
+                      <Chip
+                        variant={
+                          state.selectedClass &&
+                          state.selectedClass.id === item.id
+                            ? "default"
+                            : "outlined"
+                        }
+                        color="primary"
+                        onClick={() =>
+                          setState((s) => ({
+                            ...s,
+                            selectedClass: item,
+                            classInput: `${item.label} (${item.id})`,
+                          }))
+                        }
+                        label={`${item.label} (${item.id})`}
+                      />
+                    </Grid>
+                  ))
+                ) : (
                   <Grid item>
-                    <Chip
-                      variant={
-                        state.selectedClass &&
-                        state.selectedClass.id === item.id
-                          ? "default"
-                          : "outlined"
-                      }
-                      color="primary"
-                      onClick={() =>
-                        setState((s) => ({
-                          ...s,
-                          selectedClass: item,
-                          classInput: `${item.label} (${item.id})`,
-                        }))
-                      }
-                      label={`${item.label} (${item.id})`}
-                    />
+                    <Typography>No classes.</Typography>
                   </Grid>
-                ))}
+                )}
               </Grid>
             )}
           </Paper>
@@ -678,11 +686,11 @@ function Landing(props) {
                         placement="left"
                         title={
                           <Typography component="div">
-                            What are the items of your topic classified as?{" "}
+                            What are the items of your topic instances of?{" "}
                             <Box fontWeight="bold">
                               Click on the examples at the bottom or use the
                               "Visualize by Item" tab to configure the dashboard
-                              based on an subject of your topic.
+                              based on a subject of your topic.
                             </Box>
                           </Typography>
                         }

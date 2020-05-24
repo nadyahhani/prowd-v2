@@ -168,7 +168,7 @@ export default function BrowsePage(props) {
               }}
             />
           </Grid>
-          <Grid item>
+          {/* <Grid item>
             <Typography>Filters</Typography>
             <FilterBox
               classes={{ root: classes.filters }}
@@ -200,7 +200,7 @@ export default function BrowsePage(props) {
                 }))
               }
             />
-          </Grid>
+          </Grid> */}
         </Grid>
         <Grid item>
           <Button

@@ -543,7 +543,6 @@ export default function Profile(props) {
                           flexDirection: "row",
                           justifyContent: "space-between",
                           alignItems: "center",
-                          width: "50%",
                         }}
                       >
                         <PercentageSwitch
@@ -640,12 +639,12 @@ export default function Profile(props) {
                           datasets: [
                             {
                               data:
-                                state.chartNumberPercent === 1
-                                  ? temp.values.map(
+                                state.chartNumberPercent === 0
+                                  ? temp.values
+                                  : temp.values.map(
                                       (item) =>
                                         (item * 100) / state.giniData.amount
-                                    )
-                                  : temp.values,
+                                    ),
                               actualLabels: temp.labels,
                               actualValues: temp.values,
                               entityCount: state.giniData.amount,

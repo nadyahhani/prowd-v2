@@ -24,6 +24,7 @@ import {
   getCompareProperties,
   getDiscoverGini,
   getActualItemCount,
+  copyDashboard,
 } from "../../services/dashboard";
 import { getGiniEntity, getAllProperties } from "../../services/dashboard";
 import {
@@ -92,10 +93,10 @@ export default function DashboardPage(props) {
       dashclass: "",
       filters: [],
     },
-    chartNumberPercent: 1,
     copyDialogOpen: false,
     loading: true,
     globalData: {},
+    oldGlobal: {},
     update: false,
     notif: { open: false, severity: "info", message: "" },
   });
@@ -110,7 +111,7 @@ export default function DashboardPage(props) {
     gap: [],
     tableSearch: "",
     tableSort: 0,
-
+    chartNumberPercent: 1,
     // loading states
     loading: {
       gini: true,
@@ -132,6 +133,7 @@ export default function DashboardPage(props) {
     propertyPercent: 0,
     distinctProps: {},
     chartNumberPercent: 1,
+    propertyNumberPercent: 0,
     // loading states
     loading: {
       giniA: true,
@@ -163,6 +165,7 @@ export default function DashboardPage(props) {
   const fetchData = React.useCallback(
     (scope = "") => {
       console.log("scope: ", scope);
+      console.log(props.match.params.id);
 
       // Global
       if (
@@ -189,43 +192,19 @@ export default function DashboardPage(props) {
           ...s,
           loading: { ...s.loading, dimensions: true },
         }));
-        getActualItemCount(props.match.params.id, (r) => {
-          if (r.success) {
-            setState((s) => ({
-              ...s,
-              loading: false,
-              globalData: {
-                ...s.globalData,
-                actual: r.entityCount,
-              },
-            }));
-          } else {
-            setState((s) => ({
-              ...s,
-              notif: {
-                open: true,
-                message: "An Error Occured",
-                severity: "error",
-                action: () => {
-                  fetchData("info");
-                  setState((s) => ({
-                    ...s,
-                    notif: {
-                      open: true,
-                      message: "Retrying... Please Wait.",
-                      severity: "Warning",
-                    },
-                  }));
-                },
-              },
-            }));
-          }
-        });
         getDashInfo(props.match.params.id, (r) => {
           if (r.success) {
             setState((s) => ({
               ...s,
               loading: false,
+              oldGlobal: {
+                ...s.globalData,
+                public: r.public,
+                entity: r.entityInfo,
+                filters: r.filtersInfo ? r.filtersInfo : [],
+                name: r.name === "" ? "Untitled Dashboard" : r.name,
+                author: r.author === "" ? "Anonymous" : r.author,
+              },
               globalData: {
                 ...s.globalData,
                 public: r.public,
@@ -546,7 +525,11 @@ export default function DashboardPage(props) {
           return;
       }
     }
-  }, [props.match.params.subpage, state.globalData.entity]);
+  }, [
+    props.match.params.id,
+    props.match.params.subpage,
+    state.globalData.entity,
+  ]);
 
   return (
     <ThemeProvider theme={theme}>
@@ -586,7 +569,31 @@ export default function DashboardPage(props) {
           </DialogContent>
           <DialogActions>
             <Button
-              onClick={() => alert("//todo")}
+              onClick={() => {
+                setState((s) => ({ ...s, copyDialogOpen: false }));
+                copyDashboard(props.match.params.id, (r) => {
+                  if (r.success) {
+                    history.push(`/dashboards/${r.hash_code}/profile`);
+                    fetchData(props.match.params.page);
+                    setState((s) => ({
+                      ...s,
+                      pull: false,
+                      loaded: {
+                        global: false,
+                        profile: false,
+                        compare: false,
+                        discover: false,
+                      },
+                      notif: {
+                        open: true,
+                        message: "Dashboard Successfully Duplicated. Welcome!",
+                        severity: "success",
+                        action: () => {},
+                      },
+                    }));
+                  }
+                });
+              }}
               size="small"
               color="primary"
               variant="contained"
@@ -716,11 +723,28 @@ export default function DashboardPage(props) {
               )}
             </div>
             <div>
+              {state.update ? (
+                <Button
+                  color="primary"
+                  onClick={() =>
+                    setState((s) => ({
+                      ...s,
+                      update: false,
+                      globalData: {
+                        ...s.oldGlobal,
+                        pull: false,
+                      },
+                    }))
+                  }
+                >
+                  UNDO
+                </Button>
+              ) : null}
               <Button
                 variant="contained"
                 color="primary"
                 disabled={!state.update}
-                style={{ marginRight: theme.spacing(1) }}
+                style={{ margin: `0 ${theme.spacing(1)}px` }}
                 onClick={() => {
                   const hash = props.match.params.id;
                   let tempFilter = [];
@@ -785,7 +809,7 @@ export default function DashboardPage(props) {
               >
                 Apply
               </Button>
-              <IconButton
+              {/* <IconButton
                 color="primary"
                 size="small"
                 onClick={() =>
@@ -793,7 +817,7 @@ export default function DashboardPage(props) {
                 }
               >
                 <FileCopyOutlinedIcon />
-              </IconButton>
+              </IconButton> */}
               <Settings
                 onChange={(e) => {
                   if (e.reason === "restart_onboarding") {

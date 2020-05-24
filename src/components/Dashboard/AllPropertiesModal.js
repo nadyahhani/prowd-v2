@@ -14,6 +14,7 @@ import {
 import HorizontalBarChart from "./HorizontalBarChart";
 import PropTypes from "prop-types";
 import theme from "../../theme";
+import { NavigateNext } from "@material-ui/icons";
 
 export default function AllPropertiesModal(props) {
   const useStyles = makeStyles((theme) => ({
@@ -90,7 +91,7 @@ export default function AllPropertiesModal(props) {
                   key={`${props.key}-${3}`}
                   stacked={props.stacked}
                   data={
-                    props.stacked
+                    props.multiple
                       ? {
                           labels: props.data.labels,
 
@@ -163,8 +164,13 @@ export default function AllPropertiesModal(props) {
           </Grid>
         </Paper>
       </Modal>
-      <Button size="small" color="primary" onClick={() => setModal(true)}>
-        See All...
+      <Button
+        size="small"
+        color="primary"
+        onClick={() => setModal(true)}
+        endIcon={<NavigateNext />}
+      >
+        See All
       </Button>
     </React.Fragment>
   );
