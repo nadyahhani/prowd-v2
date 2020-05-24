@@ -33,6 +33,7 @@ import VennProperties from "../../components/Dashboard/VennProperties";
 import ScatterLineChart from "../../components/Dashboard/ScatterLineChart";
 import Onboarding from "../../components/Misc/Onboarding";
 import { useHistory } from "react-router-dom";
+import PercentageSwitch from "../../components/Inputs/PercentageSwitch";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -300,8 +301,8 @@ export default function Compare(props) {
                             }}
                           >
                             <Box fontWeight="bold">
-                              Distinct Properties{" "}
-                              <Help text="The number of distinct properties of subclass A and subclass B, and the number of properties which are present in both of them" />
+                              Subclass Properties{" "}
+                              <Help text="The number of information (distinct properties) available for both subclass A and subclass B, and the number of properties which are present in both of them" />
                             </Box>
                           </Typography>
                           <HorizontalBarChart
@@ -498,13 +499,15 @@ export default function Compare(props) {
                         }}
                       >
                         <Box fontWeight="bold">
-                          Property Frequency{" "}
+                          Subclass Property Frequency{" "}
                           <Help
                             text={
-                              <Typography>{`This shows whether the amount of information present in both A and B. You can switch the set operation on the right to see the properties present only in A or only in B and more.`}</Typography>
+                              <Typography>{`This shows the information present in both A and B. You can switch the set operation on the right to see the properties present only in A or only in B and more.`}</Typography>
                             }
                           />
                         </Box>
+                        <Box>
+                          <PercentageSwitch style={{marginRight: theme.spacing(1)}}/>
                         <FormControl
                           variant="outlined"
                           size="small"
@@ -544,7 +547,7 @@ export default function Compare(props) {
                               </MenuItem>
                             ))}
                           </Select>
-                        </FormControl>
+                        </FormControl></Box>
                       </Typography>
                       <VennProperties
                         properties={state.properties}
@@ -570,9 +573,17 @@ export default function Compare(props) {
                   state.giniA.newHistogramData &&
                   state.giniB.newHistogramData ? (
                     <React.Fragment>
-                      <Typography component="div">
+                      <Typography
+                        component="div"
+                        gutterBottom
+                        style={{
+                          display: "flex",
+                          flexDirection: "row",
+                          justifyContent: "space-between",
+                        }}
+                      >
                         <Box fontWeight="bold">
-                          Property Distribution{" "}
+                          Subclass Property Distribution{" "}
                           <Help
                             text={
                               <Typography>
@@ -582,23 +593,48 @@ export default function Compare(props) {
                             }
                           />
                         </Box>
+                        <Box>
+                          <PercentageSwitch
+                            percentFirst
+                            onChange={(val) => {
+                              setState((s) => ({
+                                ...s,
+                                chartNumberPercent: val,
+                              }));
+                            }}
+                          />
+                        </Box>
                       </Typography>
                       <ScatterLineChart
+                        numeric={state.chartNumberPercent === 0}
+                        key={state.chartNumberPercent}
                         hideLegend
                         data={{
                           datasets: [
                             {
                               raw: state.giniA.newHistogramData.raw_data,
-                              data: state.giniA.newHistogramData.raw_data.map(
-                                (num, index) => ({
-                                  x:
-                                    (index * 100) /
-                                    (state.giniA.newHistogramData.raw_data
-                                      .length -
-                                      1),
-                                  y: (num * 100) / state.giniA.amount,
-                                })
-                              ),
+                              data:
+                                state.chartNumberPercent === 1
+                                  ? state.giniA.newHistogramData.raw_data.map(
+                                      (num, index) => ({
+                                        x:
+                                          (index * 100) /
+                                          (state.giniA.newHistogramData.raw_data
+                                            .length -
+                                            1),
+                                        y: (num * 100) / state.giniA.amount,
+                                      })
+                                    )
+                                  : state.giniA.newHistogramData.raw_data.map(
+                                      (num, index) => ({
+                                        x:
+                                          (index * 100) /
+                                          (state.giniA.newHistogramData.raw_data
+                                            .length -
+                                            1),
+                                        y: num,
+                                      })
+                                    ),
                               amount: state.giniA.amount,
                               borderColor: theme.palette.itemA.main,
                               backgroundColor: theme.palette.itemA.main,
@@ -607,16 +643,28 @@ export default function Compare(props) {
                             },
                             {
                               raw: state.giniB.newHistogramData.raw_data,
-                              data: state.giniB.newHistogramData.raw_data.map(
-                                (num, index) => ({
-                                  x:
-                                    (index * 100) /
-                                    (state.giniB.newHistogramData.raw_data
-                                      .length -
-                                      1),
-                                  y: (num * 100) / state.giniB.amount,
-                                })
-                              ),
+                              data:
+                                state.chartNumberPercent === 1
+                                  ? state.giniB.newHistogramData.raw_data.map(
+                                      (num, index) => ({
+                                        x:
+                                          (index * 100) /
+                                          (state.giniB.newHistogramData.raw_data
+                                            .length -
+                                            1),
+                                        y: (num * 100) / state.giniB.amount,
+                                      })
+                                    )
+                                  : state.giniB.newHistogramData.raw_data.map(
+                                      (num, index) => ({
+                                        x:
+                                          (index * 100) /
+                                          (state.giniB.newHistogramData.raw_data
+                                            .length -
+                                            1),
+                                        y: num,
+                                      })
+                                    ),
                               amount: state.giniA.amount,
                               borderColor: theme.palette.itemB.main,
                               backgroundColor: theme.palette.itemB.main,

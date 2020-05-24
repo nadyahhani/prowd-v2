@@ -201,15 +201,9 @@ export default function Analysis(props) {
 
         // sort by properties
         else if (sorting === 8) {
-          return a.statistics.average_distinct_properties >
-            b.statistics.average_distinct_properties
-            ? 1
-            : -1;
+          return a.statistics.max > b.statistics.max ? 1 : -1;
         } else if (sorting === 9) {
-          return a.statistics.average_distinct_properties <
-            b.statistics.average_distinct_properties
-            ? 1
-            : -1;
+          return a.statistics.max < b.statistics.max ? 1 : -1;
         }
 
         // sort by count
@@ -295,11 +289,9 @@ export default function Analysis(props) {
                             Imbalance Score (Lowest)
                           </MenuItem>
                           <MenuItem value={8}>
-                            Average Properties (Highest)
+                            Max Properties (Highest)
                           </MenuItem>
-                          <MenuItem value={9}>
-                            Average Properties (Lowest)
-                          </MenuItem>
+                          <MenuItem value={9}>Max Properties (Lowest)</MenuItem>
                           <MenuItem value={3}>
                             {state.dimensions[0].label} (A-Z)
                           </MenuItem>
@@ -343,7 +335,7 @@ export default function Analysis(props) {
                     Imbalance Score
                   </TableCell>
                   <TableCell className={classes.tableCell} align="right">
-                    Average Properties
+                    Max Properties
                   </TableCell>
                   {/* <TableCell /> */}
                 </TableRow>
@@ -457,15 +449,9 @@ export default function Analysis(props) {
                               className={classes.tableCellnum}
                               align="right"
                             >
-                              {Number.isNaN(
-                                Math.ceil(
-                                  row.statistics.average_distinct_properties
-                                )
-                              )
+                              {Number.isNaN(Math.ceil(row.statistics.max))
                                 ? 0
-                                : Math.ceil(
-                                    row.statistics.average_distinct_properties
-                                  )}
+                                : Math.ceil(row.statistics.max)}
                             </TableCell>
                             {/* <TableCell>
                           <IconButton size="small" edge="end">
@@ -523,9 +509,17 @@ export default function Analysis(props) {
             item.analysis_info.item_3_label
               ? `-${item.analysis_info.item_3_label}`
               : ""
-          }: ${item.statistics.average_distinct_properties}`
+          }: ${
+            Number.isNaN(Math.ceil(item.statistics.average_distinct_properties))
+              ? 0
+              : Math.ceil(item.statistics.average_distinct_properties)
+          }`
         );
-        values.push(item.statistics.average_distinct_properties);
+        values.push(
+          Number.isNaN(Math.ceil(item.statistics.average_distinct_properties))
+            ? 0
+            : Math.ceil(item.statistics.average_distinct_properties)
+        );
       });
       const dataTemp = {
         labels: [...labels].splice(0, 5),
@@ -694,7 +688,7 @@ export default function Analysis(props) {
                     <React.Fragment>
                       <Typography component="div">
                         <Box fontWeight="bold">
-                          Number of Property Distribution{" "}
+                          Subclasses Property Distribution{" "}
                           <Help
                             text={
                               <Typography>{`The distribution shape of several subclasses. You can customize and select the classes shown in this chart.`}</Typography>

@@ -82,7 +82,6 @@ const globalInfo = () => (
                     filterValueLabel: item.values.label,
                   };
                 });
-                console.log(temp);
                 props.updateData((s) => ({
                   ...s,
                   update: true,
@@ -279,7 +278,6 @@ const temp = {
                         }
                       }}
                       onClose={(event, reason) => {
-                        console.log(reason, state.selectedClass);
 
                         if (
                           reason !== "select-option" &&

@@ -46,7 +46,6 @@ export default function AllPropertiesModal(props) {
 
   const setModal = (bool) => {
     setState((s) => ({ ...s, modalIsOpen: bool }));
-    console.log(props.data);
   };
 
   return (

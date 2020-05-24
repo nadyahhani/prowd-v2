@@ -25,7 +25,7 @@ import theme from "../../theme";
 import { useHistory } from "react-router-dom";
 import { ProwdLogo } from "../../images/export";
 import { getEntityInfo, getClasses } from "../../services/general";
-import { getUnique, cut } from "../../global";
+import { getUnique, cut, filterOptions } from "../../global";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import Loading from "../Misc/Loading";
 import { Search } from "@material-ui/icons";
@@ -202,6 +202,7 @@ export default function Navbar() {
           >
             <div style={{ width: "100%" }}>
               <Autocomplete
+              filterOptions={filterOptions}
                 disableClearable
                 label="Search Wikidata for item..."
                 placeholder="Type and select the item to see its class and filters"
@@ -266,7 +267,6 @@ export default function Navbar() {
                   }
                 }}
                 onClose={(event, reason) => {
-                  console.log(reason, state.selectedClass);
 
                   if (reason !== "select-option" && !state.selectedClass) {
                     setState((s) => ({
@@ -345,6 +345,7 @@ export default function Navbar() {
               {state.selectedSearch ? state.selectedSearch.label : ""}
             </Typography>
             <Autocomplete
+
               freeSolo
               disableClearable
               options={[...state.showFilterOptions]
@@ -537,6 +538,7 @@ export default function Navbar() {
             </Grid>
             <Grid item xs={3} id="search-wikidata-navbar">
               <Autocomplete
+              filterOptions={filterOptions}
                 label=""
                 placeholder="Search Wikidata for item..."
                 options={state.classes}
@@ -603,7 +605,6 @@ export default function Navbar() {
                   }
                 }}
                 onClose={(event, reason) => {
-                  console.log(reason, state.selectedClass);
 
                   if (reason !== "select-option" && !state.selectedClass) {
                     setState((s) => ({

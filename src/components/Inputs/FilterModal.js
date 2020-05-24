@@ -12,7 +12,7 @@ import {
 } from "@material-ui/core";
 import VirtualAutocomp from "../../components/Inputs/VirtualAutocomp";
 import FilterBox from "./FilterBox";
-import { getUnique, cut } from "../../global";
+import { getUnique, cut, filterOptions } from "../../global";
 import { searchProperties, getClasses } from "../../services/general";
 import theme from "../../theme";
 
@@ -89,7 +89,6 @@ export default function FilterModal(props) {
             label="Property"
             placeholder="e.g. Sex or Gender, Date of Birth, Country"
             options={state.propertiesOptions}
-            // loading={state.propertiesOptions.length === 0}
             renderOption={(option) => (
               <div>
                 <Typography
@@ -130,7 +129,6 @@ export default function FilterModal(props) {
                   }));
                 });
               }
-              console.log(state);
             }}
             onChange={(event, newValue, reason) => {
               if (newValue) {
@@ -139,13 +137,6 @@ export default function FilterModal(props) {
                   selectedProp: newValue,
                   inputProperties: `${newValue.label} (${newValue.id})`,
                 }));
-
-                // getClasses("", (r) =>
-                //   setState((s) => ({
-                //     ...s,
-                //     propValueOptions: r.entities,
-                //   }))
-                // );
               }
               if (reason === "clear") {
                 setState((s) => ({
@@ -176,6 +167,7 @@ export default function FilterModal(props) {
         <Grid item>
           <VirtualAutocomp
             label="Value"
+            filterOptions={filterOptions}
             options={state.propValueOptions}
             loading={state.valueLoading}
             noOptionsText="Type something to search"

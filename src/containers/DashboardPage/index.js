@@ -23,6 +23,7 @@ import {
   getCompareGini,
   getCompareProperties,
   getDiscoverGini,
+  getActualItemCount,
 } from "../../services/dashboard";
 import { getGiniEntity, getAllProperties } from "../../services/dashboard";
 import {
@@ -49,13 +50,14 @@ const useStyles = makeStyles(() => ({
     alignItems: "center",
   },
   content: {
-    padding: "0 1vw 0 1vw",
+    padding: "1vh 1vw",
     width: "98vw",
-    height: "92vh",
+    minWidth: "1316px",
+    height: "90vh",
     // maxHeight: "800px",
     // minHeight: "722px",
     backgroundColor: theme.palette.background.main,
-    overflowX: "hidden",
+    overflowX: "scroll",
     overflowY: "scroll",
   },
   titleInput: {
@@ -90,6 +92,7 @@ export default function DashboardPage(props) {
       dashclass: "",
       filters: [],
     },
+    chartNumberPercent: 1,
     copyDialogOpen: false,
     loading: true,
     globalData: {},
@@ -128,6 +131,7 @@ export default function DashboardPage(props) {
     propertySort: 0,
     propertyPercent: 0,
     distinctProps: {},
+    chartNumberPercent: 1,
     // loading states
     loading: {
       giniA: true,
@@ -148,6 +152,7 @@ export default function DashboardPage(props) {
     limit: [1, 2],
     sortTable: 0,
     searchSubclassTable: "",
+    sortProps: 0,
     // loading states
     loading: {
       dimensions: true,
@@ -184,12 +189,45 @@ export default function DashboardPage(props) {
           ...s,
           loading: { ...s.loading, dimensions: true },
         }));
+        getActualItemCount(props.match.params.id, (r) => {
+          if (r.success) {
+            setState((s) => ({
+              ...s,
+              loading: false,
+              globalData: {
+                ...s.globalData,
+                actual: r.entityCount,
+              },
+            }));
+          } else {
+            setState((s) => ({
+              ...s,
+              notif: {
+                open: true,
+                message: "An Error Occured",
+                severity: "error",
+                action: () => {
+                  fetchData("info");
+                  setState((s) => ({
+                    ...s,
+                    notif: {
+                      open: true,
+                      message: "Retrying... Please Wait.",
+                      severity: "Warning",
+                    },
+                  }));
+                },
+              },
+            }));
+          }
+        });
         getDashInfo(props.match.params.id, (r) => {
           if (r.success) {
             setState((s) => ({
               ...s,
               loading: false,
               globalData: {
+                ...s.globalData,
                 public: r.public,
                 entity: r.entityInfo,
                 filters: r.filtersInfo ? r.filtersInfo : [],
@@ -340,7 +378,7 @@ export default function DashboardPage(props) {
           if (r.success) {
             setCompareState((s) => ({
               ...s,
-              giniA: { ...r },
+              giniA: { amount: 0, newHistogramData: { raw_data: [] }, ...r },
               loading: { ...s.loading, giniA: false },
             }));
           } else {
@@ -369,7 +407,7 @@ export default function DashboardPage(props) {
           if (r.success) {
             setCompareState((s) => ({
               ...s,
-              giniB: { ...r },
+              giniB: { amount: 0, newHistogramData: { raw_data: [] }, ...r },
               loading: { ...s.loading, giniB: false },
             }));
           } else {

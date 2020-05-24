@@ -253,3 +253,23 @@ export function getDiscoverGini(hash, afterFunc) {
       afterFunc({ success: false, ...err });
     });
 }
+
+export function getActualItemCount(hash, afterFunc) {
+  axios
+    .get(
+      `${url}/api/entities/count?hash_code=${hash}
+    `
+    )
+    .then(
+      (response) => {
+        afterFunc({ success: true, ...response.data });
+      },
+      (error) => {
+        afterFunc({ success: false, ...error });
+      }
+    )
+    .catch((err) => {
+      afterFunc({ success: false, ...err });
+    });
+}
+

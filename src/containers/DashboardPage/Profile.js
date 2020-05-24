@@ -416,7 +416,7 @@ export default function Profile(props) {
                           }}
                         >
                           <Box fontWeight="bold">
-                            Distinct Properties{" "}
+                            Topic Properties{" "}
                             <Help
                               text={`The amount of information (property) about items of the ${props.data.entity.entityLabel} (${props.data.entity.entityID}) class with the applied filters.
                              This is also the total number of properties in the property frequency chart on the right.`}
@@ -528,7 +528,7 @@ export default function Profile(props) {
                       }}
                     >
                       <Box fontWeight="bold">
-                        Property Frequency{" "}
+                        Topic Property Frequency{" "}
                         <Help
                           text={
                             <Typography>{`Every item in Wikidata is linked with information (property). Property frequency is how many items possess a certain piece of information (property). 
@@ -597,18 +597,39 @@ export default function Profile(props) {
               >
                 {!state.loading.gini ? (
                   <React.Fragment>
-                    <Typography component="div" gutterBottom>
+                    <Typography
+                      component="div"
+                      gutterBottom
+                      style={{
+                        display: "flex",
+                        flexDirection: "row",
+                        justifyContent: "space-between",
+                      }}
+                    >
                       <Box fontWeight="bold">
-                        Property Distribution{" "}
+                        Topic Property Distribution{" "}
                         <Help
                           text={
                             <Typography>{`From the shape of the distribution, you can see whether most of the 
-                          items are rich in information (property) or not. A peak in the distribution shows the number of properties most of the items in this profile has.`}</Typography>
+                          items are rich in information (property) or not. A peak in the distribution shows the number of properties most of the items in this topic has.`}</Typography>
                           }
+                        />
+                      </Box>
+                      <Box>
+                        <PercentageSwitch
+                          percentFirst
+                          onChange={(val) => {
+                            setState((s) => ({
+                              ...s,
+                              chartNumberPercent: val,
+                            }));
+                          }}
                         />
                       </Box>
                     </Typography>
                     <LineChart
+                      key={state.chartNumberPercent}
+                      numeric={state.chartNumberPercent === 0}
                       data={(function () {
                         const temp = countProperties(state.entities);
                         return {
@@ -618,9 +639,13 @@ export default function Profile(props) {
                           ),
                           datasets: [
                             {
-                              data: temp.values.map(
-                                (item) => (item * 100) / state.giniData.amount
-                              ),
+                              data:
+                                state.chartNumberPercent === 1
+                                  ? temp.values.map(
+                                      (item) =>
+                                        (item * 100) / state.giniData.amount
+                                    )
+                                  : temp.values,
                               actualLabels: temp.labels,
                               actualValues: temp.values,
                               entityCount: state.giniData.amount,

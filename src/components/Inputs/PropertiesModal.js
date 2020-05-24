@@ -14,7 +14,7 @@ import {
 } from "@material-ui/core";
 import EditIcon from "@material-ui/icons/Edit";
 import Autocomplete from "@material-ui/lab/Autocomplete";
-import { getUnique } from "../../global";
+import { getUnique, filterOptions } from "../../global";
 import { searchProperties } from "../../services/general";
 import PropTypes from "prop-types";
 

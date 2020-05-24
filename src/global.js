@@ -1,8 +1,18 @@
 import theme from "./theme";
+import { createFilterOptions } from "@material-ui/lab/Autocomplete";
 
 // API URL
 export const url = "http://prowd.id:5000";
 // export const url = "http://localhost:5000";
+
+// custom filter for item autocompletes
+export const filterOptions = createFilterOptions({
+  matchFrom: "any",
+  stringify: (option) =>
+    `${option.label} ${
+      option.aliases ? ` also known as ${option.aliases.join(", ")}` : ""
+    } ${option.id} ${option.description}`,
+});
 
 // custom function to create linear line
 export const linearLine = (begin, end, points) => {
@@ -87,7 +97,6 @@ export const sortProperties = (props, compare = false) => {
       labels.push(`${item.label} (${item.id})`);
       values.push(item.count);
     });
-    console.log({ labels: labels, values: values });
     return { labels: labels, values: values };
   } else {
     tempProps.sort((b, a) =>

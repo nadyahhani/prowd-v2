@@ -3,7 +3,6 @@ import ChartWrapper from "./ChartWrapper";
 import theme from "../../theme";
 
 function Histogram(props) {
-  console.log(props);
 
   const config = {
     type: "bar",

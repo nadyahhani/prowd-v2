@@ -16,13 +16,19 @@ export default class ChartWrapper extends Component {
   }
 
   componentDidUpdate(prevProps) {
+    console.log(this.props.config.data);
+
     this.chart.update();
   }
 
   render() {
     return (
       <div className={this.props.className}>
-        <canvas id="myChart" ref={this.chartRef} style={this.props.style} />
+        <canvas
+          id={this.props.key ? this.props.key : "myChart"}
+          ref={this.chartRef}
+          style={this.props.style}
+        />
       </div>
     );
   }

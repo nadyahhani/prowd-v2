@@ -25,16 +25,14 @@ import {
   TextField,
   Popover,
   Tooltip,
-  Collapse,
 } from "@material-ui/core";
 import tempData from "./tempData";
 import Navbar from "../../components/Navigation/Navbar";
 import VirtualAutocomp from "../../components/Inputs/VirtualAutocomp";
 import FilterBox from "../../components/Inputs/FilterBox";
-import OnboardingTour from "../../components/Misc/OnboardingTour";
 import { getClasses, getEntityInfo } from "../../services/general";
 import { createDashboard } from "../../services/dashboard";
-import { cut, getUnique } from "../../global";
+import { cut, getUnique, filterOptions } from "../../global";
 import {
   LandingTopIcon,
   FoldersIcon,
@@ -47,6 +45,8 @@ import {
 import { NavigateNext, ExpandMore, CheckBox, Search } from "@material-ui/icons";
 import Help from "../../components/Misc/Help";
 import Loading from "../../components/Misc/Loading";
+import Tour from "reactour";
+import { steps } from "./onboardingSteps";
 
 const useStyles = makeStyles(() => ({
   centerContent: {
@@ -179,8 +179,8 @@ const useStyles = makeStyles(() => ({
 function Landing(props) {
   const classes = useStyles();
   const history = useHistory();
+  const [onboarding, setOnboarding] = React.useState({ open: false });
   const [state, setState] = React.useState({
-    onboarding: false,
     classes: [],
     classesItem: [],
     classInput: "",
@@ -467,6 +467,7 @@ function Landing(props) {
         </Popover>
         <div style={{ width: "96%" }}>
           <VirtualAutocomp
+            filterOptions={filterOptions}
             placeholder="Type and select an item"
             options={state.classesItem}
             inputProps={{
@@ -535,8 +536,6 @@ function Landing(props) {
               }
             }}
             onClose={(event, reason) => {
-              console.log(reason, state.selectedClass);
-
               if (reason !== "select-option" && !state.selectedClass) {
                 setState((s) => ({
                   ...s,
@@ -568,18 +567,30 @@ function Landing(props) {
       </Grid>
     );
   };
+  const handleClose = () => {
+    setOnboarding((s) => ({ ...s, open: false }));
+  };
   return (
     <ThemeProvider theme={theme}>
-      {state.onboarding ? (
-        <OnboardingTour
-          open={state.onboarding}
-          onChange={(reason) => {
-            if (reason === "close") {
-              setState((s) => ({ ...s, onboarding: false }));
-            }
-          }}
-        />
-      ) : null}
+      <Tour
+        disableInteraction
+        steps={steps}
+        goToStep={0}
+        isOpen={onboarding.open}
+        onRequestClose={handleClose}
+        onAfterOpen={(target) => (document.body.style.overflow = "hidden")}
+        onBeforeClose={(target) => (document.body.style.overflowY = "scroll")}
+        lastStepNextButton={
+          <Button
+            variant="contained"
+            size="small"
+            color="primary"
+            onClick={handleClose}
+          >
+            Finish
+          </Button>
+        }
+      />
       <div className={classes.mainLanding} id="home">
         <LandingTopIcon style={{ position: "absolute", width: "100%" }} />
         <Navbar />
@@ -624,7 +635,7 @@ function Landing(props) {
                 variant="contained"
                 color="primary"
                 endIcon={<NavigateNext />}
-                onClick={() => setState((s) => ({ ...s, onboarding: true }))}
+                onClick={() => setOnboarding((s) => ({ ...s, open: true }))}
               >
                 Show me how
               </Button>
@@ -641,11 +652,8 @@ function Landing(props) {
                     textColor="primary"
                     variant="fullWidth"
                   >
-                    <Tab label="Topic Subject" id="topic-item-tab" />
-                    <Tab
-                      label="Configure Dashboard"
-                      id="create-dashboard-tab"
-                    />
+                    <Tab label="Visualize by Item" id="topic-item-tab" />
+                    <Tab label="Visualize Topic" id="create-dashboard-tab" />
                   </Tabs>
                 </div>
                 {state.inputtab === 1 ? (
@@ -673,7 +681,7 @@ function Landing(props) {
                             What are the items of your topic classified as?{" "}
                             <Box fontWeight="bold">
                               Click on the examples at the bottom or use the
-                              "Topic Subject" tab to configure the dashboard
+                              "Visualize by Item" tab to configure the dashboard
                               based on an subject of your topic.
                             </Box>
                           </Typography>
@@ -681,6 +689,7 @@ function Landing(props) {
                       >
                         <div style={{ width: "100%" }}>
                           <VirtualAutocomp
+                            filterOptions={filterOptions}
                             label="Class"
                             placeholder="Input the classification for the items in your topic"
                             options={state.classes}
@@ -728,8 +737,6 @@ function Landing(props) {
                               }
                             }}
                             onClose={(event, reason) => {
-                              console.log(reason, state.selectedClass);
-
                               if (
                                 reason !== "select-option" &&
                                 !state.selectedClass
@@ -1028,9 +1035,17 @@ function Landing(props) {
                     className={classes.subTextDesc}
                     style={{ width: "100%", textAlign: "justify" }}
                   >
-                    Knowledge gaps are a very real thing. By identifying any
-                    imbalanced and underrepresented topics, we one step closer
-                    closer to knowledge equity.
+                    <a
+                      style={{ textDecoration: "none" }}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      href="https://research.wikimedia.org/knowledge-gaps.html"
+                    >
+                      Knowledge gaps
+                    </a>{" "}
+                    are a very real thing. By identifying any imbalanced and
+                    underrepresented topics, we are already one step closer to
+                    knowledge equity.
                   </Box>
                 </Typography>
               </div>

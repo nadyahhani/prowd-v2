@@ -10,7 +10,7 @@ import EditIcon from "@material-ui/icons/Edit";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import { getClasses } from "../../services/general";
 import theme from "../../theme";
-import { getUnique } from "../../global";
+import { getUnique, filterOptions } from "../../global";
 
 const useStyles = makeStyles(() => ({
   popoverPaper: {
@@ -86,6 +86,7 @@ export default function EditClass(props) {
         classes={{ paper: classes.popoverPaper }}
       >
         <Autocomplete
+        filterOptions={filterOptions}
           renderTags={(value) => <Typography>{value.label}</Typography>}
           value={state.selected}
           getOptionLabel={(option) => {

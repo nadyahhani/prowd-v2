@@ -1,10 +1,8 @@
 import React from "react";
 import ChartWrapper from "./ChartWrapper";
-import { prototype } from "chart.js";
 
 function LineChart(props) {
-  console.log(props);
-
+  React.useEffect(() => {}, [props.data]);
   const config = {
     type: "line",
     data: props.data,
@@ -122,78 +120,27 @@ function LineChart(props) {
               beginAtZero: true,
               max: props.maxValue,
               callback: function (value, index, values) {
-                return value + "%";
+                if (!props.numeric) {
+                  return value + "%";
+                } else {
+                  return value;
+                }
               },
             },
             scaleLabel: {
               display: true,
-              labelString: "Percentage of Items (of # of items)",
+              labelString: props.numeric
+                ? "Number of Items"
+                : "Percentage of Items (of # of items)",
             },
           },
         ],
       },
     },
   };
-  const percentConfig = {
-    type: "line",
-    data: props.data,
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      legend: { display: false },
-      title: {
-        display: false,
-        text: "Distribution Comparison",
-      },
-      elements: {
-        point: {
-          radius: 0,
-        },
-      },
-      scales: {
-        xAxes: [
-          {
-            display: false,
-            ticks: {
-              // max: 10000,
-              autoSkip: true,
-            },
-          },
-          {
-            display: true,
-            ticks: {
-              autoSkip: true,
-              maxTicksLimit: 11,
-              max: props.maxLabel,
-            },
-            scaleLabel: {
-              display: true,
-              labelString: "Percentage of Properties",
-              lineHeight: 1,
-              padding: 0,
-            },
-          },
-        ],
-        yAxes: [
-          {
-            ticks: {
-              beginAtZero: true,
-              max: props.maxValue,
-            },
-            scaleLabel: {
-              display: true,
-              labelString: "Percentage of Items",
-            },
-          },
-        ],
-      },
-    },
-  };
+
   return (
-    <ChartWrapper
-      config={props.percentage ? percentConfig : config}
-      className={props.classes.ChartWrapper}
-    />
+    <ChartWrapper config={config} className={props.classes.ChartWrapper} />
   );
 }
 
@@ -201,6 +148,6 @@ export default LineChart;
 
 LineChart.defaultProps = {
   classes: { ChartWrapper: "", root: "" },
-  percentage: false,
+  numeric: false,
   multiple: false,
 };

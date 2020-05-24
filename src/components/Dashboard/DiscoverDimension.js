@@ -19,7 +19,7 @@ import {
 } from "@material-ui/core";
 import { getClasses, searchProperties } from "../../services/general";
 import { AddCircle, RemoveCircle } from "@material-ui/icons";
-import { getUnique } from "../../global";
+import { getUnique, filterOptions } from "../../global";
 import theme from "../../theme";
 import Loading from "../Misc/Loading";
 import Help from "../Misc/Help";
@@ -259,7 +259,6 @@ export default function DiscoverDimension(props) {
                                 setState((s) => {
                                   let t = [...s.data];
                                   t.push(s.selectedTemp);
-                                  console.log(t);
                                   return {
                                     ...s,
                                     data: t,

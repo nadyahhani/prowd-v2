@@ -159,6 +159,7 @@ class MuiVirtualizedTable extends React.PureComponent {
         {columns[columnIndex].dropdown ? (
           <div style={{ width: "100%" }}>
             <Autocomplete
+            
               disableClearable
               getOptionLabel={(option) => {
                 return option;

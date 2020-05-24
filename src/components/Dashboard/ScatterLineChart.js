@@ -2,6 +2,9 @@ import React from "react";
 import ChartWrapper from "./ChartWrapper";
 
 function ScatterLineChart(props) {
+  // React.useEffect(() => {
+  //   console.log(props.data);
+  // }, [props.data]);
   const config = {
     type: "scatter",
     data: {
@@ -88,12 +91,17 @@ function ScatterLineChart(props) {
             ticks: {
               beginAtZero: true,
               callback: function (value, index, values) {
+                if (props.numeric) {
+                  return value;
+                }
                 return value + "%";
               },
             },
             scaleLabel: {
               display: true,
-              labelString: "Percentage of Items (of # of items)",
+              labelString: props.numeric
+                ? "Number of Items"
+                : "Percentage of Items (of # of items)",
             },
           },
         ],
@@ -102,7 +110,11 @@ function ScatterLineChart(props) {
   };
 
   return (
-    <ChartWrapper config={config} className={props.classes.ChartWrapper} />
+    <ChartWrapper
+      key={props.key}
+      config={config}
+      className={props.classes.ChartWrapper}
+    />
   );
 }
 

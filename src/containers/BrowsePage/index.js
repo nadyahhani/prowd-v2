@@ -26,7 +26,7 @@ import { NavigateNext, ExpandMore, Search } from "@material-ui/icons";
 import { useHistory } from "react-router-dom";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import FilterBox from "../../components/Inputs/FilterBox";
-import { getUnique, cut } from "../../global";
+import { getUnique, cut, filterOptions } from "../../global";
 import Link from "../../components/Misc/Link";
 
 const useStyles = makeStyles({
@@ -112,6 +112,7 @@ export default function BrowsePage(props) {
           <Grid item>
             <Typography>Class</Typography>
             <Autocomplete
+              filterOptions={filterOptions}
               disableClearable
               renderInput={(params) => (
                 <TextField

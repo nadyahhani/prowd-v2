@@ -6,7 +6,7 @@ import Tab from "@material-ui/core/Tab";
 import Typography from "@material-ui/core/Typography";
 import Box from "@material-ui/core/Box";
 import theme from "../../theme";
-import { Paper } from "@material-ui/core";
+import { Paper, ButtonGroup, Button } from "@material-ui/core";
 
 function a11yProps(index) {
   return {
@@ -50,43 +50,29 @@ const useStyles = makeStyles(() => ({
 
 export default function PercentageSwitch(props) {
   const classes = useStyles();
-  const [value, setValue] = React.useState(0);
-
-  const handleChange = (event, newValue) => {
-    setValue(newValue);
-    props.onChange(newValue);
-  };
+  const [value, setValue] = React.useState(props.percentFirst ? 1 : 0);
 
   return (
-    <Paper className={classes.root} elevation={0} variant="outlined">
-      <Tabs
-        value={value}
-        onChange={handleChange}
-        classes={{ root: classes.tabs }}
-        TabIndicatorProps={{ className: classes.indicator }}
-        aria-label="simple tabs example"
-        variant="fullWidth"
+    <ButtonGroup color="primary" {...props}>
+      <Button
+        onClick={() => {
+          setValue(0);
+          props.onChange(0);
+        }}
+        variant={value === 0 ? "contained" : "outlined"}
       >
-        <Tab
-          label={
-            <Typography component="div">
-              <Box fontWeight="bold">#</Box>
-            </Typography>
-          }
-          {...a11yProps(0)}
-          classes={{ selected: classes.selectedTab, root: classes.tab }}
-        />
-        <Tab
-          label={
-            <Typography component="div">
-              <Box fontWeight="bold">%</Box>
-            </Typography>
-          }
-          {...a11yProps(1)}
-          classes={{ selected: classes.selectedTab, root: classes.tab }}
-        />
-      </Tabs>
-    </Paper>
+        #
+      </Button>
+      <Button
+        variant={value === 1 ? "contained" : "outlined"}
+        onClick={() => {
+          setValue(1);
+          props.onChange(1);
+        }}
+      >
+        %
+      </Button>
+    </ButtonGroup>
   );
 }
 

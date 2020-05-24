@@ -1,26 +1,11 @@
-import React from "react";
-import Tour from "reactour";
-import { useHistory } from "react-router-dom";
 import { Typography, Box, Button } from "@material-ui/core";
+import ReactImageMagnify from "react-image-magnify";
 import { DouglasAdamsStructure } from "../../images/export";
+import React from 'react';
 import theme from "../../theme";
 import { NavigateNext } from "@material-ui/icons";
-import ReactImageMagnify from "react-image-magnify";
 
-export default function OnboardingTour(props) {
-  const history = useHistory();
-  const [state, setState] = React.useState({ isopen: false });
-
-  const handleClose = () => {
-    setState((s) => ({ ...s, isopen: false }));
-    props.onChange("close");
-  };
-
-  React.useEffect(() => {
-    setState((s) => ({ ...s, isopen: props.open }));
-  }, [props.open]);
-
-  const steps = [
+export const steps = [
     {
       content: ({ goTo, inDOM }) => (
         <div>
@@ -303,37 +288,8 @@ export default function OnboardingTour(props) {
           <Typography variant="h2">
             <b>That's it!</b> Have fun exploring!
           </Typography>
-          <div
-            style={{
-              display: "flex",
-              flexDirection: "row",
-              justifyContent: "flex-start",
-              marginTop: theme.spacing(2),
-            }}
-          >
-            <Button
-              variant="contained"
-              size="small"
-              color="primary"
-              onClick={handleClose}
-            >
-              Finish
-            </Button>
-          </div>
           {inDOM}
         </div>
       ),
     },
   ];
-  return (
-    <Tour
-      steps={steps}
-      goToStep={0}
-      isOpen={state.isopen}
-      onRequestClose={handleClose}
-      onAfterOpen={(target) => (document.body.style.overflow = "hidden")}
-      onBeforeClose={(target) => (document.body.style.overflowY = "scroll")}
-      // { ...props}
-    />
-  );
-}

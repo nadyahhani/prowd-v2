@@ -1,13 +1,14 @@
 import React from "react";
 import PropTypes from "prop-types";
 import TextField from "@material-ui/core/TextField";
-import Autocomplete from "@material-ui/lab/Autocomplete";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
 import ListSubheader from "@material-ui/core/ListSubheader";
 import { useTheme, makeStyles } from "@material-ui/core/styles";
 import { VariableSizeList } from "react-window";
 import { InputLabel, CircularProgress } from "@material-ui/core";
 import theme from "../../theme";
+import { filterOptions } from "../../global";
+import Autocomplete from "@material-ui/lab/Autocomplete";
 const LISTBOX_PADDING = 8; // px
 
 function renderRow(props) {
@@ -105,6 +106,7 @@ export default function VirtualAutocomp(props) {
             ? `There are no options containing "${props.inputValue}"`
             : "Type to see options"
         }
+        
         classes={{ listbox: classes.listbox, option: classes.option }}
         renderInput={(params) => (
           <TextField

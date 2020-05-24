@@ -124,7 +124,6 @@ export default function VennProperties(props) {
 
   React.useEffect(() => {
     const temp = portionProps(props.properties, props.entityCount);
-    console.log(temp);
 
     setState((s) => ({ ...s, ...temp }));
   }, [props.properties, props.entityCount, portionProps]);
