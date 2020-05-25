@@ -14,7 +14,7 @@ function LineChart(props) {
         display: false,
         text: "Distribution Comparison",
       },
-      tooltips: {
+      tooltips: {mode: "nearest",
         titleSpacing: 6,
         xPadding: 20,
         yPadding: 20,

@@ -87,7 +87,7 @@ export default function FilterModal(props) {
         <Grid item>
           <VirtualAutocomp
             label="Property"
-            placeholder="e.g. Sex or Gender, Date of Birth, Country"
+            placeholder="Type and select a property"
             options={state.propertiesOptions}
             renderOption={(option) => (
               <div>
@@ -168,9 +168,9 @@ export default function FilterModal(props) {
           <VirtualAutocomp
             label="Value"
             filterOptions={filterOptions}
+            placeholder="Type and select a value"
             options={state.propValueOptions}
             loading={state.valueLoading}
-            noOptionsText="Type something to search"
             renderOption={(option) => (
               <div>
                 <Typography

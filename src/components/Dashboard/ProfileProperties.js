@@ -74,7 +74,10 @@ export default function ProfileProperties(props) {
             labels: tempLabels.slice(0, 5),
             datasets: [
               {
-                label: "Number of Items",
+                label:
+                  props.propertyPercent === 1
+                    ? "Percentage of items with this property"
+                    : "Number of Items with this property",
                 backgroundColor: theme.palette.chart.main,
                 data: state[key].values.slice(0, 5),
               },
@@ -93,6 +96,11 @@ export default function ProfileProperties(props) {
             values: state[key].values,
             max: state[key].max,
           }}
+          label={
+            props.propertyPercent === 1
+              ? "Percentage of items with this property"
+              : "Number of Items with this property"
+          }
         />
       </React.Fragment>
     );

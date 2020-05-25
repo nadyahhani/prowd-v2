@@ -114,8 +114,8 @@ export default function Onboarding(props) {
             <Typography component="div">
               These information can give you insights on your topic.{" "}
               <b>
-                Hover over <Help text="Hello!" /> to learn about each piece of
-                information
+                Hover over <Help text="Hello!" /> and the chart components to
+                learn about each piece of information
               </b>
             </Typography>
           </div>

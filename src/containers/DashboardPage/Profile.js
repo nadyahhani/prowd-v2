@@ -118,12 +118,6 @@ const useStyles = makeStyles((theme) => ({
 
 const tableColumns = [
   {
-    width: 80,
-    label: "Percentile",
-    dataKey: "percentile",
-    numeric: true,
-  },
-  {
     width: 200,
     label: "Item",
     dataKey: "label",
@@ -134,6 +128,12 @@ const tableColumns = [
     width: 100,
     label: "# of Properties",
     dataKey: "propertyCount",
+    numeric: true,
+  },
+  {
+    width: 80,
+    label: "% of Properties",
+    dataKey: "percentile",
     numeric: true,
   },
   {
@@ -266,19 +266,12 @@ export default function Profile(props) {
                             }}
                           />
                         </Grid>
-                        <Grid item xs={3}>
+                        <Grid item xs={4}>
                           <TableSort
                             onChange={(val) =>
                               setState((s) => ({ ...s, tableSort: val }))
                             }
                           />
-                        </Grid>
-                        <Grid item>
-                          <Tooltip title="Download items data">
-                            <IconButton size="small" edge="end">
-                              <SaveAltIcon color="primary" />
-                            </IconButton>
-                          </Tooltip>
                         </Grid>
                         <Grid item>
                           <Tooltip title="Open query in Wikidata">

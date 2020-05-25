@@ -99,8 +99,8 @@ export default function EditClass(props) {
           }}
           noOptionsText={
             state.entities.length === 0
-              ? "Type to search for an item"
-              : "There are no items with that name"
+              ? "Type to see options"
+              : `There are no options containing ${state.inputValue}`
           }
           inputValue={state.inputValue}
           renderOption={(option) => (

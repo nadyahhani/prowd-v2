@@ -415,6 +415,7 @@ export default function Compare(props) {
                             labels={state.giniA.percentileData}
                             data={state.giniA.data}
                             gini={state.giniA.gini}
+                            actual={state.giniA.each_amount}
                             insight={state.giniA.insight}
                             classes={{
                               root: classes.giniChart,
@@ -452,6 +453,7 @@ export default function Compare(props) {
                             data={state.giniB.data}
                             gini={state.giniB.gini}
                             insight={state.giniB.insight}
+                            actual={state.giniB.each_amount}
                             classes={{
                               root: classes.giniChart,
                               ChartWrapper: classes.giniChart,
@@ -625,6 +627,13 @@ export default function Compare(props) {
                         data={{
                           datasets: [
                             {
+                              name:
+                                state.compareFilters.length > 0 ||
+                                !state.loading.compareFilters
+                                  ? state.compareFilters
+                                      .map((item) => `${item.valueA.label}`)
+                                      .join("-")
+                                  : "-",
                               raw: state.giniA.newHistogramData.raw_data,
                               data:
                                 state.chartNumberPercent === 1
@@ -655,7 +664,15 @@ export default function Compare(props) {
                               showLine: true,
                             },
                             {
+                              name:
+                                state.compareFilters.length > 0 ||
+                                !state.loading.compareFilters
+                                  ? state.compareFilters
+                                      .map((item) => `${item.valueB.label}`)
+                                      .join("-")
+                                  : "-",
                               raw: state.giniB.newHistogramData.raw_data,
+
                               data:
                                 state.chartNumberPercent === 1
                                   ? state.giniB.newHistogramData.raw_data.map(

@@ -107,6 +107,7 @@ function GiniChart(props) {
       display: false,
     },
     tooltips: {
+      mode: "nearest",
       titleSpacing: 6,
       xPadding: 20,
       yPadding: 20,
@@ -117,9 +118,12 @@ function GiniChart(props) {
           } items possess ${(
             data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index] *
             100
-          ).toFixed(1)}% of the total number of properties.`;
+          ).toFixed(1)}% `;
 
           return label;
+        },
+        afterLabel: function (tooltipItem, data) {
+          return `of the total number of properties.`;
         },
       },
     },
@@ -138,9 +142,12 @@ function GiniChart(props) {
             min: 0,
             max: 1,
             display: !props.simple,
+            callback: function (value, index, values) {
+              return value * 100 + "%";
+            },
           },
           scaleLabel: {
-            labelString: "Cumulative Share of Properties Owned (1.0 is 100%)",
+            labelString: "Cumulative Share of Properties Owned",
             lineHeight: 1,
             padding: 0,
             display: !props.simple,

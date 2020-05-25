@@ -20,6 +20,7 @@ function ScatterLineChart(props) {
         text: "Distribution Comparison",
       },
       tooltips: {
+        mode: "nearest",
         titleSpacing: 6,
         xPadding: 20,
         yPadding: 20,

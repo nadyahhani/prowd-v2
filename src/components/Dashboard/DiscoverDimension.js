@@ -195,7 +195,7 @@ export default function DiscoverDimension(props) {
                         </TableCell>
                       </TableRow>
                     ))}
-                    {state.data.length < 3 ? (
+                    {state.data.length < 2 ? (
                       <TableRow key="input">
                         <TableCell
                           component="th"
@@ -277,7 +277,7 @@ export default function DiscoverDimension(props) {
                     ) : null}
                   </React.Fragment>
                 ) : (
-                  [0, 0, 0].map((item) => (
+                  [0, 0].map((item) => (
                     <TableRow style={{ height: 52 }}>
                       <TableCell colSpan={2}>
                         <Loading variant="text" />
@@ -288,9 +288,9 @@ export default function DiscoverDimension(props) {
                     </TableRow>
                   ))
                 )}
-                {!props.loading && state.data.length < 3
+                {!props.loading && state.data.length < 2
                   ? (function () {
-                      const temp = new Array(3 - state.data.length - 1).fill(0);
+                      const temp = new Array(2 - state.data.length - 1).fill(0);
                       return temp.map((item) => (
                         <TableRow style={{ height: 52 }}>
                           <TableCell colSpan={3} />
@@ -411,13 +411,15 @@ export default function DiscoverDimension(props) {
         </Grid>
         <Grid item>
           <Button
-            onClick={() =>
+            onClick={() => {
               setState((s) => ({
                 ...s,
-                data: props.appliedDimensions,
+                data: props.appliedDimensions.data,
+
                 update: false,
-              }))
-            }
+              }));
+              setValue(props.appliedDimensions.limit);
+            }}
             color="primary"
           >
             Reset

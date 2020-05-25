@@ -159,7 +159,6 @@ class MuiVirtualizedTable extends React.PureComponent {
         {columns[columnIndex].dropdown ? (
           <div style={{ width: "100%" }}>
             <Autocomplete
-            
               disableClearable
               getOptionLabel={(option) => {
                 return option;
@@ -173,7 +172,7 @@ class MuiVirtualizedTable extends React.PureComponent {
               options={this.props.options ? this.props.options : []}
               renderInput={(params) => (
                 <Tooltip
-                  position="top"
+                  placement="top"
                   title={
                     <Typography>Check the presence of a property</Typography>
                   }

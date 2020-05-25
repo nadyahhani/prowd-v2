@@ -211,15 +211,22 @@ function Landing(props) {
   });
 
   React.useEffect(() => {
-    getClasses("", (response) => {
-      response.success &&
-        setState((s) => ({
-          ...s,
-          inputisloading: false,
-          classes: getUnique([...s.classes, ...response.entities], "id"),
-        }));
-    });
-  }, []);
+    console.log(window.location);
+
+    let elmnt = document.getElementById(window.location.hash.replace("#", ""));
+    elmnt.scrollIntoView();
+    if (!state.firstLoaded) {
+      getClasses("", (response) => {
+        response.success &&
+          setState((s) => ({
+            ...s,
+            inputisloading: false,
+            firstLoaded: true,
+            classes: getUnique([...s.classes, ...response.entities], "id"),
+          }));
+      });
+    }
+  }, [window.location.href]);
   const handleItemDialogClose = () =>
     setState((s) => ({
       ...s,

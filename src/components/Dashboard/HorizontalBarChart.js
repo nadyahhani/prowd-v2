@@ -40,7 +40,9 @@ export default function HorizontalBarChart(props) {
             },
             scaleLabel: {
               display: !props.simple,
-              labelString: props.percent
+              labelString: props.xAxesTitle
+                ? props.xAxesTitle
+                : props.percent
                 ? "Percentage of Items"
                 : "Number of Items",
               lineHeight: 1,
@@ -67,9 +69,7 @@ export default function HorizontalBarChart(props) {
 
   var barOptions_stacked = {
     animation: false,
-    tooltips: {
-      enabled: true,
-    },
+    tooltips: { mode: "nearest", enabled: true },
     hover: {
       animationDuration: 0,
     },

@@ -93,6 +93,8 @@ export default function DashboardPage(props) {
       dashclass: "",
       filters: [],
     },
+    openLegend: false,
+    legendAnchor: null,
     copyDialogOpen: false,
     loading: true,
     globalData: {},
@@ -331,9 +333,20 @@ export default function DashboardPage(props) {
         });
         getGiniEntity(props.match.params.id, null, (r) => {
           if (r.success) {
+            const max = Math.max.apply(
+              Math,
+              r.entities.map((item) => item.propertyCount)
+            );
             setProfileState((s) => ({
               ...s,
-              entities: [...r.entities].reverse(),
+              entities: [
+                ...r.entities.map((item) => ({
+                  ...item,
+                  percentile: `${((item.propertyCount * 100) / max).toFixed(
+                    0
+                  )}%`,
+                })),
+              ].reverse(),
               giniData: {
                 gini: r.gini,
                 each_amount: r.each_amount,
@@ -766,7 +779,7 @@ export default function DashboardPage(props) {
                     }))
                   }
                 >
-                  UNDO
+                  RESET
                 </Button>
               ) : null}
               <Button

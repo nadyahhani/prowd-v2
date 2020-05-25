@@ -104,7 +104,8 @@ const useStyles = makeStyles(() => ({
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
-    overflowY: "hidden",
+    overflowY: "scroll",
+    overflowX: "hidden",
   },
 }));
 
@@ -185,7 +186,7 @@ export default function Navbar() {
           spacing={2}
           direction="column"
           // className={classes.inputInput}
-          style={{ height: "100%", width: "100%", padding: theme.spacing(2) }}
+          style={{ padding: theme.spacing(2) }}
         >
           <Grid item>
             <Typography>
@@ -391,7 +392,7 @@ export default function Navbar() {
               component={(props) => (
                 <Paper {...props} variant="outlined" elevation={0} />
               )}
-              style={{ height: theme.spacing(40) }}
+              style={{ height: theme.spacing(30) }}
             >
               <Table stickyHeader size="small">
                 <TableHead>

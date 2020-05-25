@@ -18,6 +18,10 @@ import {
   IconButton,
   TableRow,
   Badge,
+  Popover,
+  List,
+  ListItem,
+  Button,
 } from "@material-ui/core";
 import HorizontalBarChart from "../../components/Dashboard/HorizontalBarChart";
 import theme from "../../theme";
@@ -54,7 +58,7 @@ const useStyles = makeStyles((theme) => ({
     flex: "1 1 auto",
     padding: theme.spacing(1),
   },
-  table: { height: "87%", overflowY: "scroll", overflowX: "hidden" },
+  table: { height: "87%", overflowY: "scroll", overflowX: "scroll" },
   // tableCell: {
   //   padding: `${theme.spacing(2)}px 4px`,
   // },
@@ -514,9 +518,9 @@ export default function Analysis(props) {
             item.analysis_info.item_3_label
               ? `-${item.analysis_info.item_3_label}`
               : ""
-          }: ${((item.amount * 100) / state.totalAmount).toFixed(1)}%`
+          }: ${((item.amount * 100) / props.data.itemCount).toFixed(1)}%`
         );
-        values.push(((item.amount * 100) / state.totalAmount).toFixed(1));
+        values.push(((item.amount * 100) / props.data.itemCount).toFixed(1));
       });
       const dataTemp = {
         labels: [...labels].splice(0, 5),
@@ -543,7 +547,7 @@ export default function Analysis(props) {
               Subclass Proportion{" "}
               <Help
                 text={
-                  <Typography>{`The proportion of each subclass to the whole topic.`}</Typography>
+                  <Typography>{`The proportion of each subclass to the whole topic. The rest of the percentage not shown here are of those items in the topic which may not possess the property dimensions selected.`}</Typography>
                 }
               />
             </Box>
@@ -578,11 +582,13 @@ export default function Analysis(props) {
           </Typography>
           <HorizontalBarChart
             key={`props-${state.sortProps}`}
+            percent
             data={dataTemp}
             classes={{
               root: classes.horizontalbar,
               ChartWrapper: classes.horizontalbarchart,
             }}
+            xAxesTitle="Percentage of Proportion"
             max={100}
           />
           <AllPropertiesModal
@@ -592,8 +598,8 @@ export default function Analysis(props) {
               values: values,
               max: 100,
             }}
-            title="Average Number of Properties of Items from All Subclasses"
-            label="Average number of properties for items of this value"
+            title="Proportion of each subclass to the whole topic"
+            label="Proportion of this subclass to the whole topic"
           />
         </React.Fragment>
       );
@@ -682,7 +688,16 @@ export default function Analysis(props) {
                 >
                   {!state.loading.gini ? (
                     <React.Fragment>
-                      <Typography component="div">
+                      <Typography
+                        component="div"
+                        style={{
+                          width: "100%",
+                          display: "flex",
+                          flexDirection: "row",
+                          justifyContent: "space-between",
+                          alignItems: "center",
+                        }}
+                      >
                         <Box fontWeight="bold">
                           Subclasses Property Distribution{" "}
                           <Help
@@ -690,6 +705,53 @@ export default function Analysis(props) {
                               <Typography>{`The distribution shape of several subclasses. You can customize and select the classes shown in this chart.`}</Typography>
                             }
                           />
+                        </Box>
+                        <Box>
+                          <Popover
+                            open={state.openLegend}
+                            anchorEl={state.legendAnchor}
+                            anchorOrigin={{
+                              vertical: "top",
+                              horizontal: "center",
+                            }}
+                            transformOrigin={{
+                              vertical: "bottom",
+                              horizontal: "right",
+                            }}
+                            onClose={() =>
+                              setState((s) => ({ ...s, openLegend: false }))
+                            }
+                          >
+                            <List>
+                              {state.distributions.map((item) => (
+                                <ListItem>
+                                  <div
+                                    style={{
+                                      borderRadius: "50%",
+                                      width: theme.spacing(2),
+                                      height: theme.spacing(2),
+                                      backgroundColor: item.color,
+                                      marginRight: theme.spacing(1),
+                                    }}
+                                  />
+                                  <Typography>{item.name}</Typography>
+                                </ListItem>
+                              ))}
+                            </List>
+                          </Popover>
+                          <Button
+                            color="primary"
+                            size="small"
+                            onClick={(e) =>
+                              setState((s) => ({
+                                ...s,
+                                openLegend: true,
+                                legendAnchor: e.currentTarget,
+                              }))
+                            }
+                          >
+                            View Legend
+                          </Button>
                         </Box>
                       </Typography>
                       <ScatterLineChart
