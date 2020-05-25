@@ -1113,6 +1113,10 @@ function Landing(props) {
                   variant="contained"
                   onClick={() => {
                     window.location.hash = "home";
+                    let elmnt = document.getElementById(
+                      window.location.hash.replace("#", "")
+                    );
+                    elmnt.scrollIntoView();
                   }}
                 >
                   Get Started
