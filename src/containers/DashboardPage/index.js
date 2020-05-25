@@ -51,10 +51,10 @@ const useStyles = makeStyles(() => ({
     alignItems: "center",
   },
   content: {
-    padding: "1vh 1vw",
+    padding: "0 1vw",
     width: "98vw",
     minWidth: "1316px",
-    height: "90vh",
+    height: "92vh",
     // maxHeight: "800px",
     // minHeight: "722px",
     backgroundColor: theme.palette.background.main,
@@ -98,6 +98,7 @@ export default function DashboardPage(props) {
     globalData: {},
     oldGlobal: {},
     update: false,
+    itemCount: 0,
     notif: { open: false, severity: "info", message: "" },
   });
 
@@ -192,6 +193,33 @@ export default function DashboardPage(props) {
           ...s,
           loading: { ...s.loading, dimensions: true },
         }));
+
+        getActualItemCount(props.match.params.id, (r) => {
+          if (r.success) {
+            setState((s) => ({ ...s, itemCount: r.entityCount }));
+          } else {
+            setState((s) => ({
+              ...s,
+              notif: {
+                open: true,
+                message: "An Error Occured",
+                severity: "error",
+                action: () => {
+                  fetchData("info");
+                  setState((s) => ({
+                    ...s,
+                    notif: {
+                      open: true,
+                      message: "Retrying... Please Wait.",
+                      severity: "Warning",
+                    },
+                  }));
+                },
+              },
+            }));
+          }
+        });
+
         getDashInfo(props.match.params.id, (r) => {
           if (r.success) {
             setState((s) => ({
@@ -461,6 +489,7 @@ export default function DashboardPage(props) {
             setDiscoverState((s) => ({
               ...s,
               gini: r.data,
+              totalAmount: r.total_entities_amount,
               shown: filtered,
               maxAmount: r.max_number,
               limit: [1, r.max_number],
@@ -819,6 +848,8 @@ export default function DashboardPage(props) {
                 <FileCopyOutlinedIcon />
               </IconButton> */}
               <Settings
+                hash={props.match.params.id}
+                updateData={setState}
                 onChange={(e) => {
                   if (e.reason === "restart_onboarding") {
                     history.push(
@@ -968,6 +999,7 @@ export default function DashboardPage(props) {
               selectedTab={props.match.params.page}
               data={{
                 ...state.globalData,
+                itemCount: state.itemCount,
                 loaded: { ...state.loaded },
                 onboarding: { ...state.onboarding },
               }}

@@ -52,6 +52,10 @@ export default function PercentageSwitch(props) {
   const classes = useStyles();
   const [value, setValue] = React.useState(props.percentFirst ? 1 : 0);
 
+  React.useEffect(() => {
+    setValue(props.value);
+  }, [props.value]);
+
   return (
     <ButtonGroup color="primary" {...props}>
       <Button
@@ -81,4 +85,5 @@ PercentageSwitch.propTypes = {
 };
 PercentageSwitch.defaultProps = {
   onChange: () => {},
+  value: 0,
 };

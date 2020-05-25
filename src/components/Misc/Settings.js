@@ -10,8 +10,10 @@ import CloseIcon from "@material-ui/icons/Close";
 import SettingsIcon from "@material-ui/icons/Settings";
 
 import Typography from "@material-ui/core/Typography";
-import { List, ListItem, ListItemText, Popover } from "@material-ui/core";
+import { List, ListItem, Popover, Box } from "@material-ui/core";
 import theme from "../../theme";
+import { deleteDashboard } from "../../services/dashboard";
+import { useHistory } from "react-router-dom";
 
 const styles = (theme) => ({
   root: {
@@ -58,7 +60,9 @@ const DialogActions = withStyles((theme) => ({
 }))(MuiDialogActions);
 
 export default function Settings(props) {
+  const history = useHistory();
   const [open, setOpen] = React.useState(false);
+  const [deleteDialog, setDelete] = React.useState({ open: false });
   const [anchorEl, setAnchorEl] = React.useState(null);
 
   const handleClickOpen = (e) => {
@@ -74,6 +78,54 @@ export default function Settings(props) {
       <IconButton size="small" edge="end" onClick={handleClickOpen}>
         <SettingsIcon color="primary" />
       </IconButton>
+      <Dialog
+        open={deleteDialog.open}
+        onClose={() => setDelete((s) => ({ ...s, open: false }))}
+      >
+        <DialogContent>
+          <Typography variant="h2" component="div">
+            <Box fontWeight="bold">
+              Are you sure you want to delete this dashboard?
+            </Box>
+          </Typography>
+        </DialogContent>
+        <DialogContent style={{ height: theme.spacing(5) }}>
+          <Typography component="div">You cannot undo this action.</Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button
+            onClick={() => {
+              setDelete((s) => ({ ...s, open: false }));
+              deleteDashboard(props.hash, (r) => {
+                if (r.success) {
+                  history.push(`/browse/search=`);
+                } else {
+                  props.updateData((s) => ({
+                    ...s,
+                    notif: {
+                      open: true,
+                      message: "An Error Occured, Please Try Again",
+                      severity: "error",
+                    },
+                  }));
+                }
+              });
+            }}
+            size="small"
+            color="primary"
+            variant="contained"
+          >
+            yes
+          </Button>
+          <Button
+            style={{ color: theme.palette.error.main }}
+            size="small"
+            onClick={() => setDelete((s) => ({ ...s, open: false }))}
+          >
+            no
+          </Button>
+        </DialogActions>
+      </Dialog>
       <Popover
         anchorEl={anchorEl}
         onClose={handleClose}
@@ -102,6 +154,7 @@ export default function Settings(props) {
             button
             onClick={() => {
               props.onChange({ reason: "dashboard_deletion" });
+              setDelete({ open: true });
               handleClose();
             }}
           >

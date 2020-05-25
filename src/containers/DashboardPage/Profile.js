@@ -546,6 +546,7 @@ export default function Profile(props) {
                         }}
                       >
                         <PercentageSwitch
+                          value={state.propertyPercent}
                           onChange={(newVal) =>
                             setState((s) => ({ ...s, propertyPercent: newVal }))
                           }
@@ -617,6 +618,7 @@ export default function Profile(props) {
                       <Box>
                         <PercentageSwitch
                           percentFirst
+                          value={state.chartNumberPercent}
                           onChange={(val) => {
                             setState((s) => ({
                               ...s,

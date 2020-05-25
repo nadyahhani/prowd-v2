@@ -474,21 +474,26 @@ export default function Analysis(props) {
       let labels = [];
       let values = [];
 
-      const sorted = [...state.shown].sort((b, a) => {
+      const sorted = [
+        ...state.shown,
+        // {
+        //   amount: props.data.itemCount - state.totalAmount,
+        //   analysis_info: {
+        //     item_1_label: `no ${state.dimensions[0].label}`,
+        //     item_2_label: `${
+        //       state.dimensions[1] ? `no ${state.dimensions[1].label}` : ""
+        //     }`,
+        //   },
+        // },
+      ].sort((b, a) => {
         if (state.sortProps === 0) {
-          if (
-            a.statistics.average_distinct_properties >
-            b.statistics.average_distinct_properties
-          ) {
+          if (a.amount > b.amount) {
             return 1;
           } else {
             return -1;
           }
         } else {
-          if (
-            b.statistics.average_distinct_properties >
-            a.statistics.average_distinct_properties
-          ) {
+          if (b.amount > a.amount) {
             return 1;
           } else {
             return -1;
@@ -509,23 +514,15 @@ export default function Analysis(props) {
             item.analysis_info.item_3_label
               ? `-${item.analysis_info.item_3_label}`
               : ""
-          }: ${
-            Number.isNaN(Math.ceil(item.statistics.average_distinct_properties))
-              ? 0
-              : Math.ceil(item.statistics.average_distinct_properties)
-          }`
+          }: ${((item.amount * 100) / state.totalAmount).toFixed(1)}%`
         );
-        values.push(
-          Number.isNaN(Math.ceil(item.statistics.average_distinct_properties))
-            ? 0
-            : Math.ceil(item.statistics.average_distinct_properties)
-        );
+        values.push(((item.amount * 100) / state.totalAmount).toFixed(1));
       });
       const dataTemp = {
         labels: [...labels].splice(0, 5),
         datasets: [
           {
-            label: "Average Distinct Properties",
+            label: "Proportion of this subclass to the whole topic",
             data: [...values].splice(0, 5),
             backgroundColor: theme.palette.chart.main,
           },
@@ -543,10 +540,10 @@ export default function Analysis(props) {
             }}
           >
             <Box fontWeight="bold">
-              Average Number of Properties{" "}
+              Subclass Proportion{" "}
               <Help
                 text={
-                  <Typography>{`The number of pieces of information (property) the items of the subclasses have.`}</Typography>
+                  <Typography>{`The proportion of each subclass to the whole topic.`}</Typography>
                 }
               />
             </Box>
@@ -586,15 +583,14 @@ export default function Analysis(props) {
               root: classes.horizontalbar,
               ChartWrapper: classes.horizontalbarchart,
             }}
-            max={state.sortProps === 0 ? values[0] : values[values.length - 1]}
+            max={100}
           />
           <AllPropertiesModal
             key="modal-desc"
             data={{
               labels: labels,
               values: values,
-              max:
-                state.sortProps === 0 ? values[0] : values[values.length - 1],
+              max: 100,
             }}
             title="Average Number of Properties of Items from All Subclasses"
             label="Average number of properties for items of this value"

@@ -47,6 +47,7 @@ const useStyles = makeStyles((theme) => ({
       padding: theme.spacing(1),
     },
   },
+  formControl: { width: theme.spacing(18) },
   tablePaper: {
     overflowY: "scroll",
     overflowX: "hidden",
@@ -499,7 +500,7 @@ export default function Compare(props) {
                         }}
                       >
                         <Box fontWeight="bold">
-                          Subclass Property Frequency{" "}
+                          Subclass Property Freq{" "}
                           <Help
                             text={
                               <Typography>{`This shows the information present in both A and B. You can switch the set operation on the right to see the properties present only in A or only in B and more.`}</Typography>
@@ -509,6 +510,7 @@ export default function Compare(props) {
                         <Box>
                           <PercentageSwitch
                             style={{ marginRight: theme.spacing(1) }}
+                            value={state.propertyNumberPercent}
                             onChange={(val) =>
                               setState((s) => ({
                                 ...s,
@@ -606,6 +608,7 @@ export default function Compare(props) {
                         <Box>
                           <PercentageSwitch
                             percentFirst
+                            value={state.chartNumberPercent}
                             onChange={(val) => {
                               setState((s) => ({
                                 ...s,

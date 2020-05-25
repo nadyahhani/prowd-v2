@@ -272,3 +272,19 @@ export function getActualItemCount(hash, afterFunc) {
       afterFunc({ success: false, ...err });
     });
 }
+
+export function deleteDashboard(hash, afterFunc) {
+  axios
+    .get(`${url}/api/dashboard/delete?hash_code=${hash}`)
+    .then(
+      (response) => {
+        afterFunc({ success: true, ...response.data });
+      },
+      (error) => {
+        afterFunc({ success: false, ...error });
+      }
+    )
+    .catch((err) => {
+      afterFunc({ success: false, ...err });
+    });
+}
