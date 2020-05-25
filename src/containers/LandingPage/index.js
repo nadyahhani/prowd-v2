@@ -211,7 +211,9 @@ function Landing(props) {
   });
 
   React.useEffect(() => {
-    console.log(window.location);
+    if (!window.location.hash) {
+      window.location.hash = "#home";
+    }
 
     let elmnt = document.getElementById(window.location.hash.replace("#", ""));
     elmnt.scrollIntoView();
