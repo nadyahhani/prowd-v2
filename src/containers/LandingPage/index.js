@@ -442,33 +442,42 @@ function Landing(props) {
               marginTop: theme.spacing(1),
             }}
           >
-            <Tooltip title={<Typography>Select a class</Typography>}>
+            <Tooltip
+              title={
+                !state.selectedClass ? (
+                  <Typography>Select a class</Typography>
+                ) : null
+              }
+              disableHoverListener={state.selectedClass}
+            >
               <div>
                 <Button
                   disabled={!state.selectedClass}
                   variant="contained"
                   size="small"
                   color="primary"
-                  onClick={() =>
-                    setState((s) => ({
-                      ...s,
-                      appliedFilters: s.iteminfo.filters.filter(
-                        (item, index) =>
-                          s.filtersSelected[
-                            `${item.property.id}${item.value.id}`
-                          ]
-                      ),
-                      inputtab: 1,
-                      itemDialogisOpen: false,
-                      itemsearchinput: "",
-                      iteminfoisloading: true,
-                      selecteditem: null,
-                      iteminfo: null,
-                      filtersSelected: {},
-                    }))
-                  }
+                  onClick={() => {
+                    const appliedFilters = state.iteminfo.filters.filter(
+                      (item, index) =>
+                        state.filtersSelected[
+                          `${item.property.id}${item.value.id}`
+                        ]
+                    );
+                    createDashboard(
+                      state.selectedClass.id,
+                      appliedFilters.map((x) => {
+                        let temp = {};
+                        temp[x.property.id] = x.value.id;
+                        return temp;
+                      }),
+                      (response) =>
+                        history.push(
+                          `/dashboards/${response.hashCode}/profile/onboarding-profile`
+                        )
+                    );
+                  }}
                 >
-                  Apply configuration
+                  Create Dashboard
                 </Button>
               </div>
             </Tooltip>
