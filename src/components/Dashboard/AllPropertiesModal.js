@@ -78,8 +78,12 @@ export default function AllPropertiesModal(props) {
                         setState((s) => ({ ...s, sort: child.props.value }));
                       }}
                     >
-                      <MenuItem value={0}>Descending</MenuItem>
-                      <MenuItem value={1}>Ascending</MenuItem>
+                      <MenuItem value={props.ascending ? 1 : 0}>
+                        Descending
+                      </MenuItem>
+                      <MenuItem value={props.ascending ? 0 : 1}>
+                        Ascending
+                      </MenuItem>
                     </Select>
                   </FormControl>
                 </Grid>

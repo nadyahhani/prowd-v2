@@ -505,6 +505,8 @@ export default function Analysis(props) {
         }
       });
       sorted.forEach((item) => {
+        let totalCount =
+          props.data.itemCount > 10000 ? 10000 : props.data.itemCount;
         labels.push(
           `${
             item.analysis_info.item_1_label
@@ -518,9 +520,9 @@ export default function Analysis(props) {
             item.analysis_info.item_3_label
               ? `-${item.analysis_info.item_3_label}`
               : ""
-          }: ${((item.amount * 100) / props.data.itemCount).toFixed(1)}%`
+          }: ${((item.amount * 100) / totalCount).toFixed(1)}%`
         );
-        values.push(((item.amount * 100) / props.data.itemCount).toFixed(1));
+        values.push(((item.amount * 100) / totalCount).toFixed(1));
       });
       const dataTemp = {
         labels: [...labels].splice(0, 5),
@@ -547,7 +549,7 @@ export default function Analysis(props) {
               Subclass Proportion{" "}
               <Help
                 text={
-                  <Typography>{`The proportion of each subclass to the whole topic. The rest of the percentage not shown here are of those items in the topic which may not possess the property dimensions selected.`}</Typography>
+                  <Typography>{`The proportion of each subclass to the whole topic. The rest of the percentage not shown here are of those items in the topic which may not possess the selected property dimensions.`}</Typography>
                 }
               />
             </Box>
@@ -592,6 +594,7 @@ export default function Analysis(props) {
             max={100}
           />
           <AllPropertiesModal
+          ascending
             key="modal-desc"
             data={{
               labels: labels,

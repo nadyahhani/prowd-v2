@@ -649,6 +649,7 @@ function Landing(props) {
                 style={{
                   marginBottom: theme.spacing(2),
                 }}
+                size="large"
                 variant="contained"
                 color="primary"
                 endIcon={<NavigateNext />}
@@ -1091,7 +1092,7 @@ function Landing(props) {
             <div className={classes.mainDivLeft}>
               <Typography variant="h2" component="div">
                 <Box fontSize={40} fontWeight="bold">
-                  What you can do
+                  What You Can Do
                   <div className={classes.textAccent} />
                 </Box>
                 <Box className={classes.subTextDesc}>
@@ -1164,8 +1165,9 @@ function Landing(props) {
           </Grid>
         </div>
         <Typography style={{ textAlign: "center" }}>
-          2020 - Free University of Bozen-Bolzano, Universitas Indonesia and
-          Max-Planck Institute for Informatics.
+          2020 - Developed by Universitas Indonesia, Free University of
+          Bozen-Bolzano, and Max-Planck Institute for Informatics - Data from
+          Wikidata
         </Typography>
       </div>
     </ThemeProvider>

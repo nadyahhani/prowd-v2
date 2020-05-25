@@ -90,6 +90,7 @@ export default function ProfileProperties(props) {
           }}
         />
         <AllPropertiesModal
+        ascending
           key={`${key}-modal`}
           data={{
             labels: tempLabels,

@@ -118,6 +118,7 @@ export default function BrowsePage(props) {
                 <TextField
                   {...params}
                   fullWidth
+                  placeholder="Type and select a class"
                   variant="outlined"
                   size="small"
                 />
@@ -202,21 +203,27 @@ export default function BrowsePage(props) {
             />
           </Grid> */}
         </Grid>
-        <Grid item>
-          <Button
-            style={{ color: theme.palette.error.main }}
-            size="small"
-            onClick={() => {
-              setState((s) => ({
-                ...s,
-                classFilterValue: null,
-                classFilterInput: "",
-                appliedFilters: [],
-              }));
-            }}
-          >
-            Clear
-          </Button>
+        <Grid item style={{ marginTop: theme.spacing(1) }}>
+          <div>
+            <Button
+              variant="contained"
+              color="primary"
+              size="small"
+              onClick={() => {
+                setState((s) => ({
+                  ...s,
+                  classFilterValue: null,
+                  classFilterInput: "",
+                  appliedFilters: [],
+                }));
+              }}
+            >
+              Clear
+            </Button>
+            <Button color="primary" size="small" onClick={() => setOpen(false)}>
+              Close
+            </Button>
+          </div>
         </Grid>
       </Popover>
       <div className={classes.bg}>
