@@ -1,7 +1,8 @@
 const tempData = {
   items: [
     {
-      topic: "Songs performed by Queen, Songs of the Rock Music Genre, Songs",
+      topic:
+        "Songs performed by Queen, Songs of the Hard Rock Music Genre, Songs",
       label: "Bohemian Rhapsody",
       id: "Q187745",
     },
