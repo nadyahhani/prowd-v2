@@ -727,7 +727,7 @@ export default function Compare(props) {
             }}
           >
             <Typography variant="h2">
-              Compare two subclasses of the Profile topic
+              Compare two subclasses of the Topic
             </Typography>
             <CompareIllustrationIcon />
             {!props.data.entity ? (

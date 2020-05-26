@@ -801,7 +801,7 @@ export default function Analysis(props) {
             }}
           >
             <Typography variant="h2">
-              Discover facts about all subclasses of the Profile topic
+              Discover facts about all subclasses of the Topic
             </Typography>
             <DiscoverIllustration />
             {!props.data.entity ? (
