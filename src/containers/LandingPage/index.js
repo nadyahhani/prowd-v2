@@ -938,7 +938,7 @@ function Landing(props) {
                           <Grid item key={idx}>
                             <Tooltip
                               title={
-                                <Typography>{`Topic with this subject: ${x.topic}`}</Typography>
+                                <Typography>{`Topics with this subject: ${x.topic}`}</Typography>
                               }
                             >
                               <Chip
