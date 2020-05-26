@@ -123,7 +123,7 @@ function GiniChart(props) {
           return label;
         },
         afterLabel: function (tooltipItem, data) {
-          return `of the total number of properties.`;
+          return `of the total cumulative number of properties.`;
         },
       },
     },
@@ -176,6 +176,11 @@ function GiniChart(props) {
   return (
     <React.Fragment>
       <div className={props.classes.root} style={{ position: "relative" }}>
+        <ChartWrapper
+          // style={{ height: "inherit", width: "inherit" }}
+          className={props.classes.ChartWrapper}
+          config={{ type: "line", data: data, options: options }}
+        />
         <Typography
           variant="h2"
           component="div"
@@ -183,11 +188,6 @@ function GiniChart(props) {
         >
           <Box fontWeight="bold">{props.gini}</Box>
         </Typography>
-        <ChartWrapper
-          // style={{ height: "inherit", width: "inherit" }}
-          className={props.classes.ChartWrapper}
-          config={{ type: "line", data: data, options: options }}
-        />
       </div>
     </React.Fragment>
   );

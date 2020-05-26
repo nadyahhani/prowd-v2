@@ -14,7 +14,8 @@ function LineChart(props) {
         display: false,
         text: "Distribution Comparison",
       },
-      tooltips: {mode: "nearest",
+      tooltips: {
+        mode: "nearest",
         titleSpacing: 6,
         xPadding: 20,
         yPadding: 20,
@@ -76,7 +77,9 @@ function LineChart(props) {
               let label =
                 `${items} item${
                   items > 1 ? "s" : ""
-                } (${percent}% of ${maxItem}) has ${number} propert${
+                } (${percent}% of ${maxItem}) ha${
+                  items > 1 ? "ve" : "s"
+                } ${number} propert${
                   number > 1 ? "ies" : "y"
                 } (${labels} of ${maxProps})` || "";
               return label;

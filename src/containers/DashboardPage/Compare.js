@@ -71,6 +71,7 @@ const useStyles = makeStyles((theme) => ({
   },
   //charts
   giniChart: {
+    zIndex: theme.zIndex.modal,
     paddingTop: theme.spacing(1),
     width: "97.5%",
     // height: "95%",

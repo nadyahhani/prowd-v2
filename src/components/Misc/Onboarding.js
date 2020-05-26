@@ -112,7 +112,7 @@ export default function Onboarding(props) {
         content: ({ goTo, inDOM }) => (
           <div className={classes.contentdiv}>
             <Typography component="div">
-              These information can give you insights on your topic.{" "}
+              These pieces of information can give you insights on your topic.{" "}
               <b>
                 Hover over <Help text="Hello!" /> and the chart components to
                 learn about each piece of information

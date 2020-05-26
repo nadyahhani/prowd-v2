@@ -1,17 +1,17 @@
 const tempData = {
   items: [
     {
-      topic: "Songs performed by Queen",
+      topic: "Songs performed by Queen, Songs of the Rock Music Genre, Songs",
       label: "Bohemian Rhapsody",
       id: "Q187745",
     },
     {
-      topic: "Indonesian Dance",
+      topic: "Indonesian Dance, Dance, Balinese Dance",
       label: "Kecak",
       id: "Q1737691",
     },
     {
-      topic: "Paintings by Leonardo Da Vinci",
+      topic: "Paintings by Leonardo Da Vinci, Paintings, Oil Paintings",
       label: "Mona Lisa",
       id: "Q12418",
     },

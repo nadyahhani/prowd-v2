@@ -28,6 +28,7 @@ import Autocomplete from "@material-ui/lab/Autocomplete";
 import FilterBox from "../../components/Inputs/FilterBox";
 import { getUnique, cut, filterOptions } from "../../global";
 import Link from "../../components/Misc/Link";
+import Notif from "../../components/Misc/Notif";
 
 const useStyles = makeStyles({
   table: {
@@ -72,12 +73,23 @@ export default function BrowsePage(props) {
     appliedFilters: [],
     classes: [],
     classLoading: false,
+    notif: { open: false, severity: "info", message: "" },
   });
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [open, setOpen] = React.useState(false);
   const [giniRange, setRange] = React.useState([0, 1]);
 
   React.useEffect(() => {
+    if (props.location.state && props.location.state.dashboardDelete) {
+      setState((s) => ({
+        ...s,
+        notif: {
+          open: true,
+          message: "Your Dashboard has been successfully deleted",
+          severity: "success",
+        },
+      }));
+    }
     getDashboards((r) => {
       if (r.success) {
         setState((s) => ({ ...s, loading: false, dashboards: r.profiles }));
@@ -87,6 +99,7 @@ export default function BrowsePage(props) {
 
   return (
     <ThemeProvider theme={theme}>
+      <Notif {...state.notif} />
       <Popover
         open={open}
         anchorEl={anchorEl}

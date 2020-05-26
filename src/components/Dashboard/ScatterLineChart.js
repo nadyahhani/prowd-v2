@@ -55,9 +55,9 @@ function ScatterLineChart(props) {
 
             let label = `${current.name}: ${current.raw[index]} item${
               parseInt(current.raw[index]) > 1 ? "s" : ""
-            } (${dataPercent[index].toFixed(1)}% of ${maxItem}) has ${
-              propertyActual[index]
-            } propert${
+            } (${dataPercent[index].toFixed(1)}% of ${maxItem}) ha${
+              parseInt(current.raw[index]) > 1 ? "ve" : "s"
+            } ${propertyActual[index]} propert${
               propertyActual[index] > 1 ? "ies" : "y"
             } (${propertyPercent[index].toFixed(1)}% of ${maxProps})`;
             return label;

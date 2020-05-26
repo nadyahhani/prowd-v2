@@ -79,6 +79,7 @@ const useStyles = makeStyles((theme) => ({
     alignItems: "center",
   },
   giniChart: {
+    zIndex: theme.zIndex.modal,
     height: "100%",
     width: "95%",
     display: "flex",
@@ -411,7 +412,7 @@ export default function Profile(props) {
                           <Box fontWeight="bold">
                             Topic Properties{" "}
                             <Help
-                              text={`The amount of information (property) about items of the ${props.data.entity.entityLabel} (${props.data.entity.entityID}) class with the applied filters.
+                              text={`The amount of unique information (distinct property) about items of the ${props.data.entity.entityLabel} (${props.data.entity.entityID}) class with the applied filters.
                              This is also the total number of properties in the property frequency chart on the right.`}
                             />
                           </Box>
@@ -466,7 +467,7 @@ export default function Profile(props) {
                                   return "yellow";
                                 }
                               })()} section of the chart. A balanced topic's score would be closer to 0 as the area gets smaller as well. 
-                           A balanced topic indicates that items of the topic has similar amount of information. The imbalance score is based on the Gini Coefficient.`}
+                           A balanced topic indicates that items of the topic have similar amount of information. The imbalance score is based on the Gini Coefficient.`}
                             </Typography>
                           }
                         />
@@ -604,7 +605,7 @@ export default function Profile(props) {
                         <Help
                           text={
                             <Typography>{`From the shape of the distribution, you can see whether most of the 
-                          items are rich in information (property) or not. A peak in the distribution shows the number of properties most of the items in this topic has.`}</Typography>
+                          items are rich in information (property) or not. A peak in the distribution shows the number of properties most of the items in this topic have.`}</Typography>
                           }
                         />
                       </Box>

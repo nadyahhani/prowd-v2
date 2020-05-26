@@ -76,7 +76,7 @@ const useStyles = makeStyles(() => ({
     minWidth: theme.spacing(70),
     width: "90%",
     maxWidth: theme.spacing(100),
-    height: theme.spacing(40),
+    height: theme.spacing(41),
     display: "flex",
     flexDirection: "column",
     justifyContent: "flex-start",
@@ -679,8 +679,16 @@ function Landing(props) {
                     textColor="primary"
                     variant="fullWidth"
                   >
-                    <Tab label="Visualize by Item" id="topic-item-tab" />
-                    <Tab label="Visualize Topic" id="create-dashboard-tab" />
+                    <Tab
+                      value={1}
+                      label="Visualize Topic"
+                      id="create-dashboard-tab"
+                    />
+                    <Tab
+                      value={0}
+                      label="Visualize by Item"
+                      id="topic-item-tab"
+                    />
                   </Tabs>
                 </div>
                 {state.inputtab === 1 ? (
@@ -705,16 +713,18 @@ function Landing(props) {
                         placement="left"
                         title={
                           <Typography component="div">
-                            What are the items of your topic instances of?{" "}
+                            What is the type of items of your topic of interest?{" "}
                             <Box fontWeight="bold">
-                              Click on the examples at the bottom or use the
-                              "Visualize by Item" tab to configure the dashboard
-                              based on a subject of your topic.
+                              Don't know? Click on the examples at the bottom or
+                              use the "Visualize by Item" tab to configure the
+                              dashboard based on a subject of your topic.
                             </Box>
                           </Typography>
                         }
                       >
-                        <div style={{ width: "100%" }}>
+                        <div
+                          style={{ width: "100%", marginTop: theme.spacing(1) }}
+                        >
                           <VirtualAutocomp
                             filterOptions={filterOptions}
                             label="Class"

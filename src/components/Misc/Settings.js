@@ -89,16 +89,25 @@ export default function Settings(props) {
             </Box>
           </Typography>
         </DialogContent>
-        <DialogContent style={{ height: theme.spacing(5) }}>
+        <DialogContent style={{ height: theme.spacing(4) }}>
           <Typography component="div">You cannot undo this action.</Typography>
         </DialogContent>
-        <DialogActions>
+        <DialogActions
+          style={{
+            justifyContent: "flex-start",
+            marginLeft: theme.spacing(1),
+            marginBottom: theme.spacing(1),
+          }}
+        >
           <Button
             onClick={() => {
               setDelete((s) => ({ ...s, open: false }));
               deleteDashboard(props.hash, (r) => {
                 if (r.success) {
-                  history.push(`/browse/search=`);
+                  history.push({
+                    pathname: `/browse/search=`,
+                    state: { dashboardDelete: true },
+                  });
                 } else {
                   props.updateData((s) => ({
                     ...s,
@@ -112,13 +121,16 @@ export default function Settings(props) {
               });
             }}
             size="small"
-            color="primary"
+            style={{
+              backgroundColor: theme.palette.error.main,
+              color: theme.palette.common.white,
+            }}
             variant="contained"
           >
             yes
           </Button>
           <Button
-            style={{ color: theme.palette.error.main }}
+            color="primary"
             size="small"
             onClick={() => setDelete((s) => ({ ...s, open: false }))}
           >
