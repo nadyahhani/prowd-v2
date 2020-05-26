@@ -549,7 +549,7 @@ export default function Analysis(props) {
               Subclass Proportion{" "}
               <Help
                 text={
-                  <Typography>{`The proportion of each subclass to the whole topic. The rest of the percentage not shown here are of those items in the topic which may not possess the selected property dimensions.`}</Typography>
+                  <Typography>{`How large of a section does each subclass take up from the topic. The rest of the percentage not shown here are of those items in the topic which may not possess the selected property dimensions.`}</Typography>
                 }
               />
             </Box>
@@ -594,7 +594,7 @@ export default function Analysis(props) {
             max={100}
           />
           <AllPropertiesModal
-          ascending
+            ascending
             key="modal-desc"
             data={{
               labels: labels,
@@ -801,7 +801,7 @@ export default function Analysis(props) {
             }}
           >
             <Typography variant="h2">
-              Discover facts about all subclasses of the Profile
+              Discover facts about all subclasses of the Profile topic
             </Typography>
             <DiscoverIllustration />
             {!props.data.entity ? (
