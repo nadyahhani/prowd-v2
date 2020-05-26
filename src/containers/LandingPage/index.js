@@ -713,7 +713,7 @@ function Landing(props) {
                         placement="left"
                         title={
                           <Typography component="div">
-                            What is the type of items of your topic of interest?{" "}
+                            What is the type of the items of your topic of interest?{" "}
                             <Box fontWeight="bold">
                               Don't know? Click on the examples at the bottom or
                               use the "Visualize by Item" tab to configure the
