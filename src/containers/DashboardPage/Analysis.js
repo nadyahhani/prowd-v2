@@ -43,7 +43,7 @@ const useStyles = makeStyles((theme) => ({
   root: {
     height: "66.3vh",
     minHeight: "500px",
-    // padding: theme.spacing(0),
+    minWidth: "1316px"
   },
   gridItem: {
     minWidth: "33.333333%",

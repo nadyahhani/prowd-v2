@@ -53,7 +53,6 @@ const useStyles = makeStyles(() => ({
   content: {
     padding: "0 1vw",
     width: "98vw",
-    minWidth: "1316px",
     height: "92vh",
     // maxHeight: "800px",
     // minHeight: "722px",

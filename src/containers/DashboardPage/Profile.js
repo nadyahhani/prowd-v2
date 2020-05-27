@@ -41,6 +41,7 @@ const useStyles = makeStyles((theme) => ({
   root: {
     height: "66.3vh",
     minHeight: "500px",
+    minWidth: "1316px",
     // padding: theme.spacing(0),
   },
   columnGrid: { height: "100%" },
