@@ -43,7 +43,7 @@ const useStyles = makeStyles((theme) => ({
   root: {
     height: "66.3vh",
     minHeight: "500px",
-    minWidth: "1316px"
+    minWidth: "1316px",
   },
   gridItem: {
     minWidth: "33.333333%",
@@ -465,6 +465,35 @@ export default function Analysis(props) {
                           </TableRow>
                         );
                       })}
+                {!state.loading.gini && sorted.length === 0 ? (
+                  <TableRow>
+                    <TableCell colSpan={state.dimensions.length * 2 + 6}>
+                      <Typography align="center">
+                        There are no subclasses based on this property dimension
+                      </Typography>
+                    </TableCell>
+                  </TableRow>
+                ) : null}
+                {!state.loading.gini &&
+                sorted.length > 0 &&
+                sorted.filter((item) =>
+                  `${item.analysis_info.item_1_label} ${
+                    state.dimensions.length === 2
+                      ? item.analysis_info.item_2_label
+                      : ""
+                  }`
+                    .toLowerCase()
+                    .includes(state.searchSubclassTable.toLowerCase())
+                ).length === 0 ? (
+                  <TableRow>
+                    <TableCell colSpan={state.dimensions.length * 2 + 6}>
+                      <Typography align="center">
+                        There are no subclasses containing "
+                        {state.searchSubclassTable}"
+                      </Typography>
+                    </TableCell>
+                  </TableRow>
+                ) : null}
               </TableBody>
             </Table>
           </TableContainer>

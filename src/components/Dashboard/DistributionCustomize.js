@@ -69,14 +69,15 @@ export default function DistributionCustomize(props) {
           : ""
       }`,
     }));
-
-    setState((s) => ({
-      ...s,
-      allData: temp,
-      data: state.data ? state.data : props.data,
-      newLine: temp[0],
-      newLineInput: temp[0].name,
-    }));
+    if (temp.length > 0) {
+      setState((s) => ({
+        ...s,
+        allData: temp,
+        data: state.data ? state.data : props.data,
+        newLine: temp[0],
+        newLineInput: temp[0].name,
+      }));
+    }
   }, [state.open, state.data]);
 
   const handlePicker = (reason, data = null) => {
