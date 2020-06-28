@@ -53,7 +53,6 @@ const useStyles = makeStyles(() => ({
     alignItems: "center",
   },
   mainLanding: {
-    // marginTop: "8vh",
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
@@ -79,7 +78,6 @@ const useStyles = makeStyles(() => ({
     flexDirection: "column",
     justifyContent: "flex-start",
     alignItems: "center",
-    // backgroundColor: theme.palette.common.white,
   },
   infoText: {
     width: "60%",
@@ -192,7 +190,7 @@ function Landing(props) {
     appliedFilters: [],
     inputtab: 1,
     inputisloading: false,
-    // item search
+
     itemsearchinput: "",
     iteminfoisloading: true,
     selecteditem: null,
@@ -201,7 +199,7 @@ function Landing(props) {
     itemDialogisOpen: false,
     itemstatementsearch: "",
     anchoritemDialog: null,
-    // end of item search
+
     popper: {
       open: false,
       anchorEl: null,
@@ -227,7 +225,7 @@ function Landing(props) {
       });
     }
   }, [state.firstLoaded]);
-  
+
   const handleItemDialogClose = () =>
     setState((s) => ({
       ...s,
@@ -502,14 +500,12 @@ function Landing(props) {
             inputValue={state.itemsearchinput}
             value={state.selecteditem}
             onInputChange={(e) => {
-              // console.log(e);
               if (e) {
                 const tempval = e.target.value;
                 setState((s) => ({
                   ...s,
                   itemsearchinput: tempval,
                   inputisloading: true,
-                  // classes: [],
                 }));
 
                 getClasses(e.target.value, (response) => {
@@ -596,8 +592,6 @@ function Landing(props) {
   const handleClose = () => {
     setOnboarding((s) => ({ ...s, open: false }));
   };
-
-  console.log("will return!");
 
   return (
     <React.Fragment>
@@ -746,14 +740,12 @@ function Landing(props) {
                               inputValue={state.classInput}
                               value={state.selectedClass}
                               onInputChange={(e) => {
-                                // console.log(e);
                                 if (e) {
                                   const tempval = e.target.value;
                                   setState((s) => ({
                                     ...s,
                                     classInput: tempval,
                                     inputisloading: true,
-                                    // classes: [],
                                   }));
 
                                   getClasses(e.target.value, (response) => {
@@ -830,8 +822,6 @@ function Landing(props) {
                           options={state.appliedFilters}
                           propertiesOptions={state.propertiesOptions}
                           selectedClass={state.selectedClass}
-                          // disabled={!state.selectedClass}
-
                           onApply={(applied) =>
                             setState((s) => ({ ...s, appliedFilters: applied }))
                           }
@@ -859,7 +849,6 @@ function Landing(props) {
                           className={classes.exampleCarousel}
                         >
                           {[...tempData.ex].map((x, idx) => (
-                            // <GridListTile key={idx}>
                             <Grid item key={idx}>
                               <Chip
                                 size="small"
@@ -1102,7 +1091,6 @@ function Landing(props) {
             </div>
             <div
               style={{
-                // position: "absolute",
                 display: "flex",
                 flexDirection: "row",
                 justifyContent: "center",
