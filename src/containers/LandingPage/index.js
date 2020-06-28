@@ -597,350 +597,267 @@ function Landing(props) {
     setOnboarding((s) => ({ ...s, open: false }));
   };
   return (
-    <ThemeProvider theme={theme}>
-      <Tour
-        disableInteraction
-        steps={steps}
-        goToStep={0}
-        isOpen={onboarding.open}
-        onRequestClose={handleClose}
-        onAfterOpen={(target) => (document.body.style.overflow = "hidden")}
-        onBeforeClose={(target) => (document.body.style.overflowY = "scroll")}
-        lastStepNextButton={
-          <Button
-            variant="contained"
-            size="small"
-            color="primary"
-            onClick={handleClose}
+    <React.Fragment>
+      <ThemeProvider theme={theme}>
+        <Tour
+          disableInteraction
+          steps={steps}
+          goToStep={0}
+          isOpen={onboarding.open}
+          onRequestClose={handleClose}
+          onAfterOpen={(target) => (document.body.style.overflow = "hidden")}
+          onBeforeClose={(target) => (document.body.style.overflowY = "scroll")}
+          lastStepNextButton={
+            <Button
+              variant="contained"
+              size="small"
+              color="primary"
+              onClick={handleClose}
+            >
+              Finish
+            </Button>
+          }
+        />
+        <div className={classes.mainLanding} id="home">
+          <LandingTopIcon style={{ position: "absolute", width: "100%" }} />
+          <Navbar />
+          <div
+            style={{
+              width: "85%",
+              maxWidth: theme.spacing(162),
+              display: "flex",
+              flexDirection: "column",
+              zIndex: 1,
+            }}
           >
-            Finish
-          </Button>
-        }
-      />
-      <div className={classes.mainLanding} id="home">
-        <LandingTopIcon style={{ position: "absolute", width: "100%" }} />
-        <Navbar />
-        <div
-          style={{
-            width: "85%",
-            maxWidth: theme.spacing(162),
-            display: "flex",
-            flexDirection: "column",
-            zIndex: 1,
-          }}
-        >
-          <div className={classes.landingRow}>
-            <div className={classes.mainDivLeft}>
-              <Typography
-                className={classes.tagline}
-                style={{
-                  marginBottom: theme.spacing(2),
-                }}
-              >
-                Visualize Knowledge
-              </Typography>
-              <Typography
-                variant="h2"
-                className={classes.subText}
-                component="div"
-              >
-                See how well your topics of interest are represented in{" "}
-                <a
-                  rel="noopener noreferrer"
-                  target="_blank"
-                  href="https://www.wikidata.org/wiki/Wikidata:Main_Page"
-                  style={{ textDecoration: "none" }}
+            <div className={classes.landingRow}>
+              <div className={classes.mainDivLeft}>
+                <Typography
+                  className={classes.tagline}
+                  style={{
+                    marginBottom: theme.spacing(2),
+                  }}
                 >
-                  Wikidata
-                </a>
-              </Typography>
-              <Button
-                style={{
-                  marginBottom: theme.spacing(2),
-                }}
-                size="large"
-                variant="contained"
-                color="primary"
-                endIcon={<NavigateNext />}
-                onClick={() => setOnboarding((s) => ({ ...s, open: true }))}
-              >
-                Show me how
-              </Button>
-            </div>
-            <div className={classes.mainDiv}>
-              <Paper className={classes.inputBox} elevation={1} id="input-box">
-                <div style={{ width: "100%" }}>
-                  <Tabs
-                    value={state.inputtab}
-                    onChange={(e, value) =>
-                      setState((s) => ({ ...s, inputtab: value }))
-                    }
-                    indicatorColor="primary"
-                    textColor="primary"
-                    variant="fullWidth"
+                  Visualize Knowledge
+                </Typography>
+                <Typography
+                  variant="h2"
+                  className={classes.subText}
+                  component="div"
+                >
+                  See how well your topics of interest are represented in{" "}
+                  <a
+                    rel="noopener noreferrer"
+                    target="_blank"
+                    href="https://www.wikidata.org/wiki/Wikidata:Main_Page"
+                    style={{ textDecoration: "none" }}
                   >
-                    <Tab
-                      value={1}
-                      label="Visualize Topic"
-                      id="create-dashboard-tab"
-                    />
-                    <Tab
-                      value={0}
-                      label="Visualize by Item"
-                      id="topic-item-tab"
-                    />
-                  </Tabs>
-                </div>
-                {state.inputtab === 1 ? (
-                  <Grid
-                    container
-                    justify="center"
-                    spacing={2}
-                    direction="column"
-                    className={classes.inputInput}
-                  >
-                    <Grid
-                      item
-                      style={{
-                        display: "flex",
-                        flexDirection: "row",
-                        alignItems: "center",
-                        justifyContent: "space-between",
-                      }}
+                    Wikidata
+                  </a>
+                </Typography>
+                <Button
+                  style={{
+                    marginBottom: theme.spacing(2),
+                  }}
+                  size="large"
+                  variant="contained"
+                  color="primary"
+                  endIcon={<NavigateNext />}
+                  onClick={() => setOnboarding((s) => ({ ...s, open: true }))}
+                >
+                  Show me how
+                </Button>
+              </div>
+              <div className={classes.mainDiv}>
+                <Paper
+                  className={classes.inputBox}
+                  elevation={1}
+                  id="input-box"
+                >
+                  <div style={{ width: "100%" }}>
+                    <Tabs
+                      value={state.inputtab}
+                      onChange={(e, value) =>
+                        setState((s) => ({ ...s, inputtab: value }))
+                      }
+                      indicatorColor="primary"
+                      textColor="primary"
+                      variant="fullWidth"
                     >
-                      {" "}
-                      <Tooltip
-                        placement="left"
-                        title={
-                          <Typography component="div">
-                            What is the type of the items of your topic of interest?{" "}
-                            <Box fontWeight="bold">
-                              Don't know? Click on the examples at the bottom or
-                              use the "Visualize by Item" tab to configure the
-                              dashboard based on a subject of your topic.
-                            </Box>
-                          </Typography>
-                        }
-                      >
-                        <div
-                          style={{ width: "100%", marginTop: theme.spacing(1) }}
-                        >
-                          <VirtualAutocomp
-                            filterOptions={filterOptions}
-                            label="Class"
-                            placeholder="Input the classification for the items in your topic"
-                            options={state.classes}
-                            loading={state.inputisloading}
-                            inputValue={state.classInput}
-                            value={state.selectedClass}
-                            onInputChange={(e) => {
-                              // console.log(e);
-                              if (e) {
-                                const tempval = e.target.value;
-                                setState((s) => ({
-                                  ...s,
-                                  classInput: tempval,
-                                  inputisloading: true,
-                                  // classes: [],
-                                }));
-
-                                getClasses(e.target.value, (response) => {
-                                  response.success &&
-                                    setState((s) => ({
-                                      ...s,
-                                      inputisloading: false,
-                                      classes: getUnique(
-                                        [...s.classes, ...response.entities],
-                                        "id"
-                                      ),
-                                    }));
-                                });
-                              }
-                            }}
-                            onChange={(event, newValue, reason) => {
-                              if (newValue) {
-                                setState((s) => ({
-                                  ...s,
-                                  selectedClass: newValue,
-                                  classInput: `${newValue.label} (${newValue.id})`,
-                                }));
-                              }
-                              if (reason === "clear") {
-                                setState((s) => ({
-                                  ...s,
-                                  selectedClass: null,
-                                  classInput: "",
-                                }));
-                              }
-                            }}
-                            onClose={(event, reason) => {
-                              if (
-                                reason !== "select-option" &&
-                                !state.selectedClass
-                              ) {
-                                setState((s) => ({
-                                  ...s,
-                                  classInput: "",
-                                  selectedClass: null,
-                                }));
-                              }
-                            }}
-                            getOptionLabel={(option) => {
-                              return `${option.label} (${option.id})${
-                                option.aliases
-                                  ? ` also known as ${option.aliases.join(
-                                      ", "
-                                    )}`
-                                  : ""
-                              }`;
-                            }}
-                            renderOption={(option) => (
-                              <div>
-                                <Typography
-                                  noWrap
-                                >{`${option.label} (${option.id})`}</Typography>
-                                <Typography
-                                  variant="caption"
-                                  style={{ lineHeight: "1.3vmin" }}
-                                >
-                                  {cut(option.description, 500)}
-                                </Typography>
-                              </div>
-                            )}
-                          />
-                        </div>
-                      </Tooltip>
-                    </Grid>
-                    <Grid item>
-                      <FilterBox
-                        class={state.selectedClass}
-                        classes={{ root: classes.filters }}
-                        options={state.appliedFilters}
-                        propertiesOptions={state.propertiesOptions}
-                        selectedClass={state.selectedClass}
-                        // disabled={!state.selectedClass}
-
-                        onApply={(applied) =>
-                          setState((s) => ({ ...s, appliedFilters: applied }))
-                        }
-                        renderTagText={(opt) =>
-                          cut(`${opt.property.label}: ${opt.value.label}`, 1000)
-                        }
-                        onDelete={(idx) => {
-                          const temp = [...state.appliedFilters];
-                          temp.splice(idx, 1);
-                          setState((s) => ({ ...s, appliedFilters: temp }));
-                        }}
-                        onClear={() =>
-                          setState((s) => ({ ...s, appliedFilters: [] }))
-                        }
+                      <Tab
+                        value={1}
+                        label="Visualize Topic"
+                        id="create-dashboard-tab"
                       />
-                    </Grid>
-                    <Grid item>
+                      <Tab
+                        value={0}
+                        label="Visualize by Item"
+                        id="topic-item-tab"
+                      />
+                    </Tabs>
+                  </div>
+                  {state.inputtab === 1 ? (
+                    <Grid
+                      container
+                      justify="center"
+                      spacing={2}
+                      direction="column"
+                      className={classes.inputInput}
+                    >
                       <Grid
-                        container
-                        spacing={1}
-                        justify="space-between"
-                        className={classes.exampleCarousel}
-                      >
-                        {[...tempData.ex].map((x, idx) => (
-                          // <GridListTile key={idx}>
-                          <Grid item key={idx}>
-                            <Chip
-                              size="small"
-                              variant="outlined"
-                              style={{ width: "98%" }}
-                              color="primary"
-                              onClick={() => {
-                                setState((s) => ({
-                                  ...s,
-                                  selectedClass: x.class,
-                                  classInput: `${x.class.label} (${x.class.id})`,
-                                  appliedFilters: x.filters,
-                                }));
-                              }}
-                              label={
-                                <Typography variant="body1">
-                                  {x.label}
-                                </Typography>
-                              }
-                            />
-                          </Grid>
-                        ))}
-                      </Grid>
-                    </Grid>
-                    <Grid item>
-                      <div
+                        item
                         style={{
-                          width: "100%",
                           display: "flex",
                           flexDirection: "row",
+                          alignItems: "center",
+                          justifyContent: "space-between",
                         }}
                       >
-                        <div
-                          style={{
-                            width: "42%",
-                            marginRight: theme.spacing(1),
-                          }}
+                        {" "}
+                        <Tooltip
+                          placement="left"
+                          title={
+                            <Typography component="div">
+                              What is the type of the items of your topic of
+                              interest?{" "}
+                              <Box fontWeight="bold">
+                                Don't know? Click on the examples at the bottom
+                                or use the "Visualize by Item" tab to configure
+                                the dashboard based on a subject of your topic.
+                              </Box>
+                            </Typography>
+                          }
                         >
-                          <Button
-                            variant="contained"
-                            color="primary"
-                            disableElevation
-                            fullWidth
-                            disabled={state.selectedClass === null}
-                            onClick={() => {
-                              createDashboard(
-                                state.selectedClass.id,
-                                state.appliedFilters.map((x) => {
-                                  let temp = {};
-                                  temp[x.property.id] = x.value.id;
-                                  return temp;
-                                }),
-                                (response) =>
-                                  history.push(
-                                    `/dashboards/${response.hashCode}/profile/onboarding-profile`
-                                  )
-                              );
+                          <div
+                            style={{
+                              width: "100%",
+                              marginTop: theme.spacing(1),
                             }}
                           >
-                            CREATE DASHBOARD
-                          </Button>
-                        </div>
-                      </div>
-                    </Grid>
-                  </Grid>
-                ) : (
-                  <Grid
-                    container
-                    justify="center"
-                    spacing={2}
-                    direction="column"
-                    className={classes.inputInput}
-                  >
-                    <Grid item>
-                      <Typography
-                        variant="h2"
-                        style={{ marginBottom: theme.spacing(1) }}
-                      >
-                        What is a subject of your topic of interest?
-                      </Typography>
-                    </Grid>
-                    {itemSearch()}
-                    <Grid item style={{ maxWidth: "100%" }}>
-                      <Grid
-                        container
-                        spacing={1}
-                        className={classes.exampleCarousel}
-                      >
-                        {[...tempData.items].map((x, idx) => (
-                          // <GridListTile key={idx}>
-                          <Grid item key={idx}>
-                            <Tooltip
-                              title={
-                                <Typography>{`Topics with this subject: ${x.topic}`}</Typography>
-                              }
-                            >
+                            <VirtualAutocomp
+                              filterOptions={filterOptions}
+                              label="Class"
+                              placeholder="Input the classification for the items in your topic"
+                              options={state.classes}
+                              loading={state.inputisloading}
+                              inputValue={state.classInput}
+                              value={state.selectedClass}
+                              onInputChange={(e) => {
+                                // console.log(e);
+                                if (e) {
+                                  const tempval = e.target.value;
+                                  setState((s) => ({
+                                    ...s,
+                                    classInput: tempval,
+                                    inputisloading: true,
+                                    // classes: [],
+                                  }));
+
+                                  getClasses(e.target.value, (response) => {
+                                    response.success &&
+                                      setState((s) => ({
+                                        ...s,
+                                        inputisloading: false,
+                                        classes: getUnique(
+                                          [...s.classes, ...response.entities],
+                                          "id"
+                                        ),
+                                      }));
+                                  });
+                                }
+                              }}
+                              onChange={(event, newValue, reason) => {
+                                if (newValue) {
+                                  setState((s) => ({
+                                    ...s,
+                                    selectedClass: newValue,
+                                    classInput: `${newValue.label} (${newValue.id})`,
+                                  }));
+                                }
+                                if (reason === "clear") {
+                                  setState((s) => ({
+                                    ...s,
+                                    selectedClass: null,
+                                    classInput: "",
+                                  }));
+                                }
+                              }}
+                              onClose={(event, reason) => {
+                                if (
+                                  reason !== "select-option" &&
+                                  !state.selectedClass
+                                ) {
+                                  setState((s) => ({
+                                    ...s,
+                                    classInput: "",
+                                    selectedClass: null,
+                                  }));
+                                }
+                              }}
+                              getOptionLabel={(option) => {
+                                return `${option.label} (${option.id})${
+                                  option.aliases
+                                    ? ` also known as ${option.aliases.join(
+                                        ", "
+                                      )}`
+                                    : ""
+                                }`;
+                              }}
+                              renderOption={(option) => (
+                                <div>
+                                  <Typography
+                                    noWrap
+                                  >{`${option.label} (${option.id})`}</Typography>
+                                  <Typography
+                                    variant="caption"
+                                    style={{ lineHeight: "1.3vmin" }}
+                                  >
+                                    {cut(option.description, 500)}
+                                  </Typography>
+                                </div>
+                              )}
+                            />
+                          </div>
+                        </Tooltip>
+                      </Grid>
+                      <Grid item>
+                        <FilterBox
+                          class={state.selectedClass}
+                          classes={{ root: classes.filters }}
+                          options={state.appliedFilters}
+                          propertiesOptions={state.propertiesOptions}
+                          selectedClass={state.selectedClass}
+                          // disabled={!state.selectedClass}
+
+                          onApply={(applied) =>
+                            setState((s) => ({ ...s, appliedFilters: applied }))
+                          }
+                          renderTagText={(opt) =>
+                            cut(
+                              `${opt.property.label}: ${opt.value.label}`,
+                              1000
+                            )
+                          }
+                          onDelete={(idx) => {
+                            const temp = [...state.appliedFilters];
+                            temp.splice(idx, 1);
+                            setState((s) => ({ ...s, appliedFilters: temp }));
+                          }}
+                          onClear={() =>
+                            setState((s) => ({ ...s, appliedFilters: [] }))
+                          }
+                        />
+                      </Grid>
+                      <Grid item>
+                        <Grid
+                          container
+                          spacing={1}
+                          justify="space-between"
+                          className={classes.exampleCarousel}
+                        >
+                          {[...tempData.ex].map((x, idx) => (
+                            // <GridListTile key={idx}>
+                            <Grid item key={idx}>
                               <Chip
                                 size="small"
                                 variant="outlined"
@@ -949,251 +866,348 @@ function Landing(props) {
                                 onClick={() => {
                                   setState((s) => ({
                                     ...s,
-                                    selecteditem: x,
-                                    itemsearchinput: `${x.label} (${x.id})`,
-                                    itemDialogisOpen: true,
-                                    iteminfoisloading: true,
-                                    anchoritemDialog: document.getElementById(
-                                      "input-box"
-                                    ),
+                                    selectedClass: x.class,
+                                    classInput: `${x.class.label} (${x.class.id})`,
+                                    appliedFilters: x.filters,
                                   }));
-                                  getEntityInfo(x.id, (r) => {
-                                    if (r.success) {
-                                      setState((s) => ({
-                                        ...s,
-                                        iteminfoisloading: false,
-                                        iteminfo: {
-                                          classes: r.classes,
-                                          filters: r.filters.filter(
-                                            (item) =>
-                                              item.property.id !== "P31" &&
-                                              item.value.id
-                                                .slice(0, 1)
-                                                .includes("Q")
-                                          ),
-                                        },
-                                      }));
-                                    }
-                                  });
                                 }}
                                 label={
                                   <Typography variant="body1">
-                                    {x.label} ({x.id})
+                                    {x.label}
                                   </Typography>
                                 }
                               />
-                            </Tooltip>
-                          </Grid>
-                        ))}
+                            </Grid>
+                          ))}
+                        </Grid>
+                      </Grid>
+                      <Grid item>
+                        <div
+                          style={{
+                            width: "100%",
+                            display: "flex",
+                            flexDirection: "row",
+                          }}
+                        >
+                          <div
+                            style={{
+                              width: "42%",
+                              marginRight: theme.spacing(1),
+                            }}
+                          >
+                            <Button
+                              variant="contained"
+                              color="primary"
+                              disableElevation
+                              fullWidth
+                              disabled={state.selectedClass === null}
+                              onClick={() => {
+                                createDashboard(
+                                  state.selectedClass.id,
+                                  state.appliedFilters.map((x) => {
+                                    let temp = {};
+                                    temp[x.property.id] = x.value.id;
+                                    return temp;
+                                  }),
+                                  (response) =>
+                                    history.push(
+                                      `/dashboards/${response.hashCode}/profile/onboarding-profile`
+                                    )
+                                );
+                              }}
+                            >
+                              CREATE DASHBOARD
+                            </Button>
+                          </div>
+                        </div>
                       </Grid>
                     </Grid>
-                  </Grid>
-                )}
-              </Paper>
+                  ) : (
+                    <Grid
+                      container
+                      justify="center"
+                      spacing={2}
+                      direction="column"
+                      className={classes.inputInput}
+                    >
+                      <Grid item>
+                        <Typography
+                          variant="h2"
+                          style={{ marginBottom: theme.spacing(1) }}
+                        >
+                          What is a subject of your topic of interest?
+                        </Typography>
+                      </Grid>
+                      {itemSearch()}
+                      <Grid item style={{ maxWidth: "100%" }}>
+                        <Grid
+                          container
+                          spacing={1}
+                          className={classes.exampleCarousel}
+                        >
+                          {[...tempData.items].map((x, idx) => (
+                            // <GridListTile key={idx}>
+                            <Grid item key={idx}>
+                              <Tooltip
+                                title={
+                                  <Typography>{`Topics with this subject: ${x.topic}`}</Typography>
+                                }
+                              >
+                                <Chip
+                                  size="small"
+                                  variant="outlined"
+                                  style={{ width: "98%" }}
+                                  color="primary"
+                                  onClick={() => {
+                                    setState((s) => ({
+                                      ...s,
+                                      selecteditem: x,
+                                      itemsearchinput: `${x.label} (${x.id})`,
+                                      itemDialogisOpen: true,
+                                      iteminfoisloading: true,
+                                      anchoritemDialog: document.getElementById(
+                                        "input-box"
+                                      ),
+                                    }));
+                                    getEntityInfo(x.id, (r) => {
+                                      if (r.success) {
+                                        setState((s) => ({
+                                          ...s,
+                                          iteminfoisloading: false,
+                                          iteminfo: {
+                                            classes: r.classes,
+                                            filters: r.filters.filter(
+                                              (item) =>
+                                                item.property.id !== "P31" &&
+                                                item.value.id
+                                                  .slice(0, 1)
+                                                  .includes("Q")
+                                            ),
+                                          },
+                                        }));
+                                      }
+                                    });
+                                  }}
+                                  label={
+                                    <Typography variant="body1">
+                                      {x.label} ({x.id})
+                                    </Typography>
+                                  }
+                                />
+                              </Tooltip>
+                            </Grid>
+                          ))}
+                        </Grid>
+                      </Grid>
+                    </Grid>
+                  )}
+                </Paper>
+              </div>
             </div>
-          </div>
-          <div
-            style={{
-              // position: "absolute",
-              display: "flex",
-              flexDirection: "row",
-              justifyContent: "center",
-            }}
-          >
-            <IconButton
-              color="primary"
-              id="about"
-              onClick={() => {
-                history.push("/");
-                window.location.hash = "about";
+            <div
+              style={{
+                // position: "absolute",
+                display: "flex",
+                flexDirection: "row",
+                justifyContent: "center",
               }}
             >
-              <ExpandMore />
-            </IconButton>
-          </div>
-          <div className={classes.landingRow}>
-            <div className={classes.mainDivLeft}>
-              <Typography variant="h2" component="div">
-                <Box fontSize={40} fontWeight="bold">
-                  Explore Knowledge
-                  <div className={classes.textAccent} />
-                </Box>
-
-                <Box className={classes.subTextDesc}>
-                  Find any dominant topics and existing imbalance on general
-                  knowledge in{" "}
-                  <a
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    href="https://www.wikidata.org/wiki/Wikidata:Main_Page"
-                    style={{ textDecoration: "none" }}
-                  >
-                    Wikidata
-                  </a>{" "}
-                  by profiling your topic of interest.
-                </Box>
-              </Typography>
+              <IconButton
+                color="primary"
+                id="about"
+                onClick={() => {
+                  history.push("/");
+                  window.location.hash = "about";
+                }}
+              >
+                <ExpandMore />
+              </IconButton>
             </div>
-            <div className={classes.mainDiv}>
-              <MindMapIcon />
-            </div>
-          </div>
-          <div
-            style={{
-              // position: "absolute",
-              display: "flex",
-              flexDirection: "row",
-              justifyContent: "center",
-            }}
-          >
-            <IconButton
-              color="primary"
-              id="about-1"
-              onClick={() => {
-                history.push("/");
-                window.location.hash = "about-1";
-              }}
-            >
-              <ExpandMore />
-            </IconButton>
-          </div>
-          <div className={classes.landingRow}>
-            <div className={classes.mainDivLeft}>
-              <AnalysisIcon />
-            </div>
-            <div className={classes.mainDiv}>
-              <div style={{ width: "70%" }}>
+            <div className={classes.landingRow}>
+              <div className={classes.mainDivLeft}>
                 <Typography variant="h2" component="div">
                   <Box fontSize={40} fontWeight="bold">
-                    Knowledge Gaps
+                    Explore Knowledge
                     <div className={classes.textAccent} />
                   </Box>
-                  <Box
-                    className={classes.subTextDesc}
-                    style={{ width: "100%", textAlign: "justify" }}
-                  >
+
+                  <Box className={classes.subTextDesc}>
+                    Find any dominant topics and existing imbalance on general
+                    knowledge in{" "}
                     <a
-                      style={{ textDecoration: "none" }}
                       target="_blank"
                       rel="noopener noreferrer"
-                      href="https://research.wikimedia.org/knowledge-gaps.html"
+                      href="https://www.wikidata.org/wiki/Wikidata:Main_Page"
+                      style={{ textDecoration: "none" }}
                     >
-                      Knowledge gaps
+                      Wikidata
                     </a>{" "}
-                    are a very real thing. By identifying any imbalanced and
-                    underrepresented topics, we are already one step closer to
-                    knowledge equity.
+                    by profiling your topic of interest.
                   </Box>
                 </Typography>
               </div>
+              <div className={classes.mainDiv}>
+                <MindMapIcon />
+              </div>
             </div>
-          </div>
-          <div
-            style={{
-              // position: "absolute",
-              display: "flex",
-              flexDirection: "row",
-              justifyContent: "center",
-            }}
-          >
-            <IconButton
-              color="primary"
-              id="about-2"
-              onClick={() => {
-                history.push("/");
-                window.location.hash = "about-2";
+            <div
+              style={{
+                // position: "absolute",
+                display: "flex",
+                flexDirection: "row",
+                justifyContent: "center",
               }}
             >
-              <ExpandMore />
-            </IconButton>
-          </div>
-          <div className={classes.landingRow}>
-            <div className={classes.mainDivLeft}>
-              <Typography variant="h2" component="div">
-                <Box fontSize={40} fontWeight="bold">
-                  What You Can Do
-                  <div className={classes.textAccent} />
-                </Box>
-                <Box className={classes.subTextDesc}>
-                  Interested in a particular topic about science, art, socials,
-                  and more? Start profiling your topic by creating a dashboard!
-                </Box>
-                <Button
-                  color="primary"
-                  variant="contained"
-                  onClick={() => {
-                    window.location.hash = "home";
-                    let elmnt = document.getElementById(
-                      window.location.hash.replace("#", "")
-                    );
-                    elmnt.scrollIntoView();
-                  }}
-                >
-                  Get Started
-                </Button>
-              </Typography>
+              <IconButton
+                color="primary"
+                id="about-1"
+                onClick={() => {
+                  history.push("/");
+                  window.location.hash = "about-1";
+                }}
+              >
+                <ExpandMore />
+              </IconButton>
             </div>
-            <div className={classes.mainDiv}>
-              <FoldersIcon />
+            <div className={classes.landingRow}>
+              <div className={classes.mainDivLeft}>
+                <AnalysisIcon />
+              </div>
+              <div className={classes.mainDiv}>
+                <div style={{ width: "70%" }}>
+                  <Typography variant="h2" component="div">
+                    <Box fontSize={40} fontWeight="bold">
+                      Knowledge Gaps
+                      <div className={classes.textAccent} />
+                    </Box>
+                    <Box
+                      className={classes.subTextDesc}
+                      style={{ width: "100%", textAlign: "justify" }}
+                    >
+                      <a
+                        style={{ textDecoration: "none" }}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        href="https://research.wikimedia.org/knowledge-gaps.html"
+                      >
+                        Knowledge gaps
+                      </a>{" "}
+                      are a very real thing. By identifying any imbalanced and
+                      underrepresented topics, we are already one step closer to
+                      knowledge equity.
+                    </Box>
+                  </Typography>
+                </div>
+              </div>
+            </div>
+            <div
+              style={{
+                // position: "absolute",
+                display: "flex",
+                flexDirection: "row",
+                justifyContent: "center",
+              }}
+            >
+              <IconButton
+                color="primary"
+                id="about-2"
+                onClick={() => {
+                  history.push("/");
+                  window.location.hash = "about-2";
+                }}
+              >
+                <ExpandMore />
+              </IconButton>
+            </div>
+            <div className={classes.landingRow}>
+              <div className={classes.mainDivLeft}>
+                <Typography variant="h2" component="div">
+                  <Box fontSize={40} fontWeight="bold">
+                    What You Can Do
+                    <div className={classes.textAccent} />
+                  </Box>
+                  <Box className={classes.subTextDesc}>
+                    Interested in a particular topic about science, art,
+                    socials, and more? Start profiling your topic by creating a
+                    dashboard!
+                  </Box>
+                  <Button
+                    color="primary"
+                    variant="contained"
+                    onClick={() => {
+                      window.location.hash = "home";
+                      let elmnt = document.getElementById(
+                        window.location.hash.replace("#", "")
+                      );
+                      elmnt.scrollIntoView();
+                    }}
+                  >
+                    Get Started
+                  </Button>
+                </Typography>
+              </div>
+              <div className={classes.mainDiv}>
+                <FoldersIcon />
+              </div>
             </div>
           </div>
         </div>
-      </div>
-      <div
-        style={{
-          height: "fit-content",
-          display: "flex",
-          flexDirection: "column",
-          justifyContent: "space-evenly",
-          alignItems: "center",
-          backgroundColor: theme.palette.common.white,
-        }}
-      >
         <div
           style={{
             height: "fit-content",
             display: "flex",
-            padding: `${theme.spacing(2)}px 0`,
             flexDirection: "column",
-            justifyContent: "space-between",
+            justifyContent: "space-evenly",
             alignItems: "center",
-            width: "80%",
-            maxWidth: "1225px",
             backgroundColor: theme.palette.common.white,
           }}
         >
-          <Grid
-            container
-            spacing={1}
-            justify="center"
-            alignItems="center"
-            direction="row"
+          <div
+            style={{
+              height: "fit-content",
+              display: "flex",
+              padding: `${theme.spacing(2)}px 0`,
+              flexDirection: "column",
+              justifyContent: "space-between",
+              alignItems: "center",
+              width: "80%",
+              maxWidth: "1225px",
+              backgroundColor: theme.palette.common.white,
+            }}
           >
-            <Grid item xs={3} className={classes.logodiv}>
-              <UILogo className={classes.footerLogo} />
+            <Grid
+              container
+              spacing={1}
+              justify="center"
+              alignItems="center"
+              direction="row"
+            >
+              <Grid item xs={3} className={classes.logodiv}>
+                <UILogo className={classes.footerLogo} />
+              </Grid>
+              <Grid item xs={3} className={classes.logodiv}>
+                <UnibzLogo className={classes.footerLogo} />
+              </Grid>
+              <Grid item xs={3} className={classes.logodiv}>
+                <MpiiLogo className={classes.footerLogo} />
+              </Grid>
+              <Grid item xs={3} className={classes.logodiv}>
+                <img
+                  src="https://upload.wikimedia.org/wikipedia/commons/6/66/Wikidata-logo-en.svg"
+                  alt="wikidata-logo"
+                  className={classes.footerLogo}
+                />
+              </Grid>
             </Grid>
-            <Grid item xs={3} className={classes.logodiv}>
-              <UnibzLogo className={classes.footerLogo} />
-            </Grid>
-            <Grid item xs={3} className={classes.logodiv}>
-              <MpiiLogo className={classes.footerLogo} />
-            </Grid>
-            <Grid item xs={3} className={classes.logodiv}>
-              <img
-                src="https://upload.wikimedia.org/wikipedia/commons/6/66/Wikidata-logo-en.svg"
-                alt="wikidata-logo"
-                className={classes.footerLogo}
-              />
-            </Grid>
-          </Grid>
+          </div>
+          <Typography style={{ textAlign: "center" }}>
+            2020 - Developed by Universitas Indonesia, Free University of
+            Bozen-Bolzano, and Max-Planck Institute for Informatics - Data from
+            Wikidata
+          </Typography>
         </div>
-        <Typography style={{ textAlign: "center" }}>
-          2020 - Developed by Universitas Indonesia, Free University of
-          Bozen-Bolzano, and Max-Planck Institute for Informatics - Data from
-          Wikidata
-        </Typography>
-      </div>
-    </ThemeProvider>
+      </ThemeProvider>
+    </React.Fragment>
   );
 }
 

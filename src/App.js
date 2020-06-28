@@ -17,6 +17,7 @@ function App() {
           path="/dashboards/:id/:page/:subpage"
           component={DashboardPage}
         />
+        <Route component={Landing} />
       </Switch>
     </Router>
   );
