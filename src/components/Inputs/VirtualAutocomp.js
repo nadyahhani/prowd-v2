@@ -7,7 +7,6 @@ import { useTheme, makeStyles } from "@material-ui/core/styles";
 import { VariableSizeList } from "react-window";
 import { InputLabel, CircularProgress } from "@material-ui/core";
 import theme from "../../theme";
-import { filterOptions } from "../../global";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 const LISTBOX_PADDING = 8; // px
 

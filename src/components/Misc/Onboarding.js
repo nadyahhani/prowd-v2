@@ -7,7 +7,6 @@ import {
 } from "@material-ui/core";
 import Help from "./Help";
 import theme from "../../theme";
-import { useHistory } from "react-router-dom";
 import Tour from "reactour";
 
 function Typography(props) {

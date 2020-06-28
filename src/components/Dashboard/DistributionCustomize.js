@@ -12,7 +12,6 @@ import {
   TextField,
   Box,
   Paper,
-  MenuItem,
   Popover,
 } from "@material-ui/core";
 import {
@@ -73,12 +72,12 @@ export default function DistributionCustomize(props) {
       setState((s) => ({
         ...s,
         allData: temp,
-        data: state.data ? state.data : props.data,
+        data: s.data ? s.data : props.data,
         newLine: temp[0],
         newLineInput: temp[0].name,
       }));
     }
-  }, [state.open, state.data]);
+  }, [props.allData, props.data]);
 
   const handlePicker = (reason, data = null) => {
     switch (reason) {

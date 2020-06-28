@@ -15,9 +15,7 @@ import {
   TableCell,
   TextField,
   TableBody,
-  IconButton,
   TableRow,
-  Badge,
   Popover,
   List,
   ListItem,
@@ -28,16 +26,12 @@ import theme from "../../theme";
 import Loading from "../../components/Misc/Loading";
 import Help from "../../components/Misc/Help";
 import { editDiscover } from "../../services/dashboard";
-import LineChart from "../../components/Dashboard/LineChart";
 import DiscoverDimension from "../../components/Dashboard/DiscoverDimension";
 import AllPropertiesModal from "../../components/Dashboard/AllPropertiesModal";
 import { DiscoverIllustration } from "../../images/export";
 import DistributionCustomize from "../../components/Dashboard/DistributionCustomize";
 import { selectDistribution } from "../../global";
 import ScatterLineChart from "../../components/Dashboard/ScatterLineChart";
-import { MoreHoriz } from "@material-ui/icons";
-import Onboarding from "../../components/Misc/Onboarding";
-import { useHistory } from "react-router-dom";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -93,7 +87,6 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function Analysis(props) {
-  const history = useHistory();
   const classes = useStyles();
   const { state, setState } = props;
   const effectNeeds = {

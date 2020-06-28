@@ -17,9 +17,9 @@ import {
   Slider,
   Input,
 } from "@material-ui/core";
-import { getClasses, searchProperties } from "../../services/general";
+import {  searchProperties } from "../../services/general";
 import { AddCircle, RemoveCircle } from "@material-ui/icons";
-import { getUnique, filterOptions } from "../../global";
+import { getUnique} from "../../global";
 import theme from "../../theme";
 import Loading from "../Misc/Loading";
 import Help from "../Misc/Help";

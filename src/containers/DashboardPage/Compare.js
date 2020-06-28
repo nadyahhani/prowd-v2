@@ -28,11 +28,8 @@ import Status from "../../components/Misc/Status";
 import Help from "../../components/Misc/Help";
 import DimensionTable from "../../components/Dashboard/DimensionTable";
 import { editCompare } from "../../services/dashboard";
-import LineChart from "../../components/Dashboard/LineChart";
 import VennProperties from "../../components/Dashboard/VennProperties";
 import ScatterLineChart from "../../components/Dashboard/ScatterLineChart";
-import Onboarding from "../../components/Misc/Onboarding";
-import { useHistory } from "react-router-dom";
 import PercentageSwitch from "../../components/Inputs/PercentageSwitch";
 
 const useStyles = makeStyles((theme) => ({
@@ -40,7 +37,7 @@ const useStyles = makeStyles((theme) => ({
     height: "66.3vh",
     minHeight: "500px",
     // padding: theme.spacing(0),
-    minWidth: "1316px"
+    minWidth: "1316px",
   },
   gridItem: {
     minWidth: "33.333333%",
@@ -109,7 +106,6 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function Compare(props) {
-  const history = useHistory();
   const classes = useStyles();
   const { state, setState } = props;
   const effectNeeds = {

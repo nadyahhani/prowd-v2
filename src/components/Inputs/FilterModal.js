@@ -2,10 +2,8 @@ import React from "react";
 import PropTypes from "prop-types";
 import {
   Typography,
-  Paper,
   Grid,
   Button,
-  Modal,
   makeStyles,
   Box,
   Popover,

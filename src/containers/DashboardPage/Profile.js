@@ -19,7 +19,6 @@ import GiniChart from "../../components/Dashboard/GiniChart";
 import theme from "../../theme";
 import {
   WarningOutlined as WarningOutlinedIcon,
-  SaveAlt as SaveAltIcon,
   Search,
   OpenInNew,
 } from "@material-ui/icons";
@@ -32,9 +31,6 @@ import { filterEntities, countProperties } from "../../global";
 import PercentageSwitch from "../../components/Inputs/PercentageSwitch";
 import ProfileProperties from "../../components/Dashboard/ProfileProperties";
 import TableSort from "../../components/Misc/TableSort";
-import Onboarding from "../../components/Misc/Onboarding";
-import Link from "../../components/Misc/Link";
-import { useHistory } from "react-router-dom";
 import { NoInstancesLogo } from "../../images/export";
 
 const useStyles = makeStyles((theme) => ({
@@ -148,19 +144,18 @@ const tableColumns = [
 ];
 
 export default function Profile(props) {
-  const history = useHistory();
   const classes = useStyles();
-  const { state, setState } = props;
+  const { state, setState, fetchData, updateData } = props;
 
   React.useEffect(() => {
     if (!props.data.loaded.profile) {
-      props.fetchData("profile");
-      props.updateData((s) => ({
+      fetchData("profile");
+      updateData((s) => ({
         ...s,
         loaded: { ...s.loaded, profile: true },
       }));
     }
-  }, [state, props.data.loaded.profile, props.fetchData, props.updateData]);
+  }, [state, props.data.loaded.profile, fetchData, updateData]);
 
   const checkProperty = (value) => {
     const id = value.slice(value.indexOf("(") + 1, value.indexOf(")"));

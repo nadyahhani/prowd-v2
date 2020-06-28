@@ -5,7 +5,6 @@ import {
   makeStyles,
   Input,
   Box,
-  IconButton,
   Button,
   Grid,
   Paper,
@@ -33,7 +32,6 @@ import {
   compareDistinctProps,
   selectDistribution,
 } from "../../global";
-import FileCopyOutlinedIcon from "@material-ui/icons/FileCopyOutlined";
 import Loading from "../../components/Misc/Loading";
 import FilterBox from "../../components/Inputs/FilterBox";
 import Notif from "../../components/Misc/Notif";
@@ -532,7 +530,7 @@ export default function DashboardPage(props) {
         });
       }
     },
-    [props.match.params.id]
+    [props.match.params.id, state.loaded.global]
   );
 
   React.useEffect(() => {
@@ -570,6 +568,7 @@ export default function DashboardPage(props) {
     props.match.params.id,
     props.match.params.subpage,
     state.globalData.entity,
+    state.globalData.filtersInfo,
   ]);
 
   return (

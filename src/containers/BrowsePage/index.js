@@ -25,8 +25,7 @@ import Loading from "../../components/Misc/Loading";
 import { NavigateNext, ExpandMore, Search } from "@material-ui/icons";
 import { useHistory } from "react-router-dom";
 import Autocomplete from "@material-ui/lab/Autocomplete";
-import FilterBox from "../../components/Inputs/FilterBox";
-import { getUnique, cut, filterOptions } from "../../global";
+import { getUnique, filterOptions } from "../../global";
 import Link from "../../components/Misc/Link";
 import Notif from "../../components/Misc/Notif";
 
@@ -77,7 +76,7 @@ export default function BrowsePage(props) {
   });
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [open, setOpen] = React.useState(false);
-  const [giniRange, setRange] = React.useState([0, 1]);
+  // const [giniRange, setRange] = React.useState([0, 1]);
 
   React.useEffect(() => {
     if (props.location.state && props.location.state.dashboardDelete) {
@@ -95,7 +94,7 @@ export default function BrowsePage(props) {
         setState((s) => ({ ...s, loading: false, dashboards: r.profiles }));
       }
     });
-  }, []);
+  }, [props.location.state]);
 
   return (
     <ThemeProvider theme={theme}>

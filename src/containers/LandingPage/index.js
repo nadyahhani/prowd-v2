@@ -13,8 +13,6 @@ import {
   IconButton,
   Tabs,
   Tab,
-  Dialog,
-  DialogContent,
   TableContainer,
   TableRow,
   TableCell,
@@ -42,7 +40,7 @@ import {
   MpiiLogo,
   UILogo,
 } from "../../images/export";
-import { NavigateNext, ExpandMore, CheckBox, Search } from "@material-ui/icons";
+import { NavigateNext, ExpandMore, Search } from "@material-ui/icons";
 import Help from "../../components/Misc/Help";
 import Loading from "../../components/Misc/Loading";
 import Tour from "reactour";
@@ -228,7 +226,8 @@ function Landing(props) {
           }));
       });
     }
-  }, [window.location.href]);
+  }, [state.firstLoaded]);
+  
   const handleItemDialogClose = () =>
     setState((s) => ({
       ...s,
@@ -593,9 +592,13 @@ function Landing(props) {
       </Grid>
     );
   };
+
   const handleClose = () => {
     setOnboarding((s) => ({ ...s, open: false }));
   };
+
+  console.log("will return!");
+
   return (
     <React.Fragment>
       <ThemeProvider theme={theme}>
@@ -946,7 +949,6 @@ function Landing(props) {
                           className={classes.exampleCarousel}
                         >
                           {[...tempData.items].map((x, idx) => (
-                            // <GridListTile key={idx}>
                             <Grid item key={idx}>
                               <Tooltip
                                 title={
@@ -1006,7 +1008,6 @@ function Landing(props) {
             </div>
             <div
               style={{
-                // position: "absolute",
                 display: "flex",
                 flexDirection: "row",
                 justifyContent: "center",
@@ -1052,7 +1053,6 @@ function Landing(props) {
             </div>
             <div
               style={{
-                // position: "absolute",
                 display: "flex",
                 flexDirection: "row",
                 justifyContent: "center",

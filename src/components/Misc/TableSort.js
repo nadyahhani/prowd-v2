@@ -1,19 +1,8 @@
 import React from "react";
 import MenuItem from "@material-ui/core/MenuItem";
-import { makeStyles } from "@material-ui/core/styles";
 import { TextField } from "@material-ui/core";
 
-const useStyles = makeStyles((theme) => ({
-  root: {
-    display: "flex",
-  },
-  paper: {
-    marginRight: theme.spacing(2),
-  },
-}));
-
 export default function TableSort(props) {
-  const classes = useStyles();
   const [selected, setSelected] = React.useState(0);
 
   React.useEffect(() => {}, []);
