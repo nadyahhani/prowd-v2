@@ -167,7 +167,6 @@ export default function Navbar() {
 
   const itemSearch = () => {
     return (
-      // <Paper classes={{ root: classes.searchBox }}>
       <Dialog
         open={state.popper.open}
         classes={{ paper: classes.searchBox }}
@@ -446,7 +445,6 @@ export default function Navbar() {
           </Grid>
         </Grid>
       </Dialog>
-      // </Paper>
     );
   };
 

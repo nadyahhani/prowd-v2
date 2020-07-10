@@ -115,6 +115,7 @@ export default function Compare(props) {
   };
 
   React.useEffect(() => {
+    console.log(state);
     if (!effectNeeds.load) {
       effectNeeds.fetchData("compare");
       effectNeeds.updateData((s) => ({
@@ -228,7 +229,11 @@ export default function Compare(props) {
                     marginBottom: theme.spacing(1),
                   }}
                 >
-                  <Grid item xs={6} style={{ display: "flex" }}>
+                  <Grid
+                    item
+                    xs={6}
+                    style={{ display: "flex", maxHeight: "100%" }}
+                  >
                     <Paper classes={{ root: classes.card }}>
                       {!state.loading.giniA && !state.loading.giniB ? (
                         <div style={{ width: "100%", height: "100%" }}>
@@ -286,7 +291,11 @@ export default function Compare(props) {
                       )}
                     </Paper>
                   </Grid>
-                  <Grid item xs={6} style={{ display: "flex" }}>
+                  <Grid
+                    item
+                    xs={6}
+                    style={{ display: "flex", maxHeight: "100%" }}
+                  >
                     <Paper classes={{ root: classes.card }}>
                       {!state.loading.properties ? (
                         <div style={{ width: "100%", height: "100%" }}>
@@ -693,7 +702,7 @@ export default function Compare(props) {
                                         y: num,
                                       })
                                     ),
-                              amount: state.giniA.amount,
+                              amount: state.giniB.amount,
                               borderColor: theme.palette.itemB.main,
                               backgroundColor: theme.palette.itemB.main,
                               fill: true,

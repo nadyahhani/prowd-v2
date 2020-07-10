@@ -60,8 +60,6 @@ export default function FilterModal(props) {
   }, [props.open, props.appliedFilters]);
 
   return (
-    // <Modal open={props.open} onClose={props.onClose} className={classes.modal}>
-    //   <Paper className={classes.modalPaper}>
     <Popover
       classes={{ paper: classes.modalPaper }}
       open={props.open}

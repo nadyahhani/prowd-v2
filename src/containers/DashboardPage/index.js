@@ -169,12 +169,12 @@ export default function DashboardPage(props) {
 
       // Global
       if (
-        !state.loaded.global &&
-        (scope === "" ||
-          scope === "profile" ||
-          scope === "compare" ||
-          scope === "info" ||
-          scope === "discover")
+        // !state.loaded.global &&
+        scope === "" ||
+        scope === "profile" ||
+        scope === "compare" ||
+        scope === "info" ||
+        scope === "discover"
       ) {
         console.log("global pull");
 
@@ -220,7 +220,10 @@ export default function DashboardPage(props) {
         });
 
         getDashInfo(props.match.params.id, (r) => {
+          console.log(r);
           if (r.success) {
+            console.log(r);
+
             setState((s) => ({
               ...s,
               loading: false,
@@ -530,7 +533,7 @@ export default function DashboardPage(props) {
         });
       }
     },
-    [props.match.params.id, state.loaded.global]
+    [props.match.params.id]
   );
 
   React.useEffect(() => {

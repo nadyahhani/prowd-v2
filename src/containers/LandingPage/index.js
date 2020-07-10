@@ -224,7 +224,7 @@ function Landing(props) {
           }));
       });
     }
-  }, [state.firstLoaded]);
+  }, [window.location.hash, state.firstLoaded]);
 
   const handleItemDialogClose = () =>
     setState((s) => ({
@@ -589,6 +589,287 @@ function Landing(props) {
     );
   };
 
+  const createDash = () => {
+    if (state.inputtab === 1) {
+      return (
+        <Grid
+          container
+          justify="center"
+          spacing={2}
+          direction="column"
+          className={classes.inputInput}
+        >
+          <Grid
+            item
+            style={{
+              display: "flex",
+              flexDirection: "row",
+              alignItems: "center",
+              justifyContent: "space-between",
+            }}
+          >
+            <Tooltip
+              placement="left"
+              title={
+                <Typography component="div">
+                  What is the type of the items of your topic of interest?{" "}
+                  <Box fontWeight="bold">
+                    Don't know? Click on the examples at the bottom or use the
+                    "Visualize by Item" tab to configure the dashboard based on
+                    a subject of your topic.
+                  </Box>
+                </Typography>
+              }
+            >
+              <div
+                style={{
+                  width: "100%",
+                  marginTop: theme.spacing(1),
+                }}
+              >
+                <VirtualAutocomp
+                  filterOptions={filterOptions}
+                  label="Class"
+                  placeholder="Input the classification for the items in your topic"
+                  options={state.classes}
+                  loading={state.inputisloading}
+                  inputValue={state.classInput}
+                  value={state.selectedClass}
+                  onInputChange={(e) => {
+                    if (e) {
+                      const tempval = e.target.value;
+                      setState((s) => ({
+                        ...s,
+                        classInput: tempval,
+                        inputisloading: true,
+                      }));
+
+                      getClasses(e.target.value, (response) => {
+                        response.success &&
+                          setState((s) => ({
+                            ...s,
+                            inputisloading: false,
+                            classes: getUnique(
+                              [...s.classes, ...response.entities],
+                              "id"
+                            ),
+                          }));
+                      });
+                    }
+                  }}
+                  onChange={(event, newValue, reason) => {
+                    if (newValue) {
+                      setState((s) => ({
+                        ...s,
+                        selectedClass: newValue,
+                        classInput: `${newValue.label} (${newValue.id})`,
+                      }));
+                    }
+                    if (reason === "clear") {
+                      setState((s) => ({
+                        ...s,
+                        selectedClass: null,
+                        classInput: "",
+                      }));
+                    }
+                  }}
+                  onClose={(event, reason) => {
+                    if (reason !== "select-option" && !state.selectedClass) {
+                      setState((s) => ({
+                        ...s,
+                        classInput: "",
+                        selectedClass: null,
+                      }));
+                    }
+                  }}
+                  getOptionLabel={(option) => {
+                    return `${option.label} (${option.id})${
+                      option.aliases
+                        ? ` also known as ${option.aliases.join(", ")}`
+                        : ""
+                    }`;
+                  }}
+                  renderOption={(option) => (
+                    <div>
+                      <Typography
+                        noWrap
+                      >{`${option.label} (${option.id})`}</Typography>
+                      <Typography
+                        variant="caption"
+                        style={{ lineHeight: "1.3vmin" }}
+                      >
+                        {cut(option.description, 500)}
+                      </Typography>
+                    </div>
+                  )}
+                />
+              </div>
+            </Tooltip>
+          </Grid>
+          <Grid item>
+            <FilterBox
+              class={state.selectedClass}
+              classes={{ root: classes.filters }}
+              options={state.appliedFilters}
+              propertiesOptions={state.propertiesOptions}
+              selectedClass={state.selectedClass}
+              onApply={(applied) =>
+                setState((s) => ({ ...s, appliedFilters: applied }))
+              }
+              renderTagText={(opt) =>
+                cut(`${opt.property.label}: ${opt.value.label}`, 1000)
+              }
+              onDelete={(idx) => {
+                const temp = [...state.appliedFilters];
+                temp.splice(idx, 1);
+                setState((s) => ({ ...s, appliedFilters: temp }));
+              }}
+              onClear={() => setState((s) => ({ ...s, appliedFilters: [] }))}
+            />
+          </Grid>
+          <Grid item>
+            <Grid
+              container
+              spacing={1}
+              justify="space-between"
+              className={classes.exampleCarousel}
+            >
+              {[...tempData.ex].map((x, idx) => (
+                <Grid item key={idx}>
+                  <Chip
+                    size="small"
+                    variant="outlined"
+                    style={{ width: "98%" }}
+                    color="primary"
+                    onClick={() => {
+                      setState((s) => ({
+                        ...s,
+                        selectedClass: x.class,
+                        classInput: `${x.class.label} (${x.class.id})`,
+                        appliedFilters: x.filters,
+                      }));
+                    }}
+                    label={<Typography variant="body1">{x.label}</Typography>}
+                  />
+                </Grid>
+              ))}
+            </Grid>
+          </Grid>
+          <Grid item>
+            <div
+              style={{
+                width: "100%",
+                display: "flex",
+                flexDirection: "row",
+              }}
+            >
+              <div
+                style={{
+                  width: "42%",
+                  marginRight: theme.spacing(1),
+                }}
+              >
+                <Button
+                  variant="contained"
+                  color="primary"
+                  disableElevation
+                  fullWidth
+                  disabled={state.selectedClass === null}
+                  onClick={() => {
+                    createDashboard(
+                      state.selectedClass.id,
+                      state.appliedFilters.map((x) => {
+                        let temp = {};
+                        temp[x.property.id] = x.value.id;
+                        return temp;
+                      }),
+                      (response) =>
+                        history.push(
+                          `/dashboards/${response.hashCode}/profile/onboarding-profile`
+                        )
+                    );
+                  }}
+                >
+                  CREATE DASHBOARD
+                </Button>
+              </div>
+            </div>
+          </Grid>
+        </Grid>
+      );
+    } else {
+      return (
+        <Grid
+          container
+          justify="center"
+          spacing={2}
+          direction="column"
+          className={classes.inputInput}
+        >
+          <Grid item>
+            <Typography variant="h2" style={{ marginBottom: theme.spacing(1) }}>
+              What is a subject of your topic of interest?
+            </Typography>
+          </Grid>
+          {itemSearch()}
+          <Grid item style={{ maxWidth: "100%" }}>
+            <Grid container spacing={1} className={classes.exampleCarousel}>
+              {[...tempData.items].map((x, idx) => (
+                <Grid item key={idx}>
+                  <Tooltip
+                    title={
+                      <Typography>{`Topics with this subject: ${x.topic}`}</Typography>
+                    }
+                  >
+                    <Chip
+                      size="small"
+                      variant="outlined"
+                      style={{ width: "98%" }}
+                      color="primary"
+                      onClick={() => {
+                        setState((s) => ({
+                          ...s,
+                          selecteditem: x,
+                          itemsearchinput: `${x.label} (${x.id})`,
+                          itemDialogisOpen: true,
+                          iteminfoisloading: true,
+                          anchoritemDialog: document.getElementById(
+                            "input-box"
+                          ),
+                        }));
+                        getEntityInfo(x.id, (r) => {
+                          if (r.success) {
+                            setState((s) => ({
+                              ...s,
+                              iteminfoisloading: false,
+                              iteminfo: {
+                                classes: r.classes,
+                                filters: r.filters.filter(
+                                  (item) =>
+                                    item.property.id !== "P31" &&
+                                    item.value.id.slice(0, 1).includes("Q")
+                                ),
+                              },
+                            }));
+                          }
+                        });
+                      }}
+                      label={
+                        <Typography variant="body1">
+                          {x.label} ({x.id})
+                        </Typography>
+                      }
+                    />
+                  </Tooltip>
+                </Grid>
+              ))}
+            </Grid>
+          </Grid>
+        </Grid>
+      );
+    }
+  };
+
   const handleClose = () => {
     setOnboarding((s) => ({ ...s, open: false }));
   };
@@ -693,305 +974,7 @@ function Landing(props) {
                       />
                     </Tabs>
                   </div>
-                  {state.inputtab === 1 ? (
-                    <Grid
-                      container
-                      justify="center"
-                      spacing={2}
-                      direction="column"
-                      className={classes.inputInput}
-                    >
-                      <Grid
-                        item
-                        style={{
-                          display: "flex",
-                          flexDirection: "row",
-                          alignItems: "center",
-                          justifyContent: "space-between",
-                        }}
-                      >
-                        {" "}
-                        <Tooltip
-                          placement="left"
-                          title={
-                            <Typography component="div">
-                              What is the type of the items of your topic of
-                              interest?{" "}
-                              <Box fontWeight="bold">
-                                Don't know? Click on the examples at the bottom
-                                or use the "Visualize by Item" tab to configure
-                                the dashboard based on a subject of your topic.
-                              </Box>
-                            </Typography>
-                          }
-                        >
-                          <div
-                            style={{
-                              width: "100%",
-                              marginTop: theme.spacing(1),
-                            }}
-                          >
-                            <VirtualAutocomp
-                              filterOptions={filterOptions}
-                              label="Class"
-                              placeholder="Input the classification for the items in your topic"
-                              options={state.classes}
-                              loading={state.inputisloading}
-                              inputValue={state.classInput}
-                              value={state.selectedClass}
-                              onInputChange={(e) => {
-                                if (e) {
-                                  const tempval = e.target.value;
-                                  setState((s) => ({
-                                    ...s,
-                                    classInput: tempval,
-                                    inputisloading: true,
-                                  }));
-
-                                  getClasses(e.target.value, (response) => {
-                                    response.success &&
-                                      setState((s) => ({
-                                        ...s,
-                                        inputisloading: false,
-                                        classes: getUnique(
-                                          [...s.classes, ...response.entities],
-                                          "id"
-                                        ),
-                                      }));
-                                  });
-                                }
-                              }}
-                              onChange={(event, newValue, reason) => {
-                                if (newValue) {
-                                  setState((s) => ({
-                                    ...s,
-                                    selectedClass: newValue,
-                                    classInput: `${newValue.label} (${newValue.id})`,
-                                  }));
-                                }
-                                if (reason === "clear") {
-                                  setState((s) => ({
-                                    ...s,
-                                    selectedClass: null,
-                                    classInput: "",
-                                  }));
-                                }
-                              }}
-                              onClose={(event, reason) => {
-                                if (
-                                  reason !== "select-option" &&
-                                  !state.selectedClass
-                                ) {
-                                  setState((s) => ({
-                                    ...s,
-                                    classInput: "",
-                                    selectedClass: null,
-                                  }));
-                                }
-                              }}
-                              getOptionLabel={(option) => {
-                                return `${option.label} (${option.id})${
-                                  option.aliases
-                                    ? ` also known as ${option.aliases.join(
-                                        ", "
-                                      )}`
-                                    : ""
-                                }`;
-                              }}
-                              renderOption={(option) => (
-                                <div>
-                                  <Typography
-                                    noWrap
-                                  >{`${option.label} (${option.id})`}</Typography>
-                                  <Typography
-                                    variant="caption"
-                                    style={{ lineHeight: "1.3vmin" }}
-                                  >
-                                    {cut(option.description, 500)}
-                                  </Typography>
-                                </div>
-                              )}
-                            />
-                          </div>
-                        </Tooltip>
-                      </Grid>
-                      <Grid item>
-                        <FilterBox
-                          class={state.selectedClass}
-                          classes={{ root: classes.filters }}
-                          options={state.appliedFilters}
-                          propertiesOptions={state.propertiesOptions}
-                          selectedClass={state.selectedClass}
-                          onApply={(applied) =>
-                            setState((s) => ({ ...s, appliedFilters: applied }))
-                          }
-                          renderTagText={(opt) =>
-                            cut(
-                              `${opt.property.label}: ${opt.value.label}`,
-                              1000
-                            )
-                          }
-                          onDelete={(idx) => {
-                            const temp = [...state.appliedFilters];
-                            temp.splice(idx, 1);
-                            setState((s) => ({ ...s, appliedFilters: temp }));
-                          }}
-                          onClear={() =>
-                            setState((s) => ({ ...s, appliedFilters: [] }))
-                          }
-                        />
-                      </Grid>
-                      <Grid item>
-                        <Grid
-                          container
-                          spacing={1}
-                          justify="space-between"
-                          className={classes.exampleCarousel}
-                        >
-                          {[...tempData.ex].map((x, idx) => (
-                            <Grid item key={idx}>
-                              <Chip
-                                size="small"
-                                variant="outlined"
-                                style={{ width: "98%" }}
-                                color="primary"
-                                onClick={() => {
-                                  setState((s) => ({
-                                    ...s,
-                                    selectedClass: x.class,
-                                    classInput: `${x.class.label} (${x.class.id})`,
-                                    appliedFilters: x.filters,
-                                  }));
-                                }}
-                                label={
-                                  <Typography variant="body1">
-                                    {x.label}
-                                  </Typography>
-                                }
-                              />
-                            </Grid>
-                          ))}
-                        </Grid>
-                      </Grid>
-                      <Grid item>
-                        <div
-                          style={{
-                            width: "100%",
-                            display: "flex",
-                            flexDirection: "row",
-                          }}
-                        >
-                          <div
-                            style={{
-                              width: "42%",
-                              marginRight: theme.spacing(1),
-                            }}
-                          >
-                            <Button
-                              variant="contained"
-                              color="primary"
-                              disableElevation
-                              fullWidth
-                              disabled={state.selectedClass === null}
-                              onClick={() => {
-                                createDashboard(
-                                  state.selectedClass.id,
-                                  state.appliedFilters.map((x) => {
-                                    let temp = {};
-                                    temp[x.property.id] = x.value.id;
-                                    return temp;
-                                  }),
-                                  (response) =>
-                                    history.push(
-                                      `/dashboards/${response.hashCode}/profile/onboarding-profile`
-                                    )
-                                );
-                              }}
-                            >
-                              CREATE DASHBOARD
-                            </Button>
-                          </div>
-                        </div>
-                      </Grid>
-                    </Grid>
-                  ) : (
-                    <Grid
-                      container
-                      justify="center"
-                      spacing={2}
-                      direction="column"
-                      className={classes.inputInput}
-                    >
-                      <Grid item>
-                        <Typography
-                          variant="h2"
-                          style={{ marginBottom: theme.spacing(1) }}
-                        >
-                          What is a subject of your topic of interest?
-                        </Typography>
-                      </Grid>
-                      {itemSearch()}
-                      <Grid item style={{ maxWidth: "100%" }}>
-                        <Grid
-                          container
-                          spacing={1}
-                          className={classes.exampleCarousel}
-                        >
-                          {[...tempData.items].map((x, idx) => (
-                            <Grid item key={idx}>
-                              <Tooltip
-                                title={
-                                  <Typography>{`Topics with this subject: ${x.topic}`}</Typography>
-                                }
-                              >
-                                <Chip
-                                  size="small"
-                                  variant="outlined"
-                                  style={{ width: "98%" }}
-                                  color="primary"
-                                  onClick={() => {
-                                    setState((s) => ({
-                                      ...s,
-                                      selecteditem: x,
-                                      itemsearchinput: `${x.label} (${x.id})`,
-                                      itemDialogisOpen: true,
-                                      iteminfoisloading: true,
-                                      anchoritemDialog: document.getElementById(
-                                        "input-box"
-                                      ),
-                                    }));
-                                    getEntityInfo(x.id, (r) => {
-                                      if (r.success) {
-                                        setState((s) => ({
-                                          ...s,
-                                          iteminfoisloading: false,
-                                          iteminfo: {
-                                            classes: r.classes,
-                                            filters: r.filters.filter(
-                                              (item) =>
-                                                item.property.id !== "P31" &&
-                                                item.value.id
-                                                  .slice(0, 1)
-                                                  .includes("Q")
-                                            ),
-                                          },
-                                        }));
-                                      }
-                                    });
-                                  }}
-                                  label={
-                                    <Typography variant="body1">
-                                      {x.label} ({x.id})
-                                    </Typography>
-                                  }
-                                />
-                              </Tooltip>
-                            </Grid>
-                          ))}
-                        </Grid>
-                      </Grid>
-                    </Grid>
-                  )}
+                  {createDash()}
                 </Paper>
               </div>
             </div>
