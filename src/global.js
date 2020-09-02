@@ -2,7 +2,7 @@ import theme from "./theme";
 import { createFilterOptions } from "@material-ui/lab/Autocomplete";
 
 // API URL
-export const url = "https://prowd.id:5000";
+export const url = "https://prowd.id/api";
 // export const url = "http://localhost:5000";
 
 // custom filter for item autocompletes
