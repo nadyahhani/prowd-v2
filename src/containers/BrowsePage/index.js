@@ -419,7 +419,9 @@ export default function BrowsePage(props) {
                             {(() => {
                               let d = new Date(0); // The 0 there is the key, which sets the date to the epoch
                               d.setUTCSeconds(row.timestamp);
-                              return `${d.getDate()}/${d.getMonth()}/${d.getFullYear()} ${
+                              return `${d.getDate()}/${
+                                d.getMonth() + 1
+                              }/${d.getFullYear()} ${
                                 d.getHours() < 10 ? 0 : ""
                               }${d.getHours()}:${
                                 d.getMinutes() < 10 ? 0 : ""
